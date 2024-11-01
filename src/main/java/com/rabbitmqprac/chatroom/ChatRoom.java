@@ -27,13 +27,8 @@ public class ChatRoom {
     @Column(name = "chat_Room_id")
     private Long id;
 
-    //단방향
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "lastChatMsgId")
-    private ChatMessage lastChatMsg;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "ChatRoom_Members",
+    @JoinTable(name = "Chat_Room_Members",
             joinColumns = @JoinColumn(name = "chatRoomId"),
             inverseJoinColumns = @JoinColumn(name = "memberId"))
     private Set<Member> chatRoomMembers = new HashSet<>();

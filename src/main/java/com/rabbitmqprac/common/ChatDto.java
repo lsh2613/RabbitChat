@@ -2,7 +2,6 @@ package com.rabbitmqprac.common;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatroom.ChatRoom;
-import com.rabbitmqprac.user.Member;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,10 +19,10 @@ public class ChatDto {
         private Long memberId;
         private String message;
 
-        public ChatMessage toEntity(ChatRoom chatRoom, Member member) {
+        public ChatMessage toEntity(Long chatRoomId, Long memberId) {
             ChatMessage chatMessage = ChatMessage.builder()
-                    .chatRoom(chatRoom)
-                    .member(member)
+                    .chatRoomId(chatRoomId)
+                    .memberId(memberId)
                     .message(message)
                     .createdAt(LocalDateTime.now())
                     .build();

@@ -1,5 +1,6 @@
 package com.rabbitmqprac.common;
 
+import com.rabbitmqprac.chatmessage.ChatMessage;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,12 +14,12 @@ public class ChatMessageRes {
     private String message;
     private LocalDateTime createdAt;
 
-    public static ChatMessageRes createRes(Long chatRoomId, Long memberId, String message, LocalDateTime createdAt) {
+    public static ChatMessageRes createRes(ChatMessage chatMessage) {
         return ChatMessageRes.builder()
-                .chatRoomId(chatRoomId)
-                .memberId(memberId)
-                .message(message)
-                .createdAt(createdAt)
+                .chatRoomId(chatMessage.getChatRoomId())
+                .memberId(chatMessage.getMemberId())
+                .message(chatMessage.getMessage())
+                .createdAt(chatMessage.getCreatedAt())
                 .build();
     }
 }

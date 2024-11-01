@@ -41,6 +41,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp' // rabbitmq와 같은 외부 메시지 브로커 사용
     implementation 'org.springframework:spring-messaging' // @MessageMapping 기능처럼 메시지 처리 기능
     implementation 'org.springframework.boot:spring-boot-starter-reactor-netty:3.0.0' // 서버 <-> rabbitmq의 비동기 네트워크 처리
+
+    implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
+
+    // mongoDB
+    implementation ('org.springframework.boot:spring-boot-starter-data-mongodb')
 }
 
 tasks.named('test') {
