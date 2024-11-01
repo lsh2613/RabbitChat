@@ -18,7 +18,13 @@ docker run -d -p 15672:15672 -p 5672:5672 -p 61613:61613 --name rabbitmq rabbitm
 docker exec rabbitmq rabbitmq-plugins enable rabbitmq_stomp
 ```
 
-### 2. 채팅 테스트
+### 2. 도커 컴포즈 MongoDB 실행
+docker-compose.yml이 존재하는 루트 디렉토리로 이동
+``` shell
+docker-compose up
+```
+
+### 3. 채팅 테스트
 1. `localhost:8080/init`을 통해 테스트 데이터(채팅방, 유저) 생성
 2. `localhost:8080` 페이지로 접속
 3. Connect를 통해 WebSocket 연결
