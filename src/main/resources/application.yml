@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb # h2 url ex_): jdbc:h2:tcp://localhost/~/test
-    username: sa # h2 id
-    password: # h2 password
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
   h2:
     console:
       enabled: true
@@ -12,8 +12,19 @@ spring:
       uri: mongodb://root:1234@localhost:27017/message_history?authSource=admin&authMechanism=SCRAM-SHA-1
       username: root
       password: 1234
+    redis:
+      host: localhost
+      port: 6379
 
-# RabbitMQ 설정
+jwt:
+  secret: lsh2613 #jwt secret key
+  access:
+    expiration: 1800000
+    header: Authorization
+  refresh:
+    expiration: 259200000
+    header: Authorization-Refresh
+
 rabbitmq:
   host: "localhost"
   port: 5672
@@ -34,7 +45,7 @@ rabbitmq:
     routing:
       key: "*.room."
 
-#logging:
-#  level:
-#    org.springframework.messaging: trace
-#    org.springframework.web.socket: trace
+logging:
+  level:
+    org.springframework.data.redis.connection: DEBUG
+    org.springframework.cache: DEBUG

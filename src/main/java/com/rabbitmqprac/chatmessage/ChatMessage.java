@@ -1,12 +1,9 @@
 package com.rabbitmqprac.chatmessage;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;

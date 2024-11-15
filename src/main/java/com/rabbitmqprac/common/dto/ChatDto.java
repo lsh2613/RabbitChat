@@ -1,4 +1,4 @@
-package com.rabbitmqprac.common;
+package com.rabbitmqprac.common.dto;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatroom.ChatRoom;
@@ -15,11 +15,9 @@ public class ChatDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ChatMessageReq {
-        private Long chatRoomId;
-        private Long memberId;
         private String message;
 
-        public ChatMessage toEntity(Long chatRoomId, Long memberId) {
+        public ChatMessage createChatMessage(Long chatRoomId, Long memberId) {
             ChatMessage chatMessage = ChatMessage.builder()
                     .chatRoomId(chatRoomId)
                     .memberId(memberId)
