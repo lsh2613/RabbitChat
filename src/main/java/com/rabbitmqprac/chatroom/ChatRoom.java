@@ -27,20 +27,8 @@ public class ChatRoom {
     @Column(name = "chat_Room_id")
     private Long id;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "Chat_Room_Members",
-            joinColumns = @JoinColumn(name = "chatRoomId"),
-            inverseJoinColumns = @JoinColumn(name = "memberId"))
-    private Set<Member> chatRoomMembers = new HashSet<>();
-
-    @Column(name = "createdAt", updatable = false)
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    public void addMembers(Member roomMaker, Member guest) {
-        this.chatRoomMembers.add(roomMaker);
-        this.chatRoomMembers.add(guest);
-    }
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ChatRoomMember> chatRoomMembers = new HashSet<>();
 
     public static ChatRoom emptyChatRoom(){
         return new ChatRoom();
