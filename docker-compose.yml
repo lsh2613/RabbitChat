@@ -9,3 +9,18 @@ services:
       MONGO_INITDB_DATABASE: message_history
     ports:
       - "27017:27017"
+    networks:
+      - my_network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - my_network
+
+
+networks:
+  my_network:
