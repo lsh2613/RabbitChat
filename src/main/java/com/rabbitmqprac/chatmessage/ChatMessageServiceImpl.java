@@ -78,7 +78,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         Long memberId = stompHeaderAccessorUtil.getMemberIdInSession(accessor);
         Member member = entityFacade.getMember(memberId);
 
-        Long chatRoomId = stompHeaderAccessorUtil.getChatRoomIdInHeader(accessor);
+        Long chatRoomId = stompHeaderAccessorUtil.getChatRoomIdInSession(accessor);
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
         entryChatRoom(accessor, chatRoom.getId(), member.getId());
@@ -89,7 +89,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         stompHeaderAccessorUtil.setChatRoomIdInSession(accessor, chatRoomId);
         stompHeaderAccessorUtil.setMemberIdInSession(accessor, memberId);
         redisChatUtil.addChatRoom2Member(chatRoomId, memberId);
-
     }
 
     private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
