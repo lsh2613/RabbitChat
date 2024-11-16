@@ -1,16 +1,12 @@
 package com.rabbitmqprac.chatmessage;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
-import com.rabbitmqprac.chatroom.ChatRoomRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
-import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.common.EntityFacade;
-import com.rabbitmqprac.common.constant.MessageType;
 import com.rabbitmqprac.common.dto.ChatMessageRes;
 import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
 import com.rabbitmqprac.common.dto.MessageRes;
 import com.rabbitmqprac.user.Member;
-import com.rabbitmqprac.user.MemberRepository;
 import com.rabbitmqprac.util.RedisChatUtil;
 import com.rabbitmqprac.util.StompHeaderAccessorUtil;
 import jakarta.transaction.Transactional;
@@ -49,11 +45,19 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage chatMessage = req.createChatMessage(chatRoom.getId(), member.getId());
         chatMessageRepository.save(chatMessage);
 
+        int unreadCnt = calculateUnreadCnt(chatRoom);
+        sendMessage(chatMessage, unreadCnt, chatRoom);
+    }
+
+    private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
+        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
+        rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoom.getId(), messageRes);
+    }
+
+    private int calculateUnreadCnt(ChatRoom chatRoom) {
         int onlineMemberCnt = redisChatUtil.getOnlineMemberCntInChatRoom(chatRoom.getId());
         int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineMemberCnt;
-        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
-
-        rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoom.getId(), messageRes);
+        return unreadCnt;
     }
 
     @Override
@@ -81,13 +85,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         Long chatRoomId = stompHeaderAccessorUtil.getChatRoomIdInSession(accessor);
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
-        entryChatRoom(accessor, chatRoom.getId(), member.getId());
+        enterChatRoom(chatRoom.getId(), member.getId());
         readUnreadMessages(chatRoom, member.getId());
     }
 
-    private void entryChatRoom(StompHeaderAccessor accessor, Long chatRoomId, Long memberId) {
-        stompHeaderAccessorUtil.setChatRoomIdInSession(accessor, chatRoomId);
-        stompHeaderAccessorUtil.setMemberIdInSession(accessor, memberId);
+    private void enterChatRoom(Long chatRoomId, Long memberId) {
         redisChatUtil.addChatRoom2Member(chatRoomId, memberId);
     }
 
