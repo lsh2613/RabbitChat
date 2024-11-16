@@ -6,6 +6,8 @@ import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.constant.MessageType;
+import com.rabbitmqprac.common.dto.ChatMessageRes;
+import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
 import com.rabbitmqprac.common.dto.MessageRes;
 import com.rabbitmqprac.user.Member;
 import com.rabbitmqprac.user.MemberRepository;
@@ -49,7 +51,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         int onlineMemberCnt = redisChatUtil.getOnlineMemberCntInChatRoom(chatRoom.getId());
         int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineMemberCnt;
-        MessageRes messageRes = MessageRes.createRes(MessageType.CHAT_MESSAGE, chatMessage, unreadCnt);
+        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
 
         rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoom.getId(), messageRes);
     }
@@ -65,7 +67,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         List<MessageRes> messageResList = chatMessages.stream()
                 .map(chatMessage -> {
                     int unreadCnt = chatRoom.getUnreadCnt(onlineMembersInChatRoom, chatMessage.getCreatedAt());
-                    return MessageRes.createRes(MessageType.CHAT_MESSAGE, chatMessage, unreadCnt);
+                    return ChatMessageRes.createRes(chatMessage, unreadCnt);
                 })
                 .toList();
 
@@ -102,7 +104,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     private void sendChatSyncRequestMessage(Long chatRoomId) {
-        MessageRes messageRes = MessageRes.createRes(MessageType.CHAT_SYNC_REQUEST);
+        MessageRes messageRes = ChatSyncRequestRes.createRes();
         rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoomId, messageRes);
     }
 
