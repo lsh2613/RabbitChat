@@ -26,9 +26,15 @@
     </div>
 - stomp를 테스트하기 위한 페이지를 지원한다
 
+### 05. 이슈
+- [기술 스택 선정 이유](https://lsh2613.tistory.com/260#1.%20RabbitMQ%20%EC%84%A0%ED%83%9D%20%EC%9D%B4%EC%9C%A0-1)
+- [STOMP-테스트 실패](https://lsh2613.tistory.com/260#3.%20%ED%85%8C%EC%8A%A4%ED%8A%B8%20%EC%A4%91%20%EB%B3%80%EC%88%98%20%EB%B0%9C%EC%83%9D-1)
+- [채팅 내역을 MongoDB에 저장하는 이유](https://lsh2613.tistory.com/261#1.%20%EC%B1%84%ED%8C%85%20%EB%82%B4%EC%97%AD%EC%9D%84%20MongoDB%EC%97%90%20%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94%20%EC%9D%B4%EC%9C%A0-1)
+- [읽음/안 읽음 기능 적용](https://lsh2613.tistory.com/262#1.%20%EC%9D%BD%EC%9D%8C%2F%EC%95%88%20%EC%9D%BD%EC%9D%8C-1)
+- [JWT + Session 적용 이유](https://lsh2613.tistory.com/263#2.%20JWT%2C%20Session%20%EB%8C%80%EC%8B%A0%20%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94%20%EA%B1%B4%EB%8D%B0%20%EC%99%9C%20%EA%B5%B3%EC%9D%B4%20%EB%91%98%20%EB%8B%A4%20%EC%82%AC%EC%9A%A9%ED%95%A0%EA%B9%8C%3F-1)
 
-## 시작하기
-### 1. 도커 rabbitmq 세팅
+### 06. 시작하기
+**1. 도커 rabbitmq 세팅**
 
 ``` shell
 docker pull rabbitmq
@@ -39,13 +45,13 @@ ocker exec rabbitmq rabbitmq-plugins enable rabbitmq_management
 docker exec rabbitmq rabbitmq-plugins enable rabbitmq_stomp
 ```
 
-### 2. 도커 컴포즈를 통해 mongodb, redis 띄우기
+**2. 도커 컴포즈를 통해 mongodb, redis 띄우기**
 docker-compose.yml이 존재하는 루트 디렉토리로 이동
 ``` shell
 docker-compose up
 ```
 
-### 3. 채팅 테스트
+**3. 채팅 테스트**
 1. `localhost:8080/init`을 통해 테스트 데이터(채팅방, 유저) 생성
 2. `localhost:8080` 페이지로 접속 (혹은, index.html을 따로 띄우기)
 3. Connect를 통해 WebSocket 연결
