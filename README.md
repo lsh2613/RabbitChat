@@ -43,7 +43,7 @@ docker pull rabbitmq
 
 docker run -d -p 15672:15672 -p 5672:5672 -p 61613:61613 --name rabbitmq rabbitmq
 
-ocker exec rabbitmq rabbitmq-plugins enable rabbitmq_management
+docker exec rabbitmq rabbitmq-plugins enable rabbitmq_management
 docker exec rabbitmq rabbitmq-plugins enable rabbitmq_stomp
 ```
 
