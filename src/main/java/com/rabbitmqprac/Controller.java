@@ -32,7 +32,7 @@ public class Controller {
         memberRepository.save(roomMaker);
         memberRepository.save(guest);
 
-        ChatRoom chatRoom = ChatRoom.emptyChatRoom();
+        ChatRoom chatRoom = ChatRoom.create();
         chatRoom.addChatRoomMember(new ChatRoomMember(chatRoom, roomMaker));
         chatRoom.addChatRoomMember(new ChatRoomMember(chatRoom, guest));
         chatRoomRepository.save(chatRoom);
