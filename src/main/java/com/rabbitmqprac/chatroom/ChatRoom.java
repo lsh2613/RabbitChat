@@ -29,7 +29,7 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChatRoomMember> chatRoomMembers = new HashSet<>();
 
-    public static ChatRoom emptyChatRoom() {
+    public static ChatRoom create() {
         return new ChatRoom();
     }
 

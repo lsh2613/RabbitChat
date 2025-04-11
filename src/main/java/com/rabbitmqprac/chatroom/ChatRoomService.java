@@ -30,7 +30,7 @@ public class ChatRoomService {
         Member roomMaker = entityFacade.getMember(loginId);
         Member guest = entityFacade.getMember(loginId);
 
-        ChatRoom newRoom = chatRoomReq.createChatRoom();
+        ChatRoom newRoom = ChatRoom.create();
         newRoom.addChatRoomMember(new ChatRoomMember(newRoom, roomMaker));
         newRoom.addChatRoomMember(new ChatRoomMember(newRoom, guest));
         chatRoomRepository.save(newRoom);

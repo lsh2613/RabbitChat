@@ -35,10 +35,6 @@ public class ChatDto {
     public static class ChatRoomCreateReq {
         private Long roomMakerId;
         private Long guestId;
-
-        public ChatRoom createChatRoom() {
-            return ChatRoom.emptyChatRoom();
-        }
     }
 
     /**
