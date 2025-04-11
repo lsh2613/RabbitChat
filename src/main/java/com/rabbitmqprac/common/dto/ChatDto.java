@@ -1,7 +1,6 @@
 package com.rabbitmqprac.common.dto;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
-import com.rabbitmqprac.chatroom.ChatRoom;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -33,8 +32,7 @@ public class ChatDto {
      */
     @Getter
     public static class ChatRoomCreateReq {
-        private Long roomMakerId;
-        private Long guestId;
+        private Long counterpartId;
     }
 
     /**

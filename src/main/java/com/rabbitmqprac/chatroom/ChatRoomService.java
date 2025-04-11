@@ -26,16 +26,16 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
-    public ChatRoomCreateRes createChatRoomForPersonal(Long loginId, ChatRoomCreateReq chatRoomReq) {
-        Member roomMaker = entityFacade.getMember(loginId);
-        Member guest = entityFacade.getMember(loginId);
+    public ChatRoomCreateRes createChatRoomForPersonal(Long loginId, ChatRoomCreateReq req) {
+        Member member = entityFacade.getMember(loginId);
+        Member counterpart = entityFacade.getMember(req.getCounterpartId());
 
         ChatRoom newRoom = ChatRoom.create();
-        newRoom.addChatRoomMember(new ChatRoomMember(newRoom, roomMaker));
-        newRoom.addChatRoomMember(new ChatRoomMember(newRoom, guest));
+        newRoom.addChatRoomMember(new ChatRoomMember(newRoom, member));
+        newRoom.addChatRoomMember(new ChatRoomMember(newRoom, counterpart));
         chatRoomRepository.save(newRoom);
 
-        return ChatRoomCreateRes.createRes(newRoom.getId(), roomMaker.getId(), guest.getId());
+        return ChatRoomCreateRes.createRes(newRoom.getId(), member.getId(), counterpart.getId());
     }
 
     public List<ChatRoomRes> getChatRooms(Long memberId) {
