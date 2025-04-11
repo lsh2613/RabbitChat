@@ -54,7 +54,7 @@ public class ChatMessageService {
     }
 
     private int calculateUnreadCnt(ChatRoom chatRoom) {
-        int onlineMemberCnt = redisChatUtil.getOnlineMemberCntInChatRoom(chatRoom.getId());
+        int onlineMemberCnt = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId());
         int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineMemberCnt;
         return unreadCnt;
     }
@@ -62,13 +62,13 @@ public class ChatMessageService {
     public List<MessageRes> getChatMessages(Long chatRoomId) {
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
-        Set<Long> onlineMembersInChatRoom = redisChatUtil.getOnlineMembers(chatRoomId);
+        Set<Long> onlineChatRoomMembers = redisChatUtil.getOnlineChatRoomMembers(chatRoomId);
 
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(chatRoom.getId());
 
         List<MessageRes> messageResList = chatMessages.stream()
                 .map(chatMessage -> {
-                    int unreadCnt = chatRoom.getUnreadCnt(onlineMembersInChatRoom, chatMessage.getCreatedAt());
+                    int unreadCnt = chatRoom.getUnreadCnt(onlineChatRoomMembers, chatMessage.getCreatedAt());
                     return ChatMessageRes.createRes(chatMessage, unreadCnt);
                 })
                 .toList();
@@ -88,7 +88,7 @@ public class ChatMessageService {
     }
 
     private void enterChatRoom(Long chatRoomId, Long memberId) {
-        redisChatUtil.addChatRoom2Member(chatRoomId, memberId);
+        redisChatUtil.enterChatRoom(chatRoomId, memberId);
     }
 
     private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
@@ -96,7 +96,7 @@ public class ChatMessageService {
         LocalDateTime lastEntryTime = chatRoomMember.getLastEntryTime();
 
         boolean existsUnreadMessage = chatMessageRepository.existsByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), lastEntryTime);
-        boolean existsOnlineChatRoomMember = redisChatUtil.getOnlineMemberCntInChatRoom(chatRoom.getId()) > 1; // 1은 본인
+        boolean existsOnlineChatRoomMember = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId()) > 1; // 1은 본인
 
         if (existsUnreadMessage && existsOnlineChatRoomMember)
             sendChatSyncRequestMessage(chatRoom.getId());
@@ -121,6 +121,6 @@ public class ChatMessageService {
     }
 
     private void exitChatRoom(ChatRoom chatRoom, Member member) {
-        redisChatUtil.removeChatRoom2Member(chatRoom.getId(), member.getId());
+        redisChatUtil.exitChatRoom(chatRoom.getId(), member.getId());
     }
 }

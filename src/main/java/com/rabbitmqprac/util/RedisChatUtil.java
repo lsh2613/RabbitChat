@@ -13,22 +13,22 @@ public class RedisChatUtil {
 
     private final RedisTemplate<Long, Long> redisTemplate;
 
-    public void addChatRoom2Member(Long chatRoomId, Long memberId) {
+    public void enterChatRoom(Long chatRoomId, Long memberId) {
         SetOperations<Long, Long> ops = redisTemplate.opsForSet();
         ops.add(chatRoomId, memberId);
     }
 
-    public Set<Long> getOnlineMembers(Long chatRoomId) {
+    public Set<Long> getOnlineChatRoomMembers(Long chatRoomId) {
         SetOperations<Long, Long> ops = redisTemplate.opsForSet();
         return ops.members(chatRoomId);
     }
 
-    public int getOnlineMemberCntInChatRoom(Long chatRoomId) {
+    public int getOnlineChatRoomMemberCnt(Long chatRoomId) {
         SetOperations<Long, Long> ops = redisTemplate.opsForSet();
         return ops.members(chatRoomId).size();
     }
 
-    public void removeChatRoom2Member(Long chatRoomId, Long memberId) {
+    public void exitChatRoom(Long chatRoomId, Long memberId) {
         SetOperations<Long, Long> ops = redisTemplate.opsForSet();
         ops.remove(chatRoomId, memberId);
     }
