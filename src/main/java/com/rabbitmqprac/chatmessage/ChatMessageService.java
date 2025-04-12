@@ -48,17 +48,6 @@ public class ChatMessageService {
         sendMessage(chatMessage, unreadCnt, chatRoom);
     }
 
-    private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
-        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
-        rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoom.getId(), messageRes);
-    }
-
-    private int calculateUnreadCnt(ChatRoom chatRoom) {
-        int onlineMemberCnt = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId());
-        int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineMemberCnt;
-        return unreadCnt;
-    }
-
     @Transactional(readOnly = true)
     public List<MessageRes> getChatMessages(Long chatRoomId) {
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
@@ -75,6 +64,17 @@ public class ChatMessageService {
                 .toList();
 
         return messageResList;
+    }
+
+    private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
+        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
+        rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoom.getId(), messageRes);
+    }
+
+    private int calculateUnreadCnt(ChatRoom chatRoom) {
+        int onlineMemberCnt = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId());
+        int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineMemberCnt;
+        return unreadCnt;
     }
 
     public void handleConnectMessage(StompHeaderAccessor accessor) {
