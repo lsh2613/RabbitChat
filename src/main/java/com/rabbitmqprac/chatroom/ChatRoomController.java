@@ -2,7 +2,6 @@ package com.rabbitmqprac.chatroom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateReq;
@@ -16,13 +15,13 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/chat-rooms")
-    public ResponseEntity<ChatRoomCreateRes> createChatRoom(@RequestParam Long loginId,
-                                                            @RequestBody ChatRoomCreateReq chatRoomCreateReq) {
-        return ResponseEntity.ok(chatRoomService.createChatRoom(loginId, chatRoomCreateReq));
+    public ChatRoomCreateRes createChatRoom(@RequestParam Long loginId,
+                                            @RequestBody ChatRoomCreateReq chatRoomCreateReq) {
+        return chatRoomService.createChatRoom(loginId, chatRoomCreateReq);
     }
 
     @GetMapping("/chat-rooms")
-    public ResponseEntity getChatRooms(@RequestParam Long loginId) {
-        return ResponseEntity.ok(chatRoomService.getChatRooms(loginId));
+    public Object getChatRooms(@RequestParam Long loginId) {
+        return chatRoomService.getChatRooms(loginId);
     }
 }
