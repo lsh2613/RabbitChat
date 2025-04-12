@@ -1,15 +1,18 @@
 package com.rabbitmqprac.user;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "MEMBER")
 public class Member {
+
+    private static String NICKNAME_FORMAT = "MEMBER_%d";
+    private static Integer SEQUENCE_NAME = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +21,9 @@ public class Member {
 
     private String username;
 
-    public Member(String username) {
-        this.username = username;
+    public static Member create() {
+        Member member = new Member();
+        member.username = String.format(NICKNAME_FORMAT, SEQUENCE_NAME++);
+        return member;
     }
 }
