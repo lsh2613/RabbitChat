@@ -10,9 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Document(collection = "chat_message")
 @ToString
 public class ChatMessage {
@@ -29,4 +27,13 @@ public class ChatMessage {
     @CreatedDate
     @Column(name = "createdAt", updatable = false)
     private LocalDateTime createdAt;
+
+    public static ChatMessage create(Long chatRoomId, Long memberId, String message) {
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setChatRoomId(chatRoomId);
+        chatMessage.setMemberId(memberId);
+        chatMessage.setMessage(message);
+        chatMessage.setCreatedAt(LocalDateTime.now());
+        return chatMessage;
+    }
 }

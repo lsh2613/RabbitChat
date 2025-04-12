@@ -3,8 +3,6 @@ package com.rabbitmqprac.common.dto;
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 public class ChatDto {
     /**
      * 웹소켓 접속시 요청 Dto
@@ -17,13 +15,7 @@ public class ChatDto {
         private String message;
 
         public ChatMessage createChatMessage(Long chatRoomId, Long memberId) {
-            ChatMessage chatMessage = ChatMessage.builder()
-                    .chatRoomId(chatRoomId)
-                    .memberId(memberId)
-                    .message(message)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            return chatMessage;
+            return ChatMessage.create(chatRoomId, memberId, message);
         }
     }
 
