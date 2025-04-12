@@ -26,7 +26,7 @@ public class ChatMessageController {
         chatMessageService.sendMessage(accessor, message);
     }
 
-    @GetMapping("/chat-messages/chat-rooms/{chatRoomId}")
+    @GetMapping("/chat-rooms/{chatRoomId}/messages")
     public List<MessageRes> getChatMessages(@PathVariable Long chatRoomId) {
         return chatMessageService.getChatMessages(chatRoomId);
     }
