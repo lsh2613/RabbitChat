@@ -13,7 +13,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public Member createMember() {
+    public MemberRes createMember() {
         return memberService.create();
     }
 

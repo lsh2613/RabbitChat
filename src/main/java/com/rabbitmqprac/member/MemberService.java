@@ -15,8 +15,10 @@ public class MemberService {
     private final TokenUtil tokenUtil;
 
     @Transactional
-    public Member create() {
-        return memberRepository.save(Member.create());
+    public MemberRes create() {
+        Member member = memberRepository.save(Member.create());
+        String accessToken = tokenUtil.issueAccessToken(member.getId());
+        return MemberRes.createRes(member, accessToken);
     }
 
     @Transactional(readOnly = true)
