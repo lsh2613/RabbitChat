@@ -77,8 +77,8 @@ public class ChatMessageService {
     }
 
     private int calculateUnreadCnt(ChatRoom chatRoom) {
-        int onlineMemberCnt = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId());
-        int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineMemberCnt;
+        int onlineChatRoomMemberCnt = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId());
+        int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineChatRoomMemberCnt;
         return unreadCnt;
     }
 
