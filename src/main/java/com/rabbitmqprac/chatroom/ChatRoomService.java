@@ -35,15 +35,13 @@ public class ChatRoomService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     @Transactional
-    public ChatRoomCreateRes createChatRoom(Long loginId, ChatRoomCreateReq req) {
-        Member member = entityFacade.getMember(loginId);
-        Member counterpart = entityFacade.getMember(req.getCounterpartId());
+    public ChatRoomCreateRes createChatRoom(ChatRoomCreateReq req) {
+        Member member = entityFacade.getMember(req.getMemberId());
 
-        ChatRoom newRoom = ChatRoom.create();
-        chatRoomMemberService.addChatRoomMember(newRoom.getId(), member.getId());
-        chatRoomMemberService.addChatRoomMember(newRoom.getId(), counterpart.getId());
+        ChatRoom chatRoom = ChatRoom.create();
+        chatRoomMemberService.addChatRoomMember(chatRoom.getId(), member.getId());
 
-        return ChatRoomCreateRes.createRes(newRoom.getId(), member.getId(), counterpart.getId());
+        return ChatRoomCreateRes.createRes(chatRoom.getId(), member.getId());
     }
 
     @Transactional(readOnly = true)

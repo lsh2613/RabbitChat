@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatRoomCreateRes {
     private Long chatRoomId;
-    private Long roomMakerId;
-    private Long guestId;
+    private Long memberId;
 
-    public static ChatRoomCreateRes createRes(Long chatRoomId, Long roomMakerId, Long guestId) {
+    public static ChatRoomCreateRes createRes(Long chatRoomId, Long memberId) {
         ChatRoomCreateRes chatRoomCreateRes = new ChatRoomCreateRes();
         chatRoomCreateRes.chatRoomId = chatRoomId;
-        chatRoomCreateRes.roomMakerId = roomMakerId;
-        chatRoomCreateRes.guestId = guestId;
+        chatRoomCreateRes.memberId = memberId;
         return chatRoomCreateRes;
     }
 }

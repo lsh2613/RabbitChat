@@ -14,9 +14,8 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/chat-rooms")
-    public ChatRoomCreateRes createChatRoom(@RequestParam Long loginId,
-                                            @RequestBody ChatRoomCreateReq chatRoomCreateReq) {
-        return chatRoomService.createChatRoom(loginId, chatRoomCreateReq);
+    public ChatRoomCreateRes createChatRoom(@RequestBody ChatRoomCreateReq chatRoomCreateReq) {
+        return chatRoomService.createChatRoom(chatRoomCreateReq);
     }
 
     @GetMapping("/chat-rooms")

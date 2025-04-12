@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class ChatRoomCreateReq {
-    private Long counterpartId;
+    private Long memberId;
 }
