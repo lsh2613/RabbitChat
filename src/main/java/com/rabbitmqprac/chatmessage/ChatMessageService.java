@@ -1,7 +1,6 @@
 package com.rabbitmqprac.chatmessage;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
-import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.dto.ChatMessageRes;
 import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
@@ -15,7 +14,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -82,51 +80,8 @@ public class ChatMessageService {
         return unreadCnt;
     }
 
-    public void handleConnectMessage(StompHeaderAccessor accessor) {
-        Long memberId = stompHeaderAccessorUtil.getMemberIdInSession(accessor);
-        Member member = entityFacade.getMember(memberId);
-
-        Long chatRoomId = stompHeaderAccessorUtil.getChatRoomIdInSession(accessor);
-        ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
-
-        enterChatRoom(chatRoom.getId(), member.getId());
-        readUnreadMessages(chatRoom, member.getId());
-    }
-
-    private void enterChatRoom(Long chatRoomId, Long memberId) {
-        redisChatUtil.enterChatRoom(chatRoomId, memberId);
-    }
-
-    private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
-        ChatRoomMember chatRoomMember = chatRoom.getChatRoomMember(memberId);
-        LocalDateTime lastEntryTime = chatRoomMember.getLastEntryTime();
-
-        boolean existsUnreadMessage = chatMessageRepository.existsByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), lastEntryTime);
-        boolean existsOnlineChatRoomMember = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId()) > 1; // 1은 본인
-
-        if (existsUnreadMessage && existsOnlineChatRoomMember)
-            sendChatSyncRequestMessage(chatRoom.getId());
-    }
-
-    private void sendChatSyncRequestMessage(Long chatRoomId) {
+    public void sendChatSyncRequestMessage(Long chatRoomId) {
         MessageRes messageRes = ChatSyncRequestRes.createRes();
         rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoomId, messageRes);
-    }
-
-    public void handleDisconnectMessage(StompHeaderAccessor accessor) {
-        Long memberId = stompHeaderAccessorUtil.removeMemberIdInSession(accessor);
-        Member member = entityFacade.getMember(memberId);
-
-        Long chatRoomId = stompHeaderAccessorUtil.removeChatRoomIdInSession(accessor);
-        ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
-
-        ChatRoomMember chatRoomMember = chatRoom.getChatRoomMember(member.getId());
-        chatRoomMember.updateLastEntryTime();
-
-        exitChatRoom(chatRoom, member);
-    }
-
-    private void exitChatRoom(ChatRoom chatRoom, Member member) {
-        redisChatUtil.exitChatRoom(chatRoom.getId(), member.getId());
     }
 }

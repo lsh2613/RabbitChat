@@ -3,15 +3,18 @@ package com.rabbitmqprac.chatroom;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
+import com.rabbitmqprac.chatmessage.ChatMessageService;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.dto.ChatRoomRes;
 import com.rabbitmqprac.user.Member;
+import com.rabbitmqprac.util.RedisChatUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +25,9 @@ import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateRes;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+    private final RedisChatUtil redisChatUtil;
     private final EntityFacade entityFacade;
+    private final ChatMessageService chatMessageService;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
@@ -57,5 +62,36 @@ public class ChatRoomService {
                 .toList();
 
         return chatRoomResList;
+    }
+
+    public void enterChatRoom(Long memberId, Long chatRoomId) {
+        Member member = entityFacade.getMember(memberId);
+
+        ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
+
+        redisChatUtil.enterChatRoom(chatRoomId, memberId);
+        readUnreadMessages(chatRoom, member.getId());
+    }
+
+    private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
+        ChatRoomMember chatRoomMember = chatRoom.getChatRoomMember(memberId);
+        LocalDateTime lastEntryTime = chatRoomMember.getLastEntryTime();
+
+        boolean existsUnreadMessage = chatMessageRepository.existsByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), lastEntryTime);
+        boolean existsOnlineChatRoomMember = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId()) > 1; // 1은 본인
+
+        if (existsUnreadMessage && existsOnlineChatRoomMember)
+            chatMessageService.sendChatSyncRequestMessage(chatRoom.getId());
+    }
+
+    public void exitChatRoom(Long memberId, Long chatRoomId) {
+        Member member = entityFacade.getMember(memberId);
+
+        ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
+
+        ChatRoomMember chatRoomMember = chatRoom.getChatRoomMember(member.getId());
+        chatRoomMember.updateLastEntryTime();
+
+        redisChatUtil.exitChatRoom(chatRoom.getId(), member.getId());
     }
 }

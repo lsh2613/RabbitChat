@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.rabbitmqprac.common.dto.ChatDto.*;
+import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateReq;
+import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateRes;
 
 @RestController
 @RequiredArgsConstructor
