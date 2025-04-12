@@ -10,6 +10,7 @@ import com.rabbitmqprac.common.dto.ChatRoomRes;
 import com.rabbitmqprac.user.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
+    @Transactional
     public ChatRoomCreateRes createChatRoomForPersonal(Long loginId, ChatRoomCreateReq req) {
         Member member = entityFacade.getMember(loginId);
         Member counterpart = entityFacade.getMember(req.getCounterpartId());
@@ -38,6 +40,7 @@ public class ChatRoomService {
         return ChatRoomCreateRes.createRes(newRoom.getId(), member.getId(), counterpart.getId());
     }
 
+    @Transactional(readOnly = true)
     public List<ChatRoomRes> getChatRooms(Long memberId) {
         Member member = entityFacade.getMember(memberId);
 
