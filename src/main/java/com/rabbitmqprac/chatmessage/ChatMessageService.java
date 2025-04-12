@@ -3,13 +3,12 @@ package com.rabbitmqprac.chatmessage;
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.dto.ChatMessageRes;
-import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
 import com.rabbitmqprac.common.dto.MessageRes;
 import com.rabbitmqprac.user.Member;
+import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
 import com.rabbitmqprac.util.StompHeaderAccessorUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +24,9 @@ public class ChatMessageService {
 
     private final EntityFacade entityFacade;
     private final ChatMessageRepository chatMessageRepository;
-    private final RabbitTemplate rabbitTemplate;
+    private final RabbitPublisher rabbitPublisher;
     private final RedisChatUtil redisChatUtil;
     private final StompHeaderAccessorUtil stompHeaderAccessorUtil;
-
-    private static final String ROUTING_KEY_PREFIX = "room.";
 
     @Transactional
     public void sendMessage(StompHeaderAccessor accessor, ChatMessageReq req) {
@@ -69,19 +66,14 @@ public class ChatMessageService {
         return chatMessage;
     }
 
-    private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
-        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
-        rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoom.getId(), messageRes);
-    }
-
     private int calculateUnreadCnt(ChatRoom chatRoom) {
         int onlineChatRoomMemberCnt = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId());
         int unreadCnt = chatRoom.getChatRoomMemberCnt() - onlineChatRoomMemberCnt;
         return unreadCnt;
     }
 
-    public void sendChatSyncRequestMessage(Long chatRoomId) {
-        MessageRes messageRes = ChatSyncRequestRes.createRes();
-        rabbitTemplate.convertAndSend(ROUTING_KEY_PREFIX + chatRoomId, messageRes);
+    private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
+        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
+        rabbitPublisher.publish(chatRoom.getId(), messageRes);
     }
 }

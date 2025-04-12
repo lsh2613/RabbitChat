@@ -3,12 +3,14 @@ package com.rabbitmqprac.chatroom;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
-import com.rabbitmqprac.chatmessage.ChatMessageService;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.dto.ChatRoomRes;
+import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
+import com.rabbitmqprac.common.dto.MessageRes;
 import com.rabbitmqprac.user.Member;
+import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class ChatRoomService {
 
     private final RedisChatUtil redisChatUtil;
     private final EntityFacade entityFacade;
-    private final ChatMessageService chatMessageService;
+    private final RabbitPublisher rabbitPublisher;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
@@ -81,7 +83,12 @@ public class ChatRoomService {
         boolean existsOnlineChatRoomMember = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId()) > 1; // 1은 본인
 
         if (existsUnreadMessage && existsOnlineChatRoomMember)
-            chatMessageService.sendChatSyncRequestMessage(chatRoom.getId());
+            sendChatSyncRequestMessage(chatRoom.getId());
+    }
+
+    public void sendChatSyncRequestMessage(Long chatRoomId) {
+        MessageRes messageRes = ChatSyncRequestRes.createRes();
+        rabbitPublisher.publish(chatRoomId, messageRes);
     }
 
     public void exitChatRoom(Long memberId, Long chatRoomId) {
