@@ -1,4 +1,4 @@
-package com.rabbitmqprac.common.dto;
+package com.rabbitmqprac.chatmessage.dto;
 
 import com.rabbitmqprac.common.constant.MessageType;
 import lombok.Getter;

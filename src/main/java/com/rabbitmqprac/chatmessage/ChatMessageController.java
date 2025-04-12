@@ -1,6 +1,7 @@
 package com.rabbitmqprac.chatmessage;
 
-import com.rabbitmqprac.common.dto.MessageRes;
+import com.rabbitmqprac.chatmessage.dto.ChatMessageReq;
+import com.rabbitmqprac.chatmessage.dto.MessageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -9,8 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static com.rabbitmqprac.common.dto.ChatDto.ChatMessageReq;
 
 @RestController
 @RequiredArgsConstructor

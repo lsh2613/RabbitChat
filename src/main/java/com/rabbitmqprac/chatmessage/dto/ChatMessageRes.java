@@ -1,8 +1,7 @@
-package com.rabbitmqprac.common.dto;
+package com.rabbitmqprac.chatmessage.dto;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.common.constant.MessageType;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

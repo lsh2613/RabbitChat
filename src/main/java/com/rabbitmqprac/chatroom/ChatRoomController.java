@@ -1,11 +1,10 @@
 package com.rabbitmqprac.chatroom;
 
+import com.rabbitmqprac.chatroom.dto.ChatRoomCreateReq;
+import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateReq;
-import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateRes;
 
 @RestController
 @RequiredArgsConstructor

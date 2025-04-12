@@ -1,6 +1,6 @@
 package com.rabbitmqprac.util;
 
-import com.rabbitmqprac.common.dto.MessageRes;
+import com.rabbitmqprac.chatmessage.dto.MessageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;

@@ -3,13 +3,15 @@ package com.rabbitmqprac.chatroom;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
+import com.rabbitmqprac.chatroom.dto.ChatRoomCreateReq;
+import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
+import com.rabbitmqprac.chatroom.dto.ChatRoomRes;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberService;
 import com.rabbitmqprac.common.EntityFacade;
-import com.rabbitmqprac.common.dto.ChatRoomRes;
-import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
-import com.rabbitmqprac.common.dto.MessageRes;
+import com.rabbitmqprac.chatmessage.dto.ChatSyncRequestRes;
+import com.rabbitmqprac.chatmessage.dto.MessageRes;
 import com.rabbitmqprac.member.Member;
 import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
@@ -20,9 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateReq;
-import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateRes;
 
 @Service
 @RequiredArgsConstructor
