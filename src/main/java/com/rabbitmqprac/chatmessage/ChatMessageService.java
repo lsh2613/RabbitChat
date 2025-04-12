@@ -9,11 +9,11 @@ import com.rabbitmqprac.common.dto.MessageRes;
 import com.rabbitmqprac.user.Member;
 import com.rabbitmqprac.util.RedisChatUtil;
 import com.rabbitmqprac.util.StompHeaderAccessorUtil;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.Set;
 
 import static com.rabbitmqprac.common.dto.ChatDto.ChatMessageReq;
 
-@Transactional
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
@@ -34,6 +33,7 @@ public class ChatMessageService {
 
     private static final String ROUTING_KEY_PREFIX = "room.";
 
+    @Transactional
     public void sendMessage(StompHeaderAccessor accessor, ChatMessageReq req) {
         Long memberId = stompHeaderAccessorUtil.getMemberIdInSession(accessor);
         Member member = entityFacade.getMember(memberId);
@@ -59,6 +59,7 @@ public class ChatMessageService {
         return unreadCnt;
     }
 
+    @Transactional(readOnly = true)
     public List<MessageRes> getChatMessages(Long chatRoomId) {
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
