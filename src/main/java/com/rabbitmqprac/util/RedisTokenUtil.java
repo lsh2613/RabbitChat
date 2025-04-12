@@ -10,15 +10,15 @@ import java.time.Duration;
 @RequiredArgsConstructor
 @Component
 public class RedisTokenUtil {
-    private final RedisTemplate<String, Long> refreshTokenTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
 
     public void setRefreshTokenExpire(String key, Long value, Duration duration) {
-        ValueOperations<String, Long> valueOperations = refreshTokenTemplate.opsForValue();
+        ValueOperations<String, Long> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(key, value, duration);
     }
 
     public Long getMemberId(String key) {
-        ValueOperations<String, Long> valueOperations = refreshTokenTemplate.opsForValue();
+        ValueOperations<String, Long> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
     }
 

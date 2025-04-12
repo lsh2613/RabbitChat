@@ -27,6 +27,7 @@ public class RedisConfig {
     }
 
     // jwt -> memberId
+    // chatRoomId -> SET {memberId_01, memberId_02, ...}
     @Bean
     public RedisTemplate<String, Long> StringLongRedisTemplate() {
         RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
@@ -35,15 +36,4 @@ public class RedisConfig {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Long.class));
         return redisTemplate;
     }
-
-    // chatRoomId -> SET {memberId_01, memberId_02, ...}
-    @Bean
-    public RedisTemplate<Long, Long> LongLongRedisTemplate() {
-        RedisTemplate<Long, Long> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new Jackson2JsonRedisSerializer<>(Long.class));
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Long.class));
-        return redisTemplate;
-    }
-
 }

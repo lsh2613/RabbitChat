@@ -10,26 +10,31 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Component
 public class RedisChatUtil {
+    private final RedisTemplate<String, Long> redisTemplate;
 
-    private final RedisTemplate<Long, Long> redisTemplate;
+    private static final String KEY_FORMAT = "CHAT-ROOM::%d";
 
     public void enterChatRoom(Long chatRoomId, Long memberId) {
-        SetOperations<Long, Long> ops = redisTemplate.opsForSet();
-        ops.add(chatRoomId, memberId);
+        SetOperations<String, Long> ops = redisTemplate.opsForSet();
+        ops.add(generateKey(chatRoomId), memberId);
     }
 
     public Set<Long> getOnlineChatRoomMembers(Long chatRoomId) {
-        SetOperations<Long, Long> ops = redisTemplate.opsForSet();
-        return ops.members(chatRoomId);
+        SetOperations<String, Long> ops = redisTemplate.opsForSet();
+        return ops.members(generateKey(chatRoomId));
     }
 
     public int getOnlineChatRoomMemberCnt(Long chatRoomId) {
-        SetOperations<Long, Long> ops = redisTemplate.opsForSet();
-        return ops.members(chatRoomId).size();
+        SetOperations<String, Long> ops = redisTemplate.opsForSet();
+        return ops.members(generateKey(chatRoomId)).size();
     }
 
     public void exitChatRoom(Long chatRoomId, Long memberId) {
-        SetOperations<Long, Long> ops = redisTemplate.opsForSet();
-        ops.remove(chatRoomId, memberId);
+        SetOperations<String, Long> ops = redisTemplate.opsForSet();
+        ops.remove(generateKey(chatRoomId), memberId);
+    }
+
+    private static String generateKey(Long chatRoomId) {
+        return KEY_FORMAT.formatted(chatRoomId);
     }
 }
