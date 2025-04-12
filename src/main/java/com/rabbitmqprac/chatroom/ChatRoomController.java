@@ -18,7 +18,7 @@ public class ChatRoomController {
     @PostMapping("/chat-rooms")
     public ResponseEntity<ChatRoomCreateRes> createChatRoom(@RequestParam Long loginId,
                                                             @RequestBody ChatRoomCreateReq chatRoomCreateReq) {
-        return ResponseEntity.ok(chatRoomService.createChatRoomForPersonal(loginId, chatRoomCreateReq));
+        return ResponseEntity.ok(chatRoomService.createChatRoom(loginId, chatRoomCreateReq));
     }
 
     @GetMapping("/chat-rooms")

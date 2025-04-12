@@ -35,7 +35,7 @@ public class ChatRoomService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
     @Transactional
-    public ChatRoomCreateRes createChatRoomForPersonal(Long loginId, ChatRoomCreateReq req) {
+    public ChatRoomCreateRes createChatRoom(Long loginId, ChatRoomCreateReq req) {
         Member member = entityFacade.getMember(loginId);
         Member counterpart = entityFacade.getMember(req.getCounterpartId());
 
