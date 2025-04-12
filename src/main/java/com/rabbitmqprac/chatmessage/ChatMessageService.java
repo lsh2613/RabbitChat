@@ -41,8 +41,7 @@ public class ChatMessageService {
         Long chatRoomId = stompHeaderAccessorUtil.getChatRoomIdInSession(accessor);
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
-        ChatMessage chatMessage = req.createChatMessage(chatRoom.getId(), member.getId());
-        chatMessageRepository.save(chatMessage);
+        ChatMessage chatMessage = saveChatMessage(req, chatRoom, member);
 
         int unreadCnt = calculateUnreadCnt(chatRoom);
         sendMessage(chatMessage, unreadCnt, chatRoom);
@@ -64,6 +63,12 @@ public class ChatMessageService {
                 .toList();
 
         return messageResList;
+    }
+
+    private ChatMessage saveChatMessage(ChatMessageReq req, ChatRoom chatRoom, Member member) {
+        ChatMessage chatMessage = req.createChatMessage(chatRoom.getId(), member.getId());
+        chatMessageRepository.save(chatMessage);
+        return chatMessage;
     }
 
     private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
