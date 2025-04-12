@@ -2,7 +2,7 @@ package com.rabbitmqprac.chatroommember;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.common.EntityFacade;
-import com.rabbitmqprac.user.Member;
+import com.rabbitmqprac.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

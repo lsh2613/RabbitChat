@@ -1,10 +1,9 @@
 package com.rabbitmqprac.common;
 
-import com.rabbitmqprac.chatmessage.ChatMessageRepository;
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.chatroom.ChatRoomRepository;
-import com.rabbitmqprac.user.Member;
-import com.rabbitmqprac.user.MemberRepository;
+import com.rabbitmqprac.member.Member;
+import com.rabbitmqprac.member.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

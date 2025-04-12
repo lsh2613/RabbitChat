@@ -1,4 +1,4 @@
-package com.rabbitmqprac.user;
+package com.rabbitmqprac.member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

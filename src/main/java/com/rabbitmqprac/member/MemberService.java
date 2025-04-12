@@ -1,4 +1,4 @@
-package com.rabbitmqprac.user;
+package com.rabbitmqprac.member;
 
 
 import com.rabbitmqprac.util.TokenUtil;

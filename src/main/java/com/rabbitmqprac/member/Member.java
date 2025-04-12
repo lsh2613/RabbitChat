@@ -1,8 +1,7 @@
-package com.rabbitmqprac.user;
+package com.rabbitmqprac.member;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

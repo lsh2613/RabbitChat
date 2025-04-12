@@ -10,7 +10,7 @@ import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.dto.ChatRoomRes;
 import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
 import com.rabbitmqprac.common.dto.MessageRes;
-import com.rabbitmqprac.user.Member;
+import com.rabbitmqprac.member.Member;
 import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.rabbitmqprac.chatroommember;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
-import com.rabbitmqprac.user.Member;
+import com.rabbitmqprac.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
