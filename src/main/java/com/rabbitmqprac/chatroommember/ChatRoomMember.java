@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "ChatRoomMember")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class ChatRoomMember {
 
     @Id
@@ -36,14 +34,16 @@ public class ChatRoomMember {
         this.lastEntryTime = LocalDateTime.now();
     }
 
+    public static ChatRoomMember create(ChatRoom chatRoom, Member member) {
+        ChatRoomMember chatRoomMember = new ChatRoomMember();
+        chatRoomMember.setChatRoom(chatRoom);
+        chatRoomMember.setMember(member);
+        chatRoomMember.setLastEntryTime(LocalDateTime.now());
+        return chatRoomMember;
+    }
+
     public void updateLastEntryTime() {
         this.lastEntryTime = LocalDateTime.now();
     }
 
-    public void addChatRoom(ChatRoom chatRoom) {
-        if (!chatRoom.getChatRoomMembers().contains(this)) {
-            chatRoom.getChatRoomMembers().add(this);
-        }
-        this.chatRoom = chatRoom;
-    }
 }

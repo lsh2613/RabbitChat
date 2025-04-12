@@ -5,6 +5,7 @@ import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
+import com.rabbitmqprac.chatroommember.ChatRoomMemberService;
 import com.rabbitmqprac.common.EntityFacade;
 import com.rabbitmqprac.common.dto.ChatRoomRes;
 import com.rabbitmqprac.common.dto.ChatSyncRequestRes;
@@ -27,10 +28,10 @@ import static com.rabbitmqprac.common.dto.ChatDto.ChatRoomCreateRes;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+    private final ChatRoomMemberService chatRoomMemberService;
     private final RedisChatUtil redisChatUtil;
     private final EntityFacade entityFacade;
     private final RabbitPublisher rabbitPublisher;
-    private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
 
@@ -40,9 +41,8 @@ public class ChatRoomService {
         Member counterpart = entityFacade.getMember(req.getCounterpartId());
 
         ChatRoom newRoom = ChatRoom.create();
-        newRoom.addChatRoomMember(new ChatRoomMember(newRoom, member));
-        newRoom.addChatRoomMember(new ChatRoomMember(newRoom, counterpart));
-        chatRoomRepository.save(newRoom);
+        chatRoomMemberService.addChatRoomMember(newRoom.getId(), member.getId());
+        chatRoomMemberService.addChatRoomMember(newRoom.getId(), counterpart.getId());
 
         return ChatRoomCreateRes.createRes(newRoom.getId(), member.getId(), counterpart.getId());
     }
@@ -76,7 +76,8 @@ public class ChatRoomService {
     }
 
     private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
-        ChatRoomMember chatRoomMember = chatRoom.getChatRoomMember(memberId);
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndMemberId(chatRoom.getId(), memberId)
+                .orElseThrow(() -> new RuntimeException("채팅방 참가자를 찾을 수 없습니다"));
         LocalDateTime lastEntryTime = chatRoomMember.getLastEntryTime();
 
         boolean existsUnreadMessage = chatMessageRepository.existsByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), lastEntryTime);
@@ -96,7 +97,9 @@ public class ChatRoomService {
 
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
-        ChatRoomMember chatRoomMember = chatRoom.getChatRoomMember(member.getId());
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndMemberId(chatRoom.getId(), memberId)
+                .orElseThrow(() -> new RuntimeException("채팅방 참가자를 찾을 수 없습니다"));
+
         chatRoomMember.updateLastEntryTime();
 
         redisChatUtil.exitChatRoom(chatRoom.getId(), member.getId());
