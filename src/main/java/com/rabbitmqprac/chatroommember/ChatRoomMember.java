@@ -28,12 +28,6 @@ public class ChatRoomMember {
 
     private LocalDateTime lastEntryTime;
 
-    public ChatRoomMember(ChatRoom chatRoom, Member member) {
-        this.chatRoom = chatRoom;
-        this.member = member;
-        this.lastEntryTime = LocalDateTime.now();
-    }
-
     public static ChatRoomMember create(ChatRoom chatRoom, Member member) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.setChatRoom(chatRoom);
