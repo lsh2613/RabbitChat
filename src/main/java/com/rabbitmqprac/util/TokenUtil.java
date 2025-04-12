@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -84,6 +85,20 @@ public class TokenUtil {
                     .filter(token -> token.startsWith(BEARER))
                     .map(token -> token.substring(7));
             case REFRESH_TOKEN -> Optional.ofNullable(request.getHeader(refreshHeader))
+                    .filter(token -> token.startsWith(BEARER))
+                    .map(token -> token.substring(7));
+            default -> throw new IllegalStateException("Unexpected value: " + tokenType);
+        };
+
+        return requestToken.orElse(null);
+    }
+
+    public String extractToken(StompHeaderAccessor accessor, TokenType tokenType) {
+        Optional<String> requestToken = switch (tokenType) {
+            case ACCESS_TOKEN -> Optional.ofNullable(accessor.getFirstNativeHeader(accessHeader))
+                    .filter(token -> token.startsWith(BEARER))
+                    .map(token -> token.substring(7));
+            case REFRESH_TOKEN -> Optional.ofNullable(accessor.getFirstNativeHeader(refreshHeader))
                     .filter(token -> token.startsWith(BEARER))
                     .map(token -> token.substring(7));
             default -> throw new IllegalStateException("Unexpected value: " + tokenType);

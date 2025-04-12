@@ -24,7 +24,7 @@ public class JwtAuthenticationInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         if (accessor.getCommand() == CONNECT) {
-            String token = stompHeaderAccessorUtil.extractToken(accessor, TokenType.ACCESS_TOKEN);
+            String token = tokenUtil.extractToken(accessor, TokenType.ACCESS_TOKEN);
 
             Long memberId = tokenUtil.validateTokenAndGetMemberId(token);
             stompHeaderAccessorUtil.setMemberIdInSession(accessor, memberId);
