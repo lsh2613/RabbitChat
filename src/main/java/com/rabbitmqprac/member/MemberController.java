@@ -14,7 +14,6 @@ public class MemberController {
 
     @PostMapping
     public MemberRes createMember() {
-        System.out.println("createMember");
         return memberService.create();
     }
 
@@ -23,7 +22,7 @@ public class MemberController {
         return memberService.getMember(memberId);
     }
 
-    @GetMapping("/members")
+    @GetMapping
     public List<Member> getMembers() {
         return memberService.getMembers();
     }
