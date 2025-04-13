@@ -1,4 +1,4 @@
-package com.rabbitmqprac.config;
+package com.rabbitmqprac.common.config;
 
 import com.rabbitmqprac.common.interceptor.JwtAuthenticationInterceptor;
 import lombok.RequiredArgsConstructor;

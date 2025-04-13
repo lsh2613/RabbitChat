@@ -14,6 +14,7 @@ public class MemberController {
 
     @PostMapping
     public MemberRes createMember() {
+        System.out.println("createMember");
         return memberService.create();
     }
 

@@ -1,4 +1,4 @@
-package com.rabbitmqprac.config;
+package com.rabbitmqprac.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

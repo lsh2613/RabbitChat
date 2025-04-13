@@ -1,4 +1,4 @@
-package com.rabbitmqprac.config;
+package com.rabbitmqprac.common.config;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;

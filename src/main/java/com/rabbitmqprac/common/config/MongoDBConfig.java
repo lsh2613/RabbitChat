@@ -1,4 +1,4 @@
-package com.rabbitmqprac.config;
+package com.rabbitmqprac.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
