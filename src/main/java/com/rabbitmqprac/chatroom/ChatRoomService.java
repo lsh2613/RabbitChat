@@ -5,7 +5,7 @@ import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateReq;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
-import com.rabbitmqprac.chatroom.dto.ChatRoomRes;
+import com.rabbitmqprac.chatroom.dto.MyChatRoomRes;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberService;
@@ -45,22 +45,22 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomRes> getChatRooms(Long memberId) {
+    public List<MyChatRoomRes> getMyChatRooms(Long memberId) {
         Member member = entityFacade.getMember(memberId);
 
         List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllByMemberId(member.getId());
 
-        List<ChatRoomRes> chatRoomResList = chatRoomMembers.stream().map(chatroomMember -> {
+        List<MyChatRoomRes> myChatRoomResList = chatRoomMembers.stream().map(chatroomMember -> {
                     ChatRoom chatRoom = chatroomMember.getChatRoom();
 
                     Optional<ChatMessage> lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId());
                     int unreadMessageCnt = chatMessageRepository.countByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), chatroomMember.getLastEntryTime());
 
-                    return ChatRoomRes.createRes(chatRoom.getId(), member.getUsername(), unreadMessageCnt, lastMessage);
+                    return MyChatRoomRes.createRes(chatRoom.getId(), member.getUsername(), unreadMessageCnt, lastMessage);
                 })
                 .toList();
 
-        return chatRoomResList;
+        return myChatRoomResList;
     }
 
     public void enterChatRoom(Long memberId, Long chatRoomId) {

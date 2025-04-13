@@ -2,7 +2,7 @@ package com.rabbitmqprac.chatroom;
 
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateReq;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
-import com.rabbitmqprac.chatroom.dto.ChatRoomRes;
+import com.rabbitmqprac.chatroom.dto.MyChatRoomRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/chat-rooms")
-    public List<ChatRoomRes> getChatRooms(@RequestParam Long loginId) {
-        return chatRoomService.getChatRooms(loginId);
+    public List<MyChatRoomRes> getMyChatRooms(@RequestParam Long loginId) {
+        return chatRoomService.getMyChatRooms(loginId);
     }
 }
