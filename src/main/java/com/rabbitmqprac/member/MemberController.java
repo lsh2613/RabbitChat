@@ -1,5 +1,6 @@
 package com.rabbitmqprac.member;
 
+import com.rabbitmqprac.member.dto.MemberCreateRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public MemberRes createMember() {
+    public MemberCreateRes createMember() {
         return memberService.create();
     }
 

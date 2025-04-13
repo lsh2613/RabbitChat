@@ -1,6 +1,7 @@
 package com.rabbitmqprac.member;
 
 
+import com.rabbitmqprac.member.dto.MemberCreateRes;
 import com.rabbitmqprac.util.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,10 @@ public class MemberService {
     private final TokenUtil tokenUtil;
 
     @Transactional
-    public MemberRes create() {
+    public MemberCreateRes create() {
         Member member = memberRepository.save(Member.create());
         String accessToken = tokenUtil.issueAccessToken(member.getId());
-        return MemberRes.createRes(member, accessToken);
+        return MemberCreateRes.createRes(member, accessToken);
     }
 
     @Transactional(readOnly = true)
