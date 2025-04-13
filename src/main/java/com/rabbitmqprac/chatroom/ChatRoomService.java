@@ -3,15 +3,16 @@ package com.rabbitmqprac.chatroom;
 
 import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
+import com.rabbitmqprac.chatmessage.dto.ChatSyncRequestRes;
+import com.rabbitmqprac.chatmessage.dto.MessageRes;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateReq;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
+import com.rabbitmqprac.chatroom.dto.ChatRoomRes;
 import com.rabbitmqprac.chatroom.dto.MyChatRoomRes;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberService;
 import com.rabbitmqprac.common.EntityFacade;
-import com.rabbitmqprac.chatmessage.dto.ChatSyncRequestRes;
-import com.rabbitmqprac.chatmessage.dto.MessageRes;
 import com.rabbitmqprac.member.Member;
 import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
@@ -33,6 +34,7 @@ public class ChatRoomService {
     private final RabbitPublisher rabbitPublisher;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
     public ChatRoomCreateRes createChatRoom(ChatRoomCreateReq req) {
@@ -61,6 +63,14 @@ public class ChatRoomService {
                 .toList();
 
         return myChatRoomResList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatRoomRes> getChatRooms() {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+
+        return chatRooms.stream().map(ChatRoomRes::of).toList();
+
     }
 
     public void enterChatRoom(Long memberId, Long chatRoomId) {
