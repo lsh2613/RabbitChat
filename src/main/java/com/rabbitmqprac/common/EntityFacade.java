@@ -22,7 +22,7 @@ public class EntityFacade {
     }
 
     public ChatRoom getChatRoom(Long chatRoomId) {
-        return chatRoomRepository.findByIdWithChatRoomMembers(chatRoomId)
+        return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
     }
 
