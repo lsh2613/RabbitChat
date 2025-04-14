@@ -29,14 +29,14 @@ public class ChatRoomController {
         return "chat-room-create";
     }
 
-    @GetMapping("/chat-rooms")
+    @GetMapping("/my-chat-rooms")
     public String getMyChatRooms(@RequestParam Long loginId, Model model) {
         List<MyChatRoomRes> myChatRooms = chatRoomService.getMyChatRooms(loginId);
         model.addAttribute("myChatRooms", myChatRooms);
         return "my-chat-rooms";
     }
 
-    @GetMapping("/chat-rooms/all")
+    @GetMapping("/chat-rooms")
     public String getChatRooms(Model model) {
         List<ChatRoomRes> chatRooms = chatRoomService.getChatRooms();
         model.addAttribute("chatRooms", chatRooms);
