@@ -40,10 +40,15 @@ public class ChatRoomService {
     public ChatRoomCreateRes createChatRoom(ChatRoomCreateReq req) {
         Member member = entityFacade.getMember(req.getMemberId());
 
-        ChatRoom chatRoom = ChatRoom.create();
+        ChatRoom chatRoom = saveChatRoom();
         chatRoomMemberService.addChatRoomMember(chatRoom.getId(), member.getId());
 
         return ChatRoomCreateRes.createRes(chatRoom.getId(), member.getId());
+    }
+
+    private ChatRoom saveChatRoom() {
+        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.create());
+        return chatRoom;
     }
 
     @Transactional(readOnly = true)
