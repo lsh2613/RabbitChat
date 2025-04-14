@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/chat-rooms")
-    public String createChatRoom(@RequestBody ChatRoomCreateReq chatRoomCreateReq, Model model) {
+    public String createChatRoom(@ModelAttribute ChatRoomCreateReq chatRoomCreateReq, Model model) {
         ChatRoomCreateRes chatRoomCreateRes = chatRoomService.createChatRoom(chatRoomCreateReq);
         model.addAttribute("chatRoomCreateRes", chatRoomCreateRes);
         return "chat-room-create";
