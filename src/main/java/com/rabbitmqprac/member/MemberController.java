@@ -2,11 +2,13 @@ package com.rabbitmqprac.member;
 
 import com.rabbitmqprac.member.dto.MemberCreateRes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
@@ -14,20 +16,27 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping
-    public MemberCreateRes createMember() {
-        return memberService.create();
+    public String createMember(Model model) {
+        MemberCreateRes memberCreateRes = memberService.create();
+        model.addAttribute("memberCreateRes", memberCreateRes);
+        return "member-create";
     }
 
     @GetMapping("/{memberId}")
-    public Member getMember(@PathVariable Long memberId) {
-        return memberService.getMember(memberId);
+    public String getMember(@PathVariable Long memberId, Model model) {
+        Member member = memberService.getMember(memberId);
+        model.addAttribute("member", member);
+        return "member";
     }
 
     @GetMapping
-    public List<Member> getMembers() {
-        return memberService.getMembers();
+    public String getMembers(Model model) {
+        List<Member> members = memberService.getMembers();
+        model.addAttribute("members", members);
+        return "members";
     }
 
+    @ResponseBody
     @GetMapping("/tokens")
     public String issueAccessToken(@RequestParam Long memberId) {
         return memberService.issueAccessToken(memberId);
