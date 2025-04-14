@@ -75,11 +75,56 @@
                 <button type="submit" class="btn btn-primary">Try it out</button>
             </form>
         </div>
+
+        <hr>
+
+        <h3>ChatRoomMember API</h3>
+
+        <div class="api-block">
+            <h4 class="d-flex justify-content-between align-items-center">
+                <span>채팅방 참가</span>
+                <small class="text-muted">[POST] &emsp; /chat-rooms/{chatRoomId}/members</small>
+            </h4>
+            <form onsubmit="enterChatRoom(event)">
+                <div class="mb-2">
+                    <input type="number" id="chatRoomId" class="form-control" placeholder="Chat Room ID" required>
+                </div>
+                <div class="mb-2">
+                    <input type="number" id="memberId" class="form-control" placeholder="Member ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Try it out</button>
+            </form>
+        </div>
+
     </div>
 
 </div>
 
 <script src="js/header.js"></script>
+<script>
+    function enterChatRoom(event) {
+        event.preventDefault();
+
+        const chatRoomId = document.getElementById('chatRoomId').value;
+        const memberId = document.getElementById('memberId').value;
+
+        fetch(`http://localhost:8080/chat-rooms/${chatRoomId}/members`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ memberId: memberId })
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('채팅방 참가 성공!');
+            } else {
+                response.text().then(text => alert('채팅방 참가 실패: ' + text));
+            }
+        })
+        .catch(error => alert('에러 발생: ' + error));
+    }
+</script>
 
 </body>
 
