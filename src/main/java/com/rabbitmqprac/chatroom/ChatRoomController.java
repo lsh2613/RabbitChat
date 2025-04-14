@@ -30,8 +30,8 @@ public class ChatRoomController {
     }
 
     @GetMapping("/my-chat-rooms")
-    public String getMyChatRooms(@RequestParam Long loginId, Model model) {
-        List<MyChatRoomRes> myChatRooms = chatRoomService.getMyChatRooms(loginId);
+    public String getMyChatRooms(@RequestParam Long memberId, Model model) {
+        List<MyChatRoomRes> myChatRooms = chatRoomService.getMyChatRooms(memberId);
         model.addAttribute("myChatRooms", myChatRooms);
         return "my-chat-rooms";
     }
