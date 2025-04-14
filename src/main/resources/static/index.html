@@ -35,8 +35,47 @@
                 <button type="submit" class="btn btn-primary">Try it out</button>
             </form>
         </div>
-    </div>
 
+        <hr>
+
+        <h3>ChatRoom API</h3>
+
+        <div class="api-block">
+            <h4 class="d-flex justify-content-between align-items-center">
+                <span>채팅방 생성</span>
+                <small class="text-muted">[POST] &emsp; /chat-rooms</small>
+            </h4>
+            <form action="http://localhost:8080/chat-rooms" method="POST">
+                <div class="mb-2">
+                    <input type="number" name="memberId" class="form-control" placeholder="Member ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Try it out</button>
+            </form>
+        </div>
+
+        <div class="api-block">
+            <h4 class="d-flex justify-content-between align-items-center">
+                <span>전체 채팅방 조회</span>
+                <small class="text-muted">[GET] &emsp; /chat-rooms</small>
+            </h4>
+            <form action="http://localhost:8080/chat-rooms" method="GET">
+                <button type="submit" class="btn btn-primary">Try it out</button>
+            </form>
+        </div>
+
+        <div class="api-block">
+            <h4 class="d-flex justify-content-between align-items-center">
+                <span>나의 채팅방 조회</span>
+                <small class="text-muted">[POST] &emsp; /my-chat-rooms</small>
+            </h4>
+            <form action="http://localhost:8080/my-chat-rooms" method="GET">
+                <div class="mb-2">
+                    <input type="number" name="memberId" class="form-control" placeholder="Member ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Try it out</button>
+            </form>
+        </div>
+    </div>
 
 </div>
 
