@@ -5,7 +5,6 @@ import com.rabbitmqprac.chatmessage.ChatMessage;
 import com.rabbitmqprac.chatmessage.ChatMessageRepository;
 import com.rabbitmqprac.chatmessage.dto.ChatSyncRequestRes;
 import com.rabbitmqprac.chatmessage.dto.MessageRes;
-import com.rabbitmqprac.chatroom.dto.ChatRoomCreateReq;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
 import com.rabbitmqprac.chatroom.dto.ChatRoomRes;
 import com.rabbitmqprac.chatroom.dto.MyChatRoomRes;
@@ -37,8 +36,8 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
-    public ChatRoomCreateRes createChatRoom(ChatRoomCreateReq req) {
-        Member member = entityFacade.getMember(req.getMemberId());
+    public ChatRoomCreateRes createChatRoom(Long memberId) {
+        Member member = entityFacade.getMember(memberId);
 
         ChatRoom chatRoom = saveChatRoom();
         chatRoomMemberService.addChatRoomMember(chatRoom.getId(), member.getId());

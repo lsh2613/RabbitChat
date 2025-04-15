@@ -1,10 +1,14 @@
 package com.rabbitmqprac.member;
 
+import com.rabbitmqprac.common.annotation.Requester;
 import com.rabbitmqprac.member.dto.MemberCreateRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -23,7 +27,7 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}")
-    public String getMember(@PathVariable Long memberId, Model model) {
+    public String getMember(@Requester Long memberId, Model model) {
         Member member = memberService.getMember(memberId);
         model.addAttribute("member", member);
         return "member";
@@ -38,7 +42,7 @@ public class MemberController {
 
     @ResponseBody
     @GetMapping("/tokens")
-    public String issueAccessToken(@RequestParam Long memberId) {
+    public String issueAccessToken(@Requester Long memberId) {
         return memberService.issueAccessToken(memberId);
     }
 }
