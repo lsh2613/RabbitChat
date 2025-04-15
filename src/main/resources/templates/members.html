@@ -26,23 +26,28 @@
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                         <div>
                             <strong>ID:</strong> <span th:text="${member.id}"></span><br>
-                            <strong>Username:</strong> <span th:text="${member.username}"></span><br>
+                            <strong>Username:</strong> <span th:text="${member.username}"
+                                                             th:attr="id=${'username-' + member.id}"></span><br>
 
-                            <!-- 토큰 발급 버튼 -->
-                            <button class="btn btn-sm btn-outline-success"
-                                    th:attr="id=${'token-button-' + member.id}"
-                                    th:onclick="|issueToken(${member.id})|">
-                                토큰 발급
-                            </button>
-
-                            <!-- 발급된 토큰 영역을 Username 아래로 이동 -->
-                            <div class="token-container d-none"
-                                 th:attr="id=${'token-container-' + member.id}">
+                            <!-- Access Token + 발급 버튼 + 로그인 버튼 -->
+                            <div class="d-flex align-items-center gap-2 mt-2">
                                 <strong>Access Token:</strong>
-                                <span class="token-text" th:attr="id=${'accessToken-' + member.id}"></span><br>
+                                <span th:attr="id=${'accessToken-' + member.id}"></span>
+
+                                <!-- 토큰 발급 버튼 -->
+                                <button class="btn btn-sm btn-outline-success"
+                                        th:attr="id=${'token-button-' + member.id}"
+                                        th:onclick="|issueToken(${member.id})|">
+                                    토큰 발급
+                                </button>
+
+                                <!-- 로그인 버튼 (초기에는 숨김) -->
                                 <button class="btn btn-sm btn-outline-primary"
-                                        th:onclick="|copyToken(${member.id})|">
-                                    Copy
+                                        th:attr="id=${'login-button-' + member.id}"
+                                        onclick="login(this.getAttribute('data-member-id'))"
+                                        th:attrappend="data-member-id=${member.id}"
+                                        style="display: none;">
+                                    로그인
                                 </button>
                             </div>
                         </div>
@@ -59,28 +64,31 @@
 
 <script>
     function issueToken(memberId) {
-        // 토큰 발급 버튼 숨기기
         const tokenButton = document.getElementById(`token-button-${memberId}`);
+        const tokenText = document.getElementById(`accessToken-${memberId}`);
+        const loginButton = document.getElementById(`login-button-${memberId}`);
+
         tokenButton.style.display = 'none'; // 버튼 숨기기
 
         fetch("http://localhost:8080/members/tokens?memberId=" + memberId)
             .then(response => response.text())
             .then(token => {
-                const tokenContainer = document.getElementById(`token-container-${memberId}`);
-                const tokenText = document.getElementById(`accessToken-${memberId}`);
-                tokenText.innerText = token;
-                tokenContainer.classList.remove('d-none'); // 토큰 컨테이너 표시
+                tokenText.innerText = token; // 토큰 표시
+                loginButton.style.display = 'inline-block'; // 로그인 버튼 보이기
             })
             .catch(error => alert('토큰 발급에 실패했습니다: ' + error));
     }
 
-    function copyToken(memberId) {
-        const tokenText = document.getElementById(`accessToken-${memberId}`).innerText;
-        navigator.clipboard.writeText(tokenText).then(() => {
-            alert('Access Token이 복사되었습니다!');
-        }).catch(err => {
-            alert('복사에 실패했습니다: ' + err);
-        });
+    function login(memberId) {
+        sessionStorage.clear();
+        const username = document.getElementById(`username-${memberId}`).innerText;
+        const accessToken = document.getElementById(`accessToken-${memberId}`).innerText;
+
+        sessionStorage.setItem('memberId', memberId);
+        sessionStorage.setItem('username', username);
+        sessionStorage.setItem('accessToken', accessToken);
+
+        alert(`${username} 님으로 로그인되었습니다!`);
     }
 </script>
 
