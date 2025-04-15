@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Chat Rooms</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class="container">
+
+    <!-- 헤더 -->
+    <div id="header-placeholder"></div>
+
+    <!-- 내 채팅방 목록 -->
+    <div class="api-section">
+        <div class="api-block">
+            <h4>내 채팅방 목록</h4>
+            <ul class="list-group" id="myChatRoomList"></ul>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/header.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = sessionStorage.getItem("accessToken");
+
+        if (!token) {
+            alert("Access Token이 없습니다. 먼저 로그인해주세요.");
+            window.location.href = "/index.html";
+            return;
+        }
+
+        fetch("/my-chat-rooms", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("내 채팅방 목록 조회에 실패했습니다.");
+            return response.json();
+        })
+        .then(myChatRooms => {
+            const list = document.getElementById("myChatRoomList");
+
+            if (myChatRooms.length === 0) {
+                const empty = document.createElement("li");
+                empty.className = "list-group-item";
+                empty.textContent = "참여 중인 채팅방이 없습니다.";
+                list.appendChild(empty);
+                return;
+            }
+
+            myChatRooms.forEach(chatRoom => {
+                const li = document.createElement("li");
+                li.className = "list-group-item";
+                li.innerHTML = `
+                    <div>
+                        <strong>Chat Room ID:</strong> ${chatRoom.chatRoomId}<br>
+                        <strong>Nickname:</strong> ${chatRoom.nickname}<br>
+                        <strong>Unread Message Count:</strong> ${chatRoom.unreadMessageCnt}<br>
+                        <strong>Last Message:</strong> ${chatRoom.lastMessage || "없음"}<br>
+                        <strong>Created At:</strong> ${formatDate(chatRoom.createdAt)}
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        })
+        .catch(error => {
+            alert(error.message);
+            console.error("Error fetching my chat rooms:", error);
+        });
+    });
+
+    function formatDate(dateTimeString) {
+        const date = new Date(dateTimeString);
+        return date.toLocaleString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+    }
+</script>
+
+</body>
+</html>

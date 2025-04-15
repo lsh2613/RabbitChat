@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+
+    <!-- 헤더 -->
+    <div id="header-placeholder"></div>
+
+    <!-- 채팅방 참가 Form -->
+    <div class="api-section">
+        <div class="api-block">
+            <h4>채팅방 참가</h4>
+            <form id="joinChatRoomForm">
+                <div class="mb-3">
+                    <label for="chatRoomIdInput" class="form-label">Chat Room ID</label>
+                    <input type="text" class="form-control" id="chatRoomIdInput" placeholder="채팅방 ID를 입력하세요" required>
+                </div>
+                <button type="submit" class="btn btn-primary">참가하기</button>
+            </form>
+        </div>
+
+        <!-- 조회된 채팅방 목록 -->
+        <div class="api-block">
+            <h4>채팅방 목록</h4>
+            <ul id="chatRoomList" class="list-group mb-3"></ul>
+        </div>
+
+        <!-- 결과 출력 -->
+        <div class="api-block" id="chatRoomJoinResult" style="display: none;">
+            <h4>채팅방 참가 성공</h4>
+            <ul class="list-group mb-3">
+                <li class="list-group-item">
+                    <strong>Chat Room ID:</strong>
+                    <span id="resultChatRoomId"></span>
+                </li>
+            </ul>
+
+            <!-- 참여자 리스트 출력 -->
+            <h4>채팅방 참여자 목록</h4>
+            <div id="chatRoomMembersContainer" class="d-none">
+                <ul id="chatRoomMembersList" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/header.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const token = sessionStorage.getItem("accessToken");
+
+    if (!token) {
+        alert("Access Token이 없습니다. 먼저 로그인해주세요.");
+        window.location.href = "/index.html";
+        return;
+    }
+
+    // 채팅방 전체 목록 조회
+    fetch("/chat-rooms", {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("채팅방 목록 조회에 실패했습니다.");
+        return res.json();
+    })
+    .then(rooms => {
+        const list = document.getElementById("chatRoomList");
+        list.innerHTML = "";
+
+        if (rooms.length === 0) {
+            list.innerHTML = '<li class="list-group-item">등록된 채팅방이 없습니다.</li>';
+        } else {
+            rooms.forEach(room => {
+                const item = document.createElement("li");
+                item.className = "list-group-item d-flex justify-content-between align-items-center";
+                item.innerHTML = `
+                    <span><strong>Chat Room ID:</strong> ${room.chatRoomId}</span>
+                    <button class="btn btn-sm btn-outline-primary">참가하기</button>
+                `;
+
+                const joinButton = item.querySelector("button");
+                joinButton.addEventListener("click", () => joinChatRoom(room.chatRoomId, token));
+
+                list.appendChild(item);
+            });
+        }
+    })
+    .catch(error => {
+        alert(error.message);
+        console.error("채팅방 목록 조회 에러:", error);
+    });
+});
+
+document.getElementById("joinChatRoomForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const token = sessionStorage.getItem("accessToken");
+    const chatRoomId = document.getElementById("chatRoomIdInput").value;
+
+    joinChatRoom(chatRoomId, token);
+});
+
+function joinChatRoom(chatRoomId, token) {
+    fetch(`/chat-rooms/${chatRoomId}/members`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("채팅방 참가에 실패했습니다.");
+        document.getElementById("resultChatRoomId").innerText = chatRoomId;
+        document.getElementById("chatRoomJoinResult").style.display = "block";
+
+        fetchChatRoomMembers(chatRoomId, token);
+    })
+    .catch(error => {
+        alert(error.message);
+        console.error("Error joining chat room:", error);
+    });
+}
+
+function fetchChatRoomMembers(chatRoomId, token) {
+    fetch(`/chat-rooms/${chatRoomId}/members`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json"
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("참여자 목록 조회에 실패했습니다.");
+        return res.json();
+    })
+    .then(members => {
+        const list = document.getElementById("chatRoomMembersList");
+        const container = document.getElementById("chatRoomMembersContainer");
+        list.innerHTML = "";
+
+        if (members.length === 0) {
+            list.innerHTML = '<li class="list-group-item">참여자가 없습니다.</li>';
+        } else {
+            members.forEach(member => {
+                const item = document.createElement("li");
+                item.className = "list-group-item";
+                item.innerHTML = `
+                    <strong>Member ID:</strong> ${member.memberId}<br>
+                    <strong>Username:</strong> ${member.username}
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        container.classList.remove("d-none");
+    })
+    .catch(error => {
+        alert(error.message);
+        console.error("Error fetching members:", error);
+    });
+}
+</script>
+</body>
+</html>

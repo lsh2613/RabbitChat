@@ -3,7 +3,6 @@ package com.rabbitmqprac.chatroommember;
 import com.rabbitmqprac.chatroommember.dto.ChatRoomMemberRes;
 import com.rabbitmqprac.common.annotation.Requester;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +22,7 @@ public class ChatRoomMemberController {
     }
 
     @GetMapping("/chat-rooms/{chatRoomId}/members")
-    public List<ChatRoomMemberRes> getChatRoomMembers(@PathVariable Long chatRoomId, Model model) {
-        List<ChatRoomMemberRes> chatRoomMembers = chatRoomMemberService.getChatRoomMembers(chatRoomId);
-        model.addAttribute("chatRoomMembers", chatRoomMembers);
-        return chatRoomMembers;
+    public List<ChatRoomMemberRes> getChatRoomMembers(@PathVariable Long chatRoomId) {
+        return chatRoomMemberService.getChatRoomMembers(chatRoomId);
     }
 }

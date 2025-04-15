@@ -21,9 +21,7 @@
                 <span>회원가입</span>
                 <small class="text-muted">[POST] &emsp; /members</small>
             </h4>
-            <form action="http://localhost:8080/members" method="POST">
-                <button type="submit" class="btn btn-primary">Try it out</button>
-            </form>
+            <button onclick="location.href='/member-create.html'" class="btn btn-primary">Try it out</button>
         </div>
 
         <div class="api-block">
@@ -31,9 +29,7 @@
                 <span>모든 회원 조회</span>
                 <small class="text-muted">[GET] &emsp; /members</small>
             </h4>
-            <form action="http://localhost:8080/members" method="GET">
-                <button type="submit" class="btn btn-primary">Try it out</button>
-            </form>
+            <button onclick="location.href='/members.html'" class="btn btn-primary">Try it out</button>
         </div>
 
         <hr>
@@ -45,12 +41,7 @@
                 <span>채팅방 생성</span>
                 <small class="text-muted">[POST] &emsp; /chat-rooms</small>
             </h4>
-            <form action="http://localhost:8080/chat-rooms" method="POST">
-                <div class="mb-2">
-                    <input type="number" name="memberId" class="form-control" placeholder="Member ID" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Try it out</button>
-            </form>
+            <button onclick="location.href='/chat-room-create.html'" class="btn btn-primary">Try it out</button>
         </div>
 
         <div class="api-block">
@@ -58,9 +49,7 @@
                 <span>전체 채팅방 조회</span>
                 <small class="text-muted">[GET] &emsp; /chat-rooms</small>
             </h4>
-            <form action="http://localhost:8080/chat-rooms" method="GET">
-                <button type="submit" class="btn btn-primary">Try it out</button>
-            </form>
+            <button onclick="location.href='/chat-rooms.html'" class="btn btn-primary">Try it out</button>
         </div>
 
         <div class="api-block">
@@ -68,12 +57,8 @@
                 <span>나의 채팅방 조회</span>
                 <small class="text-muted">[POST] &emsp; /my-chat-rooms</small>
             </h4>
-            <form action="http://localhost:8080/my-chat-rooms" method="GET">
-                <div class="mb-2">
-                    <input type="number" name="memberId" class="form-control" placeholder="Member ID" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Try it out</button>
-            </form>
+            <button onclick="location.href='/my-chat-rooms.html'" class="btn btn-primary">Try it out</button>
+
         </div>
 
         <hr>
@@ -85,15 +70,7 @@
                 <span>채팅방 참가</span>
                 <small class="text-muted">[POST] &emsp; /chat-rooms/{chatRoomId}/members</small>
             </h4>
-            <form onsubmit="enterChatRoom(event)">
-                <div class="mb-2">
-                    <input type="number" id="chatRoomId" class="form-control" placeholder="Chat Room ID" required>
-                </div>
-                <div class="mb-2">
-                    <input type="number" id="memberId" class="form-control" placeholder="Member ID" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Try it out</button>
-            </form>
+            <button onclick="location.href='/chat-room-join.html'" class="btn btn-primary">Try it out</button>
         </div>
 
     </div>
