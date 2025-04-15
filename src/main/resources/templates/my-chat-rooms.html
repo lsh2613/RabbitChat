@@ -21,6 +21,10 @@
                 <li class="list-group-item" th:each="chatRoom : ${myChatRooms}">
                     <div>
                         <strong>Chat Room ID:</strong> <span th:text="${chatRoom.chatRoomId}"></span><br>
+                        <strong>Nickname:</strong> <span th:text="${chatRoom.nickname}"></span><br>
+                        <strong>Unread Message Count:</strong> <span th:text="${chatRoom.unreadMessageCnt}"></span><br>
+                        <strong>Last Message:</strong> <span th:text="${chatRoom.lastMessage}"></span><br>
+                        <strong>Created At:</strong> <span th:text="${#temporals.format(chatRoom.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span><br>
                     </div>
                 </li>
             </ul>
