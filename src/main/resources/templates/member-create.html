@@ -17,11 +17,11 @@
         <ul class="list-group">
             <li class="list-group-item">
                 <strong>Member ID:</strong>
-                <span th:text="${memberCreateRes.memberId}"></span>
+                <span id="memberId" th:text="${memberCreateRes.memberId}"></span>
             </li>
             <li class="list-group-item">
                 <strong>Username:</strong>
-                <span th:text="${memberCreateRes.username}"></span>
+                <span id="username" th:text="${memberCreateRes.username}"></span>
             </li>
             <li class="list-group-item">
                 <strong>Access Token:</strong>
@@ -31,11 +31,17 @@
                 </div>
             </li>
         </ul>
-    </div>
 
+        <!-- 로그인 버튼 추가 -->
+        <div class="mt-3">
+            <button class="btn btn-success" onclick="handleLogin()">로그인</button>
+        </div>
+    </div>
 </div>
 
-<script src="js/header.js">
+<script src="js/header.js"></script>
+
+<script>
     function copyAccessToken() {
         const tokenText = document.getElementById('accessToken').innerText;
         navigator.clipboard.writeText(tokenText).then(() => {
@@ -43,6 +49,20 @@
         }).catch(err => {
             alert('복사에 실패했습니다: ' + err);
         });
+    }
+
+    function handleLogin() {
+        sessionStorage.clear();
+        const memberId = document.getElementById("memberId").innerText;
+        const username = document.getElementById("username").innerText;
+        const accessToken = document.getElementById("accessToken").innerText;
+
+        sessionStorage.setItem("memberId", memberId);
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("accessToken", accessToken);
+
+        alert("로그인 되었습니다!");
+        location.reload(); // 페이지 새로고침하여 header에 로그인 상태 반영
     }
 </script>
 
