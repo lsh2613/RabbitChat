@@ -23,6 +23,10 @@ public class ChatRoomMemberService {
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
         Member member = entityFacade.getMember(memberId);
 
+        if (chatRoomMemberRepository.existsByChatRoomAndMember(chatRoom, member)) {
+            throw new IllegalArgumentException("Member already exists in the chat room");
+        }
+
         ChatRoomMember chatRoomMember = ChatRoomMember.create(chatRoom, member);
         chatRoomMemberRepository.save(chatRoomMember);
     }
