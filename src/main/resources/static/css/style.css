@@ -19,17 +19,6 @@ body {
     word-break: break-word;
 }
 
-.token-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #ffffff;
-    padding: 8px 12px;
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    word-break: break-word;
-}
-
 .token-text {
     flex-grow: 1;
     margin-right: 10px;
@@ -48,8 +37,13 @@ h4 {
 .header {
     width: 100%;
     background-color: rgb(123, 184, 6);
-    padding: 1rem;
+    padding: 0.5rem 1rem; /* px-3 py-2 반영 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    /* 유연한 레이아웃 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .header a {
@@ -57,5 +51,12 @@ h4 {
     color: #333;
     font-weight: bold;
     font-size: 1.5rem;
-    display: inline-block;
+    margin-bottom: 0; /* mb-0 반영 */
+}
+
+/* 유저 정보 표시 영역 */
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
