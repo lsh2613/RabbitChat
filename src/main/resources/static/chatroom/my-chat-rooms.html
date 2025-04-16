@@ -60,16 +60,26 @@
 
             myChatRooms.forEach(chatRoom => {
                 const li = document.createElement("li");
-                li.className = "list-group-item";
-                li.innerHTML = `
-                    <div>
-                        <strong>Chat Room ID:</strong> ${chatRoom.chatRoomId}<br>
-                        <strong>Nickname:</strong> ${chatRoom.nickname}<br>
-                        <strong>Unread Message Count:</strong> ${chatRoom.unreadMessageCnt}<br>
-                        <strong>Last Message:</strong> ${chatRoom.lastMessage || "없음"}<br>
-                        <strong>Created At:</strong> ${formatDate(chatRoom.createdAt)}
-                    </div>
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+                const infoDiv = document.createElement("div");
+                infoDiv.innerHTML = `
+                    <strong>Chat Room ID:</strong> ${chatRoom.chatRoomId}<br>
+                    <strong>Nickname:</strong> ${chatRoom.nickname}<br>
+                    <strong>Unread Message Count:</strong> ${chatRoom.unreadMessageCnt}<br>
+                    <strong>Last Message:</strong> ${chatRoom.lastMessage || "없음"}<br>
+                    <strong>Created At:</strong> ${formatDate(chatRoom.createdAt)}
                 `;
+
+                const button = document.createElement("button");
+                button.className = "btn btn-sm btn-primary ms-3";
+                button.textContent = "채팅방 입장";
+                button.addEventListener("click", () => {
+                    window.location.href = `/chatroom/chat-room.html?chatRoomId=${chatRoom.chatRoomId}`;
+                });
+
+                li.appendChild(infoDiv);
+                li.appendChild(button);
                 list.appendChild(li);
             });
         })

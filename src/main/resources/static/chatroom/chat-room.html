@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        #chatBox {
+            height: 400px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        #messageList {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 10px;
+        }
+
+        .chat-wrapper {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .chat-wrapper.my-message {
+            justify-content: flex-end;
+        }
+
+        .chat-message {
+            display: inline-block;
+            max-width: 60%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            word-break: break-word;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .chat-left {
+            align-self: flex-start;
+            background-color: #e9ecef;
+            color: #000;
+        }
+
+        .chat-right {
+            align-self: flex-end;
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .chat-username {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .chat-meta {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="header-placeholder"></div>
+    <div class="api-section">
+        <h3 class="mb-3">채팅방</h3>
+        <div id="chatBox" class="mb-3 border d-flex flex-column justify-content-between">
+            <div id="messageList"></div>
+            <div class="input-group mt-2">
+                <input id="messageInput" type="text" class="form-control" placeholder="메시지를 입력하세요...">
+                <button id="sendBtn" class="btn btn-primary">전송</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="/js/header.js"></script>
+<script>
+    const token = sessionStorage.getItem("accessToken");
+    const myMemberId = Number(sessionStorage.getItem("memberId"));
+    const params = new URLSearchParams(window.location.search);
+    const chatRoomId = params.get("chatRoomId");
+
+    if (!token || !chatRoomId) {
+        alert("유효하지 않은 접근입니다.");
+        window.location.href = "/index.html";
+    }
+
+    const messageList = document.getElementById("messageList");
+
+    const client = Stomp.client(`ws://localhost:8080/chat/inbox`);
+    client.webSocketFactory = () => new WebSocket(`ws://localhost:8080/chat/inbox`);
+
+    client.connect(
+        {
+            "Authorization": `Bearer ${token}`,
+            "chat-room-id": chatRoomId
+        },
+        () => {
+            client.subscribe(`/exchange/chat.exchange/room.${chatRoomId}`, (message) => {
+                const data = JSON.parse(message.body);
+                renderMessage(data);
+            });
+        },
+        (error) => {
+            console.error("STOMP 연결 실패:", error);
+            alert("WebSocket 연결에 실패했습니다.");
+        }
+    );
+
+    function formatTime(dateArray) {
+        try {
+            const [year, month, day, hour, minute] = dateArray;
+            const date = new Date(year, month - 1, day, hour, minute);
+            return date.toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch {
+            return '';
+        }
+    }
+
+    function renderMessage(data) {
+        const isMyMessage = data.memberId === myMemberId;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "chat-wrapper" + (isMyMessage ? " my-message" : "");
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "chat-message " + (isMyMessage ? "chat-right" : "chat-left");
+
+        const usernameSpan = document.createElement("div");
+        usernameSpan.className = "chat-username";
+        usernameSpan.textContent = data.username;
+
+        const textSpan = document.createElement("div");
+        textSpan.textContent = data.message;
+
+        messageDiv.appendChild(usernameSpan);
+        messageDiv.appendChild(textSpan);
+
+        const metaContainer = document.createElement("div");
+        metaContainer.style.display = "flex";
+        metaContainer.style.flexDirection = "column";
+        metaContainer.style.alignItems = isMyMessage ? "flex-end" : "flex-start";
+        metaContainer.style.marginLeft = isMyMessage ? "1.5rem" : "0.75rem";
+        metaContainer.style.marginRight = isMyMessage ? "0.75rem" : "1.5rem";
+
+        if (data.unreadCnt !== undefined && data.unreadCnt > 0) {
+            const unreadDiv = document.createElement("div");
+            unreadDiv.className = "chat-meta";
+            unreadDiv.textContent = `${data.unreadCnt}`;
+            unreadDiv.style.color = "#dc3545";
+            unreadDiv.style.fontWeight = "bold";
+            metaContainer.appendChild(unreadDiv);
+        }
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "chat-meta";
+        timeDiv.textContent = formatTime(data.createdAt);
+        metaContainer.appendChild(timeDiv);
+
+        if (isMyMessage) {
+            wrapper.appendChild(metaContainer);
+            wrapper.appendChild(messageDiv);
+        } else {
+            wrapper.appendChild(messageDiv);
+            wrapper.appendChild(metaContainer);
+        }
+
+        messageList.appendChild(wrapper);
+        messageList.scrollTop = messageList.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const message = input.value.trim();
+        if (!message) return;
+
+        const payload = { message: message };
+        client.send("/pub/chat.message", {
+            Authorization: `Bearer ${token}`
+        }, JSON.stringify(payload));
+
+        input.value = "";
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("messageInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
