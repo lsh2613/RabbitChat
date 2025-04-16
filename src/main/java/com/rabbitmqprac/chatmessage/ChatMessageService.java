@@ -42,7 +42,7 @@ public class ChatMessageService {
         ChatMessage chatMessage = saveChatMessage(req, chatRoom, member);
 
         int unreadCnt = calculateUnreadCntAtPublish(chatRoom.getId());
-        sendMessage(chatMessage, unreadCnt, chatRoom);
+        sendMessage(member, chatMessage, unreadCnt, chatRoom);
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +59,8 @@ public class ChatMessageService {
                     unreadCnt = 채팅방 유저 수 - 현재 접속 중인 유저 수 - 메시지 생성 시간보다 늦은 시간에 입장한 유저 수
                      */
                     int unreadCnt = calculateUnreadCntAtReadTime(chatRoom.getId(), chatMessage.getCreatedAt());
-                    return ChatMessageRes.createRes(chatMessage, unreadCnt);
+                    Member member = entityFacade.getMember(chatMessage.getMemberId());
+                    return ChatMessageRes.createRes(member.getUsername(), chatMessage, unreadCnt);
                 })
                 .toList();
 
@@ -98,8 +99,8 @@ public class ChatMessageService {
                 .toList();
     }
 
-    private void sendMessage(ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
-        MessageRes messageRes = ChatMessageRes.createRes(chatMessage, unreadCnt);
+    private void sendMessage(Member member, ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
+        MessageRes messageRes = ChatMessageRes.createRes(member.getUsername(), chatMessage, unreadCnt);
         rabbitPublisher.publish(chatRoom.getId(), messageRes);
     }
 }
