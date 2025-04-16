@@ -34,10 +34,6 @@ function updateUserInfo() {
         userInfoDiv.appendChild(nameSpan);
         userInfoDiv.appendChild(logoutButton);
     } else {
-        const loginForm = document.createElement("form");
-        loginForm.action = "http://localhost:8080/members";
-        loginForm.method = "GET";
-
         const loginButton = document.createElement("button");
         loginButton.textContent = "로그인";
         loginButton.style.background = "transparent";
@@ -47,8 +43,11 @@ function updateUserInfo() {
         loginButton.style.textDecoration = "none";
         loginButton.style.fontWeight = "bold";
 
-        loginForm.appendChild(loginButton);
-        userInfoDiv.appendChild(loginForm);
+        loginButton.onclick = () => {
+            window.location.href = "/member/members.html";
+        };
+
+        userInfoDiv.appendChild(loginButton);
     }
 }
 
