@@ -81,9 +81,13 @@
     const chatRoomId = new URLSearchParams(location.search).get("chatRoomId");
     const messageList = document.getElementById("messageList");
 
-    if (!token || !chatRoomId) {
-        alert("유효하지 않은 접근입니다.");
-        location.href = "/index.html";
+    if (!token) {
+        alert("Access Token이 없습니다. 먼저 로그인해주세요.");
+        window.location.href = "/index.html";
+    }
+    if (!chatRoomId) {
+        alert("채팅방 ID가 없습니다.");
+        window.location.href = "/index.html";
     }
 
     window.addEventListener("DOMContentLoaded", () => {
