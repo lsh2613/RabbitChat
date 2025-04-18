@@ -1,32 +1,25 @@
 ### 01. 프로젝트 설명
-- Spring + RabbitMQ(stomp)를 통해 1:1 채팅을 구현한 개인 프로젝트
-- 주 DB는 RDB-H2, 채팅 메시지 NoSQL-MongoDB 사용
-- STOMP-CONNECT 시 JWT 검증을 통한 인증
-- 메시지에 대한 읽음/안 읽음 처리 기능 구현
-  - 채팅방 참가자의 접속 유무와 마지막 접속 시간을 관리하여 처리
-  - 채팅방 참가자의 접속 유무 판단을 위해 Redis 사용
-  - 읽음/안 읽음 기능은 1. 내가 읽지 않은 채팅방의 메시지 카운팅 2. 각 메시지가 안 읽힌 횟수 카운팅을 의미한다
-    <div style="display: flex; justify-content: space-between;">
-      <img src="https://github.com/user-attachments/assets/7ced4eee-0a35-4ba7-8330-ea245fd864b0" alt="페이지 2" width="30%" />
-      <img src="https://github.com/user-attachments/assets/f015f7bd-b475-4860-8db0-178e744628ed" alt="페이지 1" width="30%" />
-    </div>
-- 자세한 설명과 테스트는 [블로그](https://lsh2613.tistory.com/260)를 통해 확인해볼 수 있다
+- Spring + RabbitMQ + STOMP를 통한 실시간 채팅 서비스
+- JWT를 통한 세션 관리
+- DB 활용
+  - | DB | 사용 이유          |
+    |---|----------------|
+    | H2 | 메인 DB          |
+    | MongoDB | 채팅 내역 저장       |
+    | Redis | 실시간 채팅방 참가자 관리 |
 
-### 02. 기능
-- 채팅방 및 채팅 내역 조회
-- 채팅 테스트
-    - STOMP 연결
-    - 채팅방 큐 구독
-    - 채팅방 메시지 전송
-    - 이벤트 리스너를 통한 메시지 출력
+### 02. 핵심 기능
+- 실시간 채팅
+- 채팅방 메시지의 읽지 않은 사용자의 수를 실시간으로 반영
+- UI를 통한 데이터 시각화 및 편의성 제공
 
 ### 03. 사용 기술
 - `Spring Boot 3.1`, `Spring Data JPA`
-- `Docker`, `Docker Compose`
+- `Docker`, `docker-compose`
 - `H2`, `MongoDB`, `Redis`
-- `RabbitMQ-STOMP`
+- `RabbitMQ`, `STOMP`
 - `JWT`
-- `HTML`, `JS`
+- `HTML`, `CSS`, `JS`
 
 ### 04. 이슈
 - [기술 스택 선정 이유](https://lsh2613.tistory.com/260#1.%20RabbitMQ%20%EC%84%A0%ED%83%9D%20%EC%9D%B4%EC%9C%A0-1)
@@ -36,29 +29,25 @@
 - [JWT + Session 적용 이유](https://lsh2613.tistory.com/263#2.%20JWT%2C%20Session%20%EB%8C%80%EC%8B%A0%20%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94%20%EA%B1%B4%EB%8D%B0%20%EC%99%9C%20%EA%B5%B3%EC%9D%B4%20%EB%91%98%20%EB%8B%A4%20%EC%82%AC%EC%9A%A9%ED%95%A0%EA%B9%8C%3F-1)
 
 ### 05. 시작하기
-**1. RabbitMQ 실행**
-
-``` shell
-docker pull rabbitmq
-
-docker run -d -p 15672:15672 -p 5672:5672 -p 61613:61613 --name rabbitmq rabbitmq
-
-docker exec rabbitmq rabbitmq-plugins enable rabbitmq_management
-docker exec rabbitmq rabbitmq-plugins enable rabbitmq_stomp
+**1. 프로젝트 불러오기**
+``` bash
+git clone https://github.com/lsh2613/RabbitMQ.git <원하는 경로>
+cd <원하는 경로>
 ```
 
-**2. Mongodb, Redis 실행**<br>
-docker-compose.yml이 존재하는 루트 디렉토리로 이동
-``` shell
-docker-compose up
+**2. docker-compose 실행**
+
+``` bash
+docker-compose up -d
 ```
 
-**3. 채팅 테스트**
-1. `localhost:8080/init`을 통해 테스트 데이터(채팅방, 유저) 생성
-2. `localhost:8080` 페이지로 접속 (혹은, index.html을 따로 띄우기)
-3. Connect를 통해 WebSocket 연결
-4. SUB을 통해 큐 구독
-5. Send Message를 통해 특정 큐로 메시지 전송
-6. 구독된 큐로 메시지가 발행되면 Message를 출력
+**3. 애플리케이션 실행**
+``` bash
+./gradlew bootRun
+```
 
-> 각 텍스트 에디터에 적힌 placeholder로 테스트를 진행할 수 있다
+**4. 채팅 테스트**
+1. `localhost:8080`를 통해 API UI에 접속
+2. 회원 가입, 채팅방 생성, 채팅방 참가 등 필요한 api 호출
+3. 두 개 이상의 브라우저를 열고, 각 브라우저에서 채팅방에 참가
+4. 각 브라우저에서 채팅 메시지를 전송하고, 실시간으로 메시지가 전달되는지 확인
