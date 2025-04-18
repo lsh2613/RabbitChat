@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +8,6 @@
 </head>
 <body>
 <div class="container">
-
     <!-- 헤더 -->
     <div id="header-placeholder"></div>
 
@@ -27,12 +25,6 @@
                     <span id="memberId"></span>
                 </li>
             </ul>
-
-            <!-- 참여자 리스트 출력 -->
-            <h4>채팅방 참여자 목록</h4>
-            <div id="chatRoomMembersContainer" class="d-none">
-                <ul id="chatRoomMembersList" class="list-group"></ul>
-            </div>
         </div>
     </div>
 
@@ -59,7 +51,6 @@
         })
         .then(response => {
             if (!response.ok) throw new Error("채팅방 생성에 실패했습니다.");
-            console.log(response);
             return response.json();
         })
         .then(data => {
@@ -67,52 +58,11 @@
             document.getElementById("chatRoomId").innerText = data.chatRoomId;
             document.getElementById("memberId").innerText = data.memberId;
             document.getElementById("chatRoomResult").style.display = "block";
-
-            // 채팅방 참여자 조회
-            fetchChatRoomMembers(data.chatRoomId, token);
         })
         .catch(error => {
             alert(error.message);
         });
     });
-
-    function fetchChatRoomMembers(chatRoomId, token) {
-        fetch(`/chat-rooms/${chatRoomId}/members`, {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Accept": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('참여자 목록 조회에 실패했습니다.');
-            return response.json();
-        })
-        .then(members => {
-            const container = document.getElementById("chatRoomMembersContainer");
-            const list = document.getElementById("chatRoomMembersList");
-
-            list.innerHTML = "";
-
-            if (members.length === 0) {
-                list.innerHTML = '<li class="list-group-item">참여자가 없습니다.</li>';
-            } else {
-                members.forEach(member => {
-                    const listItem = document.createElement("li");
-                    listItem.className = "list-group-item";
-                    listItem.innerHTML = `
-                        <strong>Member ID:</strong> ${member.memberId} <br>
-                        <strong>Username:</strong> ${member.username}
-                    `;
-                    list.appendChild(listItem);
-                });
-            }
-
-            container.classList.remove("d-none");
-        })
-        .catch(error => {
-            alert(error.message);
-        });
-    }
 </script>
 </body>
 </html>
