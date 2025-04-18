@@ -91,10 +91,47 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-        fetchMessages();
-        bindMessageEvents();
-        connectWebSocket();
+        connectWebSocket(() => {
+            setTimeout(() => {
+                bindMessageEvents();
+                fetchMessages();
+            }, 300); // 0.3초 대기
+        });
     });
+
+    function connectWebSocket(callback) {
+        const client = Stomp.client("ws://localhost:8080/chat/inbox");
+        client.webSocketFactory = () => new WebSocket("ws://localhost:8080/chat/inbox");
+
+        client.connect(
+            {
+                Authorization: `Bearer ${token}`,
+                "chat-room-id": chatRoomId
+            },
+            () => {
+                client.subscribe(`/exchange/chat.exchange/room.${chatRoomId}`, (msg) => {
+                    const data = JSON.parse(msg.body);
+
+                    if (data.messageType === "CHAT_MESSAGE") {
+                        renderMessage(data);
+                    } else if (data.messageType === "CHAT_SYNC_REQUEST") {
+                        messageList.innerHTML = "";
+                        fetchMessages();
+                    }
+                });
+
+                if (typeof callback === "function") {
+                    callback();
+                }
+            },
+            (err) => {
+                console.error("STOMP 연결 실패:", err);
+                alert("WebSocket 연결에 실패했습니다.");
+            }
+        );
+
+        window.client = client;
+    }
 
     async function fetchMessages() {
         try {
@@ -118,36 +155,6 @@
                 sendMessage();
             }
         });
-    }
-
-    function connectWebSocket() {
-        const client = Stomp.client("ws://localhost:8080/chat/inbox");
-        client.webSocketFactory = () => new WebSocket("ws://localhost:8080/chat/inbox");
-
-        client.connect(
-            {
-                Authorization: `Bearer ${token}`,
-                "chat-room-id": chatRoomId
-            },
-            () => {
-                client.subscribe(`/exchange/chat.exchange/room.${chatRoomId}`, (msg) => {
-                    const data = JSON.parse(msg.body);
-
-                    if (data.messageType === "CHAT_MESSAGE") {
-                        renderMessage(data);
-                    } else if (data.messageType === "CHAT_SYNC_REQUEST") {
-                        messageList.innerHTML = ""; // 기존 메시지 제거
-                        fetchMessages(); // 메시지 다시 조회
-                    }
-                });
-            },
-            (err) => {
-                console.error("STOMP 연결 실패:", err);
-                alert("WebSocket 연결에 실패했습니다.");
-            }
-        );
-
-        window.client = client;
     }
 
     function renderMessage({ memberId, nickname, message, createdAt, unreadCnt }) {
