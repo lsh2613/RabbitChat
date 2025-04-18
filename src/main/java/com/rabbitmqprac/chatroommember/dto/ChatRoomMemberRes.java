@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatRoomMemberRes {
     private Long memberId;
-    private String username;
+    private String nickname;
 
     public static ChatRoomMemberRes of(ChatRoomMember chatRoomMember) {
         Member member = chatRoomMember.getMember();
         ChatRoomMemberRes memberRes = new ChatRoomMemberRes();
         memberRes.memberId = member.getId();
-        memberRes.username = member.getUsername();
+        memberRes.nickname = member.getNickname();
         return memberRes;
     }
 }

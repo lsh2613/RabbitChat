@@ -18,11 +18,11 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    private String username;
+    private String nickname;
 
     public static Member create() {
         Member member = new Member();
-        member.username = String.format(NICKNAME_FORMAT, SEQUENCE_NAME++);
+        member.nickname = String.format(NICKNAME_FORMAT, SEQUENCE_NAME++);
         return member;
     }
 }

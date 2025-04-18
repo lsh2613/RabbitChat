@@ -45,7 +45,7 @@
             background-color: #0d6efd;
             color: white;
         }
-        .chat-username {
+        .chat-nickname {
             font-weight: bold;
             margin-bottom: 4px;
             font-size: 13px;
@@ -150,7 +150,7 @@
         window.client = client;
     }
 
-    function renderMessage({ memberId, username, message, createdAt, unreadCnt }) {
+    function renderMessage({ memberId, nickname, message, createdAt, unreadCnt }) {
         const isMyMessage = memberId === myMemberId;
 
         const wrapper = document.createElement("div");
@@ -159,16 +159,16 @@
         const messageDiv = document.createElement("div");
         messageDiv.className = `chat-message ${isMyMessage ? "chat-right" : "chat-left"}`;
 
-        const usernameSpan = Object.assign(document.createElement("div"), {
-            className: "chat-username",
-            textContent: username
+        const nicknameSpan = Object.assign(document.createElement("div"), {
+            className: "chat-nickname",
+            textContent: nickname
         });
 
         const textSpan = Object.assign(document.createElement("div"), {
             textContent: message
         });
 
-        messageDiv.append(usernameSpan, textSpan);
+        messageDiv.append(nicknameSpan, textSpan);
 
         const metaContainer = document.createElement("div");
         Object.assign(metaContainer.style, {

@@ -40,7 +40,7 @@
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                             <div>
                                 <strong>ID:</strong> <span>${member.id}</span><br>
-                                <strong>Username:</strong> <span id="username-${member.id}">${member.username}</span><br>
+                                <strong>Nickname:</strong> <span id="nickname-${member.id}">${member.nickname}</span><br>
 
                                 <div class="d-flex align-items-center gap-2 mt-2">
                                     <strong>Access Token:</strong>
@@ -92,14 +92,14 @@
 
     function login(memberId) {
         sessionStorage.clear();
-        const username = document.getElementById(`username-${memberId}`).innerText;
+        const nickname = document.getElementById(`nickname-${memberId}`).innerText;
         const accessToken = document.getElementById(`accessToken-${memberId}`).innerText;
 
         sessionStorage.setItem('memberId', memberId);
-        sessionStorage.setItem('username', username);
+        sessionStorage.setItem('nickname', nickname);
         sessionStorage.setItem('accessToken', accessToken);
 
-        alert(`${username} 님으로 로그인되었습니다!`);
+        alert(`${nickname} 님으로 로그인되었습니다!`);
         location.reload();
     }
 </script>

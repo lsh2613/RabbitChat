@@ -123,7 +123,7 @@
                 members.forEach(member => {
                     const mli = document.createElement("li");
                     mli.className = "list-group-item";
-                    mli.textContent = `Member ID: ${member.memberId}, Username: ${member.username}`;
+                    mli.textContent = `Member ID: ${member.memberId}, Nickname: ${member.nickname}`;
                     memberList.appendChild(mli);
 
                     if (String(member.memberId) === String(myMemberId)) {

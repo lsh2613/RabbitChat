@@ -60,7 +60,7 @@ public class ChatMessageService {
                      */
                     int unreadCnt = calculateUnreadCntAtReadTime(chatRoom.getId(), chatMessage.getCreatedAt());
                     Member member = entityFacade.getMember(chatMessage.getMemberId());
-                    return ChatMessageRes.createRes(member.getUsername(), chatMessage, unreadCnt);
+                    return ChatMessageRes.createRes(member.getNickname(), chatMessage, unreadCnt);
                 })
                 .toList();
 
@@ -100,7 +100,7 @@ public class ChatMessageService {
     }
 
     private void sendMessage(Member member, ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
-        MessageRes messageRes = ChatMessageRes.createRes(member.getUsername(), chatMessage, unreadCnt);
+        MessageRes messageRes = ChatMessageRes.createRes(member.getNickname(), chatMessage, unreadCnt);
         rabbitPublisher.publish(chatRoom.getId(), messageRes);
     }
 }

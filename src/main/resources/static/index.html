@@ -37,7 +37,7 @@
                                     <strong>Member ID:</strong> <span id="modalMemberId"></span>
                                 </li>
                                 <li class="list-group-item">
-                                    <strong>Username:</strong> <span id="modalUsername"></span>
+                                    <strong>Nickname:</strong> <span id="modalNickname"></span>
                                 </li>
                                 <li class="list-group-item">
                                     <strong>Access Token:</strong>
@@ -148,7 +148,7 @@
         })
         .then(data => {
             document.getElementById('modalMemberId').innerText = data.memberId;
-            document.getElementById('modalUsername').innerText = data.username;
+            document.getElementById('modalNickname').innerText = data.nickname;
             document.getElementById('modalAccessToken').innerText = data.accessToken;
 
             const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
@@ -163,11 +163,11 @@
         sessionStorage.clear();
 
         const memberId = document.getElementById("modalMemberId").innerText;
-        const username = document.getElementById("modalUsername").innerText;
+        const nickname = document.getElementById("modalNickname").innerText;
         const accessToken = document.getElementById("modalAccessToken").innerText;
 
         sessionStorage.setItem("memberId", memberId);
-        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("nickname", nickname);
         sessionStorage.setItem("accessToken", accessToken);
 
         alert("로그인 되었습니다!");

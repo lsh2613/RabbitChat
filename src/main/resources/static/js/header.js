@@ -11,14 +11,14 @@ document.addEventListener("DOMContentLoaded", function () {
 function updateUserInfo() {
     const userInfoDiv = document.getElementById("user-info");
     const memberId = sessionStorage.getItem("memberId");
-    const username = sessionStorage.getItem("username");
+    const nickname = sessionStorage.getItem("nickname");
     const accessToken = sessionStorage.getItem("accessToken");
 
     userInfoDiv.innerHTML = ""; // 초기화
 
-    if (memberId && username && accessToken) {
+    if (memberId && nickname && accessToken) {
         const nameSpan = document.createElement("span");
-        nameSpan.textContent = `👤 ${username}`;
+        nameSpan.textContent = `👤 ${nickname}`;
         nameSpan.style.fontSize = "0.9rem";
         nameSpan.style.fontWeight = "bold";
 
@@ -53,7 +53,7 @@ function updateUserInfo() {
 
 function logout() {
     sessionStorage.removeItem("memberId");
-    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("nickname");
     sessionStorage.removeItem("accessToken");
-    location.reload(); // 새로고침하여 로그인 상태 반영
+    location.reload();
 }
