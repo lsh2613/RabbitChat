@@ -61,8 +61,9 @@ public class ChatRoomService {
 
                     Optional<ChatMessage> lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId());
                     int unreadMessageCnt = chatMessageRepository.countByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), chatroomMember.getLastEntryTime());
+                    int chatRoomMemberCnt = chatRoomMemberRepository.countByChatRoomId(chatRoom.getId());
 
-                    return MyChatRoomRes.createRes(chatRoom.getId(), member.getUsername(), unreadMessageCnt, lastMessage);
+                    return MyChatRoomRes.createRes(chatRoom.getId(), chatRoomMemberCnt, unreadMessageCnt, lastMessage);
                 })
                 .toList();
 

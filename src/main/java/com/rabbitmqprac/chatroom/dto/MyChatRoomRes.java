@@ -12,15 +12,15 @@ import java.util.Optional;
 public class MyChatRoomRes {
 
     private Long chatRoomId;
-    private String nickname;
+    private int chatRoomMemberCnt;
     private int unreadMessageCnt;
     private String lastMessage;
     private LocalDateTime createdAt;
 
-    public static MyChatRoomRes createRes(Long chatRoomId, String nickname, int unreadMessageCnt, Optional<ChatMessage> latestMessage) {
+    public static MyChatRoomRes createRes(Long chatRoomId, int chatRoomMemberCnt, int unreadMessageCnt, Optional<ChatMessage> latestMessage) {
         MyChatRoomRes myChatRoomRes = new MyChatRoomRes();
         myChatRoomRes.chatRoomId = chatRoomId;
-        myChatRoomRes.nickname = nickname;
+        myChatRoomRes.chatRoomMemberCnt = chatRoomMemberCnt;
         myChatRoomRes.unreadMessageCnt = unreadMessageCnt;
         myChatRoomRes.createdAt = latestMessage.map(ChatMessage::getCreatedAt).orElse(null);
         myChatRoomRes.lastMessage = latestMessage.map(ChatMessage::getMessage).orElse(null);
