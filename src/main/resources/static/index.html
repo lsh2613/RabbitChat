@@ -21,7 +21,40 @@
                 <span>회원가입</span>
                 <small class="text-muted">[POST] &emsp; /members</small>
             </h4>
-            <button onclick="location.href='/member/member-create.html'" class="btn btn-primary">Try it out</button>
+
+            <!-- 회원 생성 결과 모달 -->
+            <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="memberModalLabel">회원 생성 완료</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <strong>Member ID:</strong> <span id="modalMemberId"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Username:</strong> <span id="modalUsername"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Access Token:</strong>
+                                    <div class="token-container d-flex justify-content-between align-items-center">
+                                        <span id="modalAccessToken" class="text-break"></span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" onclick="handleLogin()">로그인</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="createMember()" class="btn btn-primary">Try it out</button>
         </div>
 
         <div class="api-block">
@@ -41,7 +74,8 @@
                 <span>채팅방 생성</span>
                 <small class="text-muted">[POST] &emsp; /chat-rooms</small>
             </h4>
-            <button onclick="location.href='/chatroom/chat-room-create.html'" class="btn btn-primary">Try it out</button>
+            <button onclick="location.href='/chatroom/chat-room-create.html'" class="btn btn-primary">Try it out
+            </button>
         </div>
 
         <div class="api-block">
@@ -77,6 +111,7 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/header.js"></script>
 <script>
     function enterChatRoom(event) {
@@ -100,6 +135,43 @@
             }
         })
         .catch(error => alert('에러 발생: ' + error));
+    }
+
+    function createMember() {
+        fetch('http://localhost:8080/members', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('회원 생성 실패');
+            return res.json();
+        })
+        .then(data => {
+            document.getElementById('modalMemberId').innerText = data.memberId;
+            document.getElementById('modalUsername').innerText = data.username;
+            document.getElementById('modalAccessToken').innerText = data.accessToken;
+
+            const memberModal = new bootstrap.Modal(document.getElementById('memberModal'));
+            memberModal.show();
+        })
+        .catch(err => {
+            alert(err.message);
+        });
+    }
+
+    function handleLogin() {
+        sessionStorage.clear();
+
+        const memberId = document.getElementById("modalMemberId").innerText;
+        const username = document.getElementById("modalUsername").innerText;
+        const accessToken = document.getElementById("modalAccessToken").innerText;
+
+        sessionStorage.setItem("memberId", memberId);
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("accessToken", accessToken);
+
+        alert("로그인 되었습니다!");
+        location.reload();
     }
 </script>
 
