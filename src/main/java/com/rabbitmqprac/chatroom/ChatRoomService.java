@@ -104,6 +104,7 @@ public class ChatRoomService {
         rabbitPublisher.publish(chatRoomId, messageRes);
     }
 
+    @Transactional
     public void exitChatRoom(Long memberId, Long chatRoomId) {
         Member member = entityFacade.getMember(memberId);
 
