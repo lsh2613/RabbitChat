@@ -6,22 +6,75 @@
     <title>My Chat Rooms</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .chat-room-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .chat-room-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .chat-room-top,
+        .chat-room-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-room-id {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .chat-room-info,
+        .chat-room-time {
+            font-size: 0.85rem;
+            color: #888;
+            margin-left: 0.5rem;
+        }
+
+        .chat-room-msg {
+            color: #888;
+            font-size: 0.9rem;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .unread-count {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-room-bottom .right {
+            min-width: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-
-    <!-- 헤더 -->
+<div class="container my-5">
     <div id="header-placeholder"></div>
 
-    <!-- 내 채팅방 목록 -->
-    <div class="api-section">
-        <div class="api-block">
-            <h4>내 채팅방 목록</h4>
-            <ul class="list-group" id="myChatRoomList"></ul>
+    <div class="api-block">
+        <h4 class="mb-3">내 채팅방 목록</h4>
+        <div class="api-section">
+            <div id="myChatRoomList"></div>
         </div>
     </div>
-
 </div>
 
 <script src="../js/header.js"></script>
@@ -43,62 +96,62 @@
                 "Accept": "application/json"
             }
         })
-        .then(response => {
-            if (!response.ok) throw new Error("내 채팅방 목록 조회에 실패했습니다.");
-            return response.json();
-        })
-        .then(myChatRooms => {
-            const list = document.getElementById("myChatRoomList");
+            .then(response => {
+                if (!response.ok) throw new Error("내 채팅방 목록 조회에 실패했습니다.");
+                return response.json();
+            })
+            .then(myChatRooms => {
+                const list = document.getElementById("myChatRoomList");
 
-            if (myChatRooms.length === 0) {
-                const empty = document.createElement("li");
-                empty.className = "list-group-item";
-                empty.textContent = "참여 중인 채팅방이 없습니다.";
-                list.appendChild(empty);
-                return;
-            }
+                if (myChatRooms.length === 0) {
+                    list.innerHTML = `<div class="alert alert-info">참여 중인 채팅방이 없습니다.</div>`;
+                    return;
+                }
 
-            myChatRooms.forEach(chatRoom => {
-                const li = document.createElement("li");
-                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                myChatRooms.forEach(room => {
+                    const div = document.createElement("div");
+                    div.className = "chat-room-item";
+                    div.addEventListener("click", () => {
+                        window.location.href = `/chatroom/chat-room.html?chatRoomId=${room.chatRoomId}`;
+                    });
 
-                const infoDiv = document.createElement("div");
-                infoDiv.innerHTML = `
-                    <strong>Chat Room ID:</strong> ${chatRoom.chatRoomId}<br>
-                    <strong>Nickname:</strong> ${chatRoom.nickname}<br>
-                    <strong>Unread Message Count:</strong> ${chatRoom.unreadMessageCnt}<br>
-                    <strong>Last Message:</strong> ${chatRoom.lastMessage || "없음"}<br>
-                    <strong>Created At:</strong> ${formatDate(chatRoom.createdAt)}
-                `;
+                    const createdAtText = room.createdAt ? formatDate(room.createdAt) : "";
 
-                const button = document.createElement("button");
-                button.className = "btn btn-sm btn-primary ms-3";
-                button.textContent = "채팅방 입장";
-                button.addEventListener("click", () => {
-                    window.location.href = `/chatroom/chat-room.html?chatRoomId=${chatRoom.chatRoomId}`;
+                    div.innerHTML = `
+                        <div class="chat-room-top">
+                            <div class="d-flex align-items-center">
+                                <span class="chat-room-id">Chat Room ID: ${room.chatRoomId}</span>
+                                <span class="chat-room-info ms-2">${room.chatRoomMemberCnt}명</span>
+                            </div>
+                            <div class="chat-room-time">${createdAtText}</div>
+                        </div>
+                        <div class="chat-room-bottom mt-1">
+                            <div class="chat-room-msg">${room.lastMessage || ""}</div>
+                            <div class="right">
+                                ${room.unreadMessageCnt > 0
+                        ? `<div class="unread-count">${room.unreadMessageCnt}</div>`
+                        : ""
+                    }
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(div);
                 });
-
-                li.appendChild(infoDiv);
-                li.appendChild(button);
-                list.appendChild(li);
+            })
+            .catch(error => {
+                alert(error.message);
+                console.error("Error fetching my chat rooms:", error);
             });
-        })
-        .catch(error => {
-            alert(error.message);
-            console.error("Error fetching my chat rooms:", error);
-        });
     });
 
     function formatDate(dateTimeString) {
         const date = new Date(dateTimeString);
-        return date.toLocaleString("ko-KR", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-        });
+        const now = new Date();
+        const isToday = date.toDateString() === now.toDateString();
+
+        return isToday
+            ? date.toLocaleTimeString("ko-KR", { hour: '2-digit', minute: '2-digit' })
+            : date.toLocaleDateString("ko-KR", { month: '2-digit', day: '2-digit' });
     }
 </script>
 
