@@ -34,6 +34,16 @@ services:
     networks:
       - my_network
 
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: rabbitmq
+    ports:
+      - "3306:3306"
+    networks:
+      - my_network
 
 networks:
   my_network:

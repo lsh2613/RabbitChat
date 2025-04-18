@@ -2,11 +2,11 @@
 - Spring + RabbitMQ + STOMP를 통한 실시간 채팅 서비스
 - JWT를 통한 세션 관리
 - DB 활용
-  - | DB | 사용 이유          |
-    |---|----------------|
-    | H2 | 메인 DB          |
+  - | DB      | 사용 이유          |
+    |---------|----------------|
+    | MySQL   | 메인 DB          |
     | MongoDB | 채팅 내역 저장       |
-    | Redis | 실시간 채팅방 참가자 관리 |
+    | Redis   | 실시간 채팅방 참가자 관리 |
 
 ### 02. 핵심 기능
 - 실시간 채팅
@@ -16,7 +16,7 @@
 ### 03. 사용 기술
 - `Spring Boot 3.1`, `Spring Data JPA`
 - `Docker`, `docker-compose`
-- `H2`, `MongoDB`, `Redis`
+- `MySQL`, `MongoDB`, `Redis`
 - `RabbitMQ`, `STOMP`
 - `JWT`
 - `HTML`, `CSS`, `JS`
