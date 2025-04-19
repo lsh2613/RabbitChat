@@ -18,10 +18,10 @@
 
 ### 03. 사용 기술
 - `Spring Boot 3.1`, `Spring Data JPA`
-- `Docker`, `docker-compose`
 - `MySQL`, `MongoDB`, `Redis`
 - `RabbitMQ`, `STOMP`
 - `JWT`
+- `Docker`, `docker-compose`
 - `HTML`, `CSS`, `JS`
 
 ### 04. 관련 포스팅
