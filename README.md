@@ -5,7 +5,7 @@
   - | DB      | 사용 이유          |
     |---------|----------------|
     | MySQL   | 메인 DB          |
-    | MongoDB | 채팅 내역 저장       |
+    | MongoDB | 채팅 메시지 저장       |
     | Redis   | 실시간 채팅방 참가자 관리 |
 
 ### 02. 핵심 기능
@@ -24,7 +24,7 @@
 - `JWT`
 - `HTML`, `CSS`, `JS`
 
-### 04. 이슈
+### 04. 관련 포스팅
 - [기술 스택 선정 이유](https://lsh2613.tistory.com/260#1.%20RabbitMQ%20%EC%84%A0%ED%83%9D%20%EC%9D%B4%EC%9C%A0-1)
 - [STOMP-테스트 실패](https://lsh2613.tistory.com/260#3.%20%ED%85%8C%EC%8A%A4%ED%8A%B8%20%EC%A4%91%20%EB%B3%80%EC%88%98%20%EB%B0%9C%EC%83%9D-1)
 - [채팅 내역을 MongoDB에 저장하는 이유](https://lsh2613.tistory.com/261#1.%20%EC%B1%84%ED%8C%85%20%EB%82%B4%EC%97%AD%EC%9D%84%20MongoDB%EC%97%90%20%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94%20%EC%9D%B4%EC%9C%A0-1)
