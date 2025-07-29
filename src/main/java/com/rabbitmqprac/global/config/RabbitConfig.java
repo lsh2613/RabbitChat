@@ -12,6 +12,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +56,7 @@ public class RabbitConfig {
 
     // Exchange와 Queue바인딩
     @Bean
-    public Binding binding(Queue queue, TopicExchange exchange){
+    public Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder
                 .bind(queue)
                 .to(exchange)
@@ -84,8 +85,7 @@ public class RabbitConfig {
         return factory;
     }
 
-    // 메시지를 JSON형식으로 직렬화하고 역직렬화하는데 사용되는 변환기
-    // RabbitMQ 메시지를 JSON형식으로 보내고 받을 수 있음
+    // 메시지를 JSON으로 직렬/역직렬화
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         //LocalDateTime serializable을 위해
@@ -101,5 +101,12 @@ public class RabbitConfig {
     @Bean
     public Module dateTimeModule() {
         return new JavaTimeModule();
+    }
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        RabbitAdmin admin = new RabbitAdmin(connectionFactory);
+        admin.setAutoStartup(true);
+        return admin;
     }
 }
