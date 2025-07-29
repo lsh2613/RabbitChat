@@ -1,4 +1,4 @@
-package com.rabbitmqprac.common;
+package com.rabbitmqprac.global.service;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.chatroom.ChatRoomRepository;

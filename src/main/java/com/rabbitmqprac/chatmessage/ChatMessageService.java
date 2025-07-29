@@ -4,7 +4,7 @@ import com.rabbitmqprac.chatmessage.dto.ChatMessageReq;
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
-import com.rabbitmqprac.common.EntityFacade;
+import com.rabbitmqprac.global.service.EntityFacade;
 import com.rabbitmqprac.chatmessage.dto.ChatMessageRes;
 import com.rabbitmqprac.chatmessage.dto.MessageRes;
 import com.rabbitmqprac.member.Member;

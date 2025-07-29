@@ -1,6 +1,6 @@
-package com.rabbitmqprac.common.config;
+package com.rabbitmqprac.global.config;
 
-import com.rabbitmqprac.common.resolver.RequesterArgumentResolver;
+import com.rabbitmqprac.global.resolver.RequesterArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

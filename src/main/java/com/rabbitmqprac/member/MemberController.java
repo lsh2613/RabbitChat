@@ -1,6 +1,6 @@
 package com.rabbitmqprac.member;
 
-import com.rabbitmqprac.common.annotation.Requester;
+import com.rabbitmqprac.global.annotation.Requester;
 import com.rabbitmqprac.member.dto.MemberCreateRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

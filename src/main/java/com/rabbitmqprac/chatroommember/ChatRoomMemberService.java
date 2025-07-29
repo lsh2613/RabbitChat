@@ -3,7 +3,7 @@ package com.rabbitmqprac.chatroommember;
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.chatroom.ChatRoomRepository;
 import com.rabbitmqprac.chatroommember.dto.ChatRoomMemberRes;
-import com.rabbitmqprac.common.EntityFacade;
+import com.rabbitmqprac.global.service.EntityFacade;
 import com.rabbitmqprac.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

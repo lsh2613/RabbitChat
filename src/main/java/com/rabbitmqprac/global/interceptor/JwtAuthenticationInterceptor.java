@@ -1,7 +1,7 @@
-package com.rabbitmqprac.common.interceptor;
+package com.rabbitmqprac.global.interceptor;
 
 import com.rabbitmqprac.chatroom.ChatRoomService;
-import com.rabbitmqprac.common.constant.TokenType;
+import com.rabbitmqprac.global.constant.TokenType;
 import com.rabbitmqprac.util.StompHeaderAccessorUtil;
 import com.rabbitmqprac.util.TokenUtil;
 import lombok.RequiredArgsConstructor;

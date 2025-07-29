@@ -1,8 +1,8 @@
-package com.rabbitmqprac.common.resolver;
+package com.rabbitmqprac.global.resolver;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.rabbitmqprac.common.annotation.Requester;
-import com.rabbitmqprac.common.constant.TokenType;
+import com.rabbitmqprac.global.annotation.Requester;
+import com.rabbitmqprac.global.constant.TokenType;
 import com.rabbitmqprac.util.TokenUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

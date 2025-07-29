@@ -1,4 +1,4 @@
-package com.rabbitmqprac.common.initializer;
+package com.rabbitmqprac.global.initializer;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

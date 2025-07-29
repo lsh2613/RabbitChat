@@ -3,7 +3,7 @@ package com.rabbitmqprac.chatroom;
 import com.rabbitmqprac.chatroom.dto.ChatRoomCreateRes;
 import com.rabbitmqprac.chatroom.dto.ChatRoomRes;
 import com.rabbitmqprac.chatroom.dto.MyChatRoomRes;
-import com.rabbitmqprac.common.annotation.Requester;
+import com.rabbitmqprac.global.annotation.Requester;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

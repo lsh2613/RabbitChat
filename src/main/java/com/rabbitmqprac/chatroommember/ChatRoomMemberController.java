@@ -1,7 +1,7 @@
 package com.rabbitmqprac.chatroommember;
 
 import com.rabbitmqprac.chatroommember.dto.ChatRoomMemberRes;
-import com.rabbitmqprac.common.annotation.Requester;
+import com.rabbitmqprac.global.annotation.Requester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

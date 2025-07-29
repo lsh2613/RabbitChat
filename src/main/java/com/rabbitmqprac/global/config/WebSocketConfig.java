@@ -1,6 +1,6 @@
-package com.rabbitmqprac.common.config;
+package com.rabbitmqprac.global.config;
 
-import com.rabbitmqprac.common.interceptor.JwtAuthenticationInterceptor;
+import com.rabbitmqprac.global.interceptor.JwtAuthenticationInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

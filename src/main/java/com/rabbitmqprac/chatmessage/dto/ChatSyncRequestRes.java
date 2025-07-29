@@ -1,6 +1,6 @@
 package com.rabbitmqprac.chatmessage.dto;
 
-import com.rabbitmqprac.common.constant.MessageType;
+import com.rabbitmqprac.global.constant.MessageType;
 import lombok.Getter;
 
 @Getter

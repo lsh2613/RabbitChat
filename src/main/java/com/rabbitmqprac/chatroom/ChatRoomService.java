@@ -11,7 +11,7 @@ import com.rabbitmqprac.chatroom.dto.MyChatRoomRes;
 import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberService;
-import com.rabbitmqprac.common.EntityFacade;
+import com.rabbitmqprac.global.service.EntityFacade;
 import com.rabbitmqprac.member.Member;
 import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
