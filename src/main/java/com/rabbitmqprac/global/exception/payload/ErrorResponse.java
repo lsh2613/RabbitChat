@@ -53,7 +53,7 @@ public class ErrorResponse {
             fieldErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
 
-        String code = String.valueOf(StatusCode.UNPROCESSABLE_CONTENT.getCode() * 10 + reasonCode.getCode());
-        return failure(code, StatusCode.UNPROCESSABLE_CONTENT.name(), fieldErrors);
+        CausedBy causedBy = CausedBy.of(StatusCode.UNPROCESSABLE_CONTENT, reasonCode, DomainCode.NONE);
+        return failure(causedBy.getCode(), causedBy.getReason(), fieldErrors);
     }
 }

@@ -44,6 +44,10 @@ public record CausedBy(
         return new CausedBy(statusCode, reasonCode, domainCode);
     }
 
+    public static CausedBy of(StatusCode statusCode, ReasonCode reasonCode) {
+        return new CausedBy(statusCode, reasonCode, DomainCode.NONE);
+    }
+
     /**
      * status code, reason code, domain code, field code를 조합하여 에러 코드를 생성한다.
      *
