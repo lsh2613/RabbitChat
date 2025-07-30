@@ -83,19 +83,19 @@ public class ChatMessageService {
     private int calculateUnreadCntAtReadTime(Long chatRoomId, LocalDateTime messageCreatedAt) {
         List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllByChatRoomId(chatRoomId);
         Set<Long> onlineChatRoomMembers = redisChatUtil.getOnlineChatRoomMembers(chatRoomId);
-        List<LocalDateTime> lastEntryTimes = getLastEntryTimesExcludingOnlineMembers(chatRoomMembers, onlineChatRoomMembers);
+        List<LocalDateTime> lastExitAts = getLastExitAtsExcludingOnlineMembers(chatRoomMembers, onlineChatRoomMembers);
 
-        int memberCntAfterMessageCreated = (int) lastEntryTimes.stream()
+        int memberCntAfterMessageCreated = (int) lastExitAts.stream()
                 .filter(time -> time.isAfter(messageCreatedAt))
                 .count();
 
         return chatRoomMembers.size() - onlineChatRoomMembers.size() - memberCntAfterMessageCreated;
     }
 
-    private List<LocalDateTime> getLastEntryTimesExcludingOnlineMembers(List<ChatRoomMember> chatRoomMembers, Set<Long> onlineMemberIds) {
+    private List<LocalDateTime> getLastExitAtsExcludingOnlineMembers(List<ChatRoomMember> chatRoomMembers, Set<Long> onlineMemberIds) {
         return chatRoomMembers.stream()
                 .filter(chatRoomMember -> !onlineMemberIds.contains(chatRoomMember.getUser().getId()))
-                .map(ChatRoomMember::getLastEntryTime)
+                .map(ChatRoomMember::getLastExitAt)
                 .toList();
     }
 

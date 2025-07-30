@@ -11,9 +11,9 @@ import java.util.Optional;
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
     List<ChatMessage> findByChatRoomIdOrderByCreatedAtAsc(Long chatRoomId);
 
-    boolean existsByChatRoomIdAndCreatedAtAfter(Long chatRoomId, LocalDateTime lastEntryTime);
+    boolean existsByChatRoomIdAndCreatedAtAfter(Long chatRoomId, LocalDateTime lastExitAt);
 
     Optional<ChatMessage> findTopByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);
 
-    int countByChatRoomIdAndCreatedAtAfter(Long id, LocalDateTime lastEntryTime);
+    int countByChatRoomIdAndCreatedAtAfter(Long id, LocalDateTime lastExitAt);
 }

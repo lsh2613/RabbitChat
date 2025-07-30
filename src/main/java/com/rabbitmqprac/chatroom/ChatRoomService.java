@@ -60,7 +60,7 @@ public class ChatRoomService {
                     ChatRoom chatRoom = chatroomMember.getChatRoom();
 
                     Optional<ChatMessage> lastMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId());
-                    int unreadMessageCnt = chatMessageRepository.countByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), chatroomMember.getLastEntryTime());
+                    int unreadMessageCnt = chatMessageRepository.countByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), chatroomMember.getLastExitAt());
                     int chatRoomMemberCnt = chatRoomMemberRepository.countByChatRoomId(chatRoom.getId());
 
                     return MyChatRoomRes.createRes(chatRoom.getId(), chatRoomMemberCnt, unreadMessageCnt, lastMessage);
@@ -90,9 +90,9 @@ public class ChatRoomService {
     private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoom.getId(), memberId)
                 .orElseThrow(() -> new RuntimeException("채팅방 참가자를 찾을 수 없습니다"));
-        LocalDateTime lastEntryTime = chatRoomMember.getLastEntryTime();
+        LocalDateTime lastExitAt = chatRoomMember.getLastExitAt();
 
-        boolean existsUnreadMessage = chatMessageRepository.existsByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), lastEntryTime);
+        boolean existsUnreadMessage = chatMessageRepository.existsByChatRoomIdAndCreatedAtAfter(chatRoom.getId(), lastExitAt);
         boolean existsOnlineChatRoomMember = redisChatUtil.getOnlineChatRoomMemberCnt(chatRoom.getId()) > 1; // 1은 본인
 
         if (existsUnreadMessage && existsOnlineChatRoomMember)
@@ -113,7 +113,7 @@ public class ChatRoomService {
         ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoom.getId(), memberId)
                 .orElseThrow(() -> new RuntimeException("채팅방 참가자를 찾을 수 없습니다"));
 
-        chatRoomMember.updateLastEntryTime();
+        chatRoomMember.updateLastExitAt();
 
         redisChatUtil.exitChatRoom(chatRoom.getId(), user.getId());
     }

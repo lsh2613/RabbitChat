@@ -26,18 +26,18 @@ public class ChatRoomMember {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    private LocalDateTime lastEntryTime;
+    private LocalDateTime lastExitAt;
 
     public static ChatRoomMember create(ChatRoom chatRoom, User user) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.setChatRoom(chatRoom);
         chatRoomMember.setUser(user);
-        chatRoomMember.setLastEntryTime(LocalDateTime.now());
+        chatRoomMember.setLastExitAt(LocalDateTime.now());
         return chatRoomMember;
     }
 
-    public void updateLastEntryTime() {
-        this.lastEntryTime = LocalDateTime.now();
+    public void updateLastExitAt() {
+        this.lastExitAt = LocalDateTime.now();
     }
 
 }
