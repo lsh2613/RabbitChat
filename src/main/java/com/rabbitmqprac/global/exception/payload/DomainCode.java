@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DomainCode implements BaseCode {
     NONE(0),
-    MEMBER(1),
+    JWT(1),
+    MEMBER(2),
     ;
 
     private final int code;

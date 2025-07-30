@@ -1,31 +1,24 @@
 package com.rabbitmqprac.member;
 
 
-import com.rabbitmqprac.member.dto.MemberCreateRes;
-import com.rabbitmqprac.util.TokenUtil;
+import com.rabbitmqprac.global.exception.GlobalErrorException;
+import com.rabbitmqprac.member.dto.MemberDetailRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    private final TokenUtil tokenUtil;
-
-    @Transactional
-    public MemberCreateRes create() {
-        Member member = memberRepository.save(Member.create());
-        String accessToken = tokenUtil.issueAccessToken(member.getId());
-        return MemberCreateRes.createRes(member, accessToken);
-    }
 
     @Transactional(readOnly = true)
-    public Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+    public Member readById(Long memberId) {
+        return memberRepository.findById(memberId).
+                orElseThrow(() -> new GlobalErrorException(MemberErrorCode.NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -33,7 +26,15 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    public String issueAccessToken(Long memberId) {
-        return tokenUtil.issueAccessToken(memberId);
+    @Transactional(readOnly = true)
+    public Optional<Member> readUser(long memberId) {
+        return memberRepository.findById(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDetailRes getMemberDetail(Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new GlobalErrorException(MemberErrorCode.NOT_FOUND));
+        return MemberMapper.toDetailRes(member);
     }
 }
