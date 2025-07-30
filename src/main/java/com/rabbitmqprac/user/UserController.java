@@ -1,6 +1,6 @@
-package com.rabbitmqprac.member;
+package com.rabbitmqprac.user;
 
-import com.rabbitmqprac.member.dto.MemberDetailRes;
+import com.rabbitmqprac.user.dto.UserDetailRes;
 import com.rabbitmqprac.security.jwt.AccessTokenClaim;
 import com.rabbitmqprac.security.jwt.RefreshTokenClaim;
 import com.rabbitmqprac.security.authentication.SecurityUserDetails;
@@ -24,18 +24,18 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class MemberController {
-    private final MemberService memberService;
+public class UserController {
+    private final UserService userService;
     private final AccessTokenProvider accessTokenProvider;
     private final RefreshTokenProvider refreshTokenProvider;
 
     // todo AuthController로 이동
-    @GetMapping("/login/{memberId}")
-    public ResponseEntity<?> login(@PathVariable("memberId") Long memberId) {
-        Member member = memberService.readById(memberId);
+    @GetMapping("/login/{userId}")
+    public ResponseEntity<?> login(@PathVariable("userId") Long userId) {
+        User user = userService.readById(userId);
 
-        String accessToken = accessTokenProvider.generateToken(AccessTokenClaim.of(member.getId(), member.getRole().getType()));
-        String refreshToken = refreshTokenProvider.generateToken(RefreshTokenClaim.of(member.getId(), member.getRole().getType()));
+        String accessToken = accessTokenProvider.generateToken(AccessTokenClaim.of(user.getId(), user.getRole().getType()));
+        String refreshToken = refreshTokenProvider.generateToken(RefreshTokenClaim.of(user.getId(), user.getRole().getType()));
 
         log.info("accessToken: {}", accessToken);
         log.info("refreshToken: {}", refreshToken);
@@ -45,16 +45,16 @@ public class MemberController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(Map.of("memberId", memberId));
+                .body(Map.of("userId", userId));
     }
 
-    @GetMapping("/members/me")
-    public MemberDetailRes getMember(@AuthenticationPrincipal SecurityUserDetails user) {
-        return memberService.getMemberDetail(user.getUserId());
+    @GetMapping("/users/me")
+    public UserDetailRes getMember(@AuthenticationPrincipal SecurityUserDetails user) {
+        return userService.getUserDetail(user.getUserId());
     }
 
-    @GetMapping("/members")
-    public List<Member> getMembers() {
-        return memberService.getMembers();
+    @GetMapping("/users")
+    public List<User> getMembers() {
+        return userService.getUsers();
     }
 }

@@ -11,7 +11,7 @@ public class AccessTokenClaim implements JwtClaims {
 
     public static AccessTokenClaim of(Long userId, String role) {
         Map<String, Object> claims = Map.of(
-                AccessTokenClaimKeys.MEMBER_ID.getValue(), userId.toString(),
+                AccessTokenClaimKeys.USER_ID.getValue(), userId.toString(),
                 AccessTokenClaimKeys.ROLE.getValue(), role
         );
         return new AccessTokenClaim(claims);

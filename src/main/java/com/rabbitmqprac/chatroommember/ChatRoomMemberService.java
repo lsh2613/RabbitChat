@@ -4,7 +4,7 @@ import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.chatroom.ChatRoomRepository;
 import com.rabbitmqprac.chatroommember.dto.ChatRoomMemberRes;
 import com.rabbitmqprac.global.service.EntityFacade;
-import com.rabbitmqprac.member.Member;
+import com.rabbitmqprac.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +19,15 @@ public class ChatRoomMemberService {
     private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
-    public void addChatRoomMember(Long chatRoomId, Long memberId) {
+    public void addChatRoomMember(Long chatRoomId, Long userId) {
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
-        Member member = entityFacade.getMember(memberId);
+        User user = entityFacade.getUser(userId);
 
-        if (chatRoomMemberRepository.existsByChatRoomAndMember(chatRoom, member)) {
-            throw new IllegalArgumentException("Member already exists in the chat room");
+        if (chatRoomMemberRepository.existsByChatRoomAndUser(chatRoom, user)) {
+            throw new IllegalArgumentException("User already exists in the chat room");
         }
 
-        ChatRoomMember chatRoomMember = ChatRoomMember.create(chatRoom, member);
+        ChatRoomMember chatRoomMember = ChatRoomMember.create(chatRoom, user);
         chatRoomMemberRepository.save(chatRoomMember);
     }
 

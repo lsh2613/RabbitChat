@@ -1,7 +1,7 @@
 package com.rabbitmqprac.security.jwt;
 
 public enum AccessTokenClaimKeys {
-    MEMBER_ID("id"),
+    USER_ID("id"),
     ROLE("role");
 
     private final String value;

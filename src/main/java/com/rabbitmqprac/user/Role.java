@@ -1,4 +1,4 @@
-package com.rabbitmqprac.member;
+package com.rabbitmqprac.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

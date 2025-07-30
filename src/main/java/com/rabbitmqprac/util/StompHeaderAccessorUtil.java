@@ -8,20 +8,20 @@ import java.util.Optional;
 @Component
 public class StompHeaderAccessorUtil {
     static final String CHAT_ROOM_ID = "chat-room-id";
-    static final String MEMBER_ID = "member-id";
+    static final String USER_ID = "user-id";
 
-    public void setMemberIdInSession(StompHeaderAccessor accessor, Long memberId) {
-        accessor.getSessionAttributes().put(MEMBER_ID, memberId);
+    public void setUserIdInSession(StompHeaderAccessor accessor, Long userId) {
+        accessor.getSessionAttributes().put(USER_ID, userId);
     }
 
-    public Long getMemberIdInSession(StompHeaderAccessor accessor) {
-        return Optional.ofNullable((Long) accessor.getSessionAttributes().get(MEMBER_ID))
-                .orElseThrow(() -> new RuntimeException("Stomp header session에 memberId가 존재하지 않습니다"));
+    public Long getUserIdInSession(StompHeaderAccessor accessor) {
+        return Optional.ofNullable((Long) accessor.getSessionAttributes().get(USER_ID))
+                .orElseThrow(() -> new RuntimeException("Stomp header session에 userId 존재하지 않습니다"));
     }
 
-    public Long removeMemberIdInSession(StompHeaderAccessor accessor) {
-        return Optional.ofNullable((Long) accessor.getSessionAttributes().remove(MEMBER_ID))
-                .orElseThrow(() -> new RuntimeException("Stomp header session에 memberId가 존재하지 않습니다"));
+    public Long removeUserIdInSession(StompHeaderAccessor accessor) {
+        return Optional.ofNullable((Long) accessor.getSessionAttributes().remove(USER_ID))
+                .orElseThrow(() -> new RuntimeException("Stomp header session에 userId가 존재하지 않습니다"));
     }
 
     public Long getChatRoomIdInHeader(StompHeaderAccessor accessor) {

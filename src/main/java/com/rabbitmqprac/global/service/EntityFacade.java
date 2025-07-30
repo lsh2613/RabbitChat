@@ -2,8 +2,8 @@ package com.rabbitmqprac.global.service;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
 import com.rabbitmqprac.chatroom.ChatRoomRepository;
-import com.rabbitmqprac.member.Member;
-import com.rabbitmqprac.member.MemberRepository;
+import com.rabbitmqprac.user.User;
+import com.rabbitmqprac.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 public class EntityFacade {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
-    public Member getMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+    public User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public ChatRoom getChatRoom(Long chatRoomId) {

@@ -12,7 +12,7 @@ import com.rabbitmqprac.chatroommember.ChatRoomMember;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.chatroommember.ChatRoomMemberService;
 import com.rabbitmqprac.global.service.EntityFacade;
-import com.rabbitmqprac.member.Member;
+import com.rabbitmqprac.user.User;
 import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +37,12 @@ public class ChatRoomService {
 
     @Transactional
     public ChatRoomCreateRes createChatRoom(Long memberId) {
-        Member member = entityFacade.getMember(memberId);
+        User user = entityFacade.getUser(memberId);
 
         ChatRoom chatRoom = saveChatRoom();
-        chatRoomMemberService.addChatRoomMember(chatRoom.getId(), member.getId());
+        chatRoomMemberService.addChatRoomMember(chatRoom.getId(), user.getId());
 
-        return ChatRoomCreateRes.createRes(chatRoom.getId(), member.getId());
+        return ChatRoomCreateRes.createRes(chatRoom.getId(), user.getId());
     }
 
     private ChatRoom saveChatRoom() {
@@ -52,9 +52,9 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public List<MyChatRoomRes> getMyChatRooms(Long memberId) {
-        Member member = entityFacade.getMember(memberId);
+        User user = entityFacade.getUser(memberId);
 
-        List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllByMemberId(member.getId());
+        List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllByUserId(user.getId());
 
         List<MyChatRoomRes> myChatRoomResList = chatRoomMembers.stream().map(chatroomMember -> {
                     ChatRoom chatRoom = chatroomMember.getChatRoom();
@@ -79,16 +79,16 @@ public class ChatRoomService {
     }
 
     public void enterChatRoom(Long memberId, Long chatRoomId) {
-        Member member = entityFacade.getMember(memberId);
+        User user = entityFacade.getUser(memberId);
 
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
         redisChatUtil.enterChatRoom(chatRoomId, memberId);
-        readUnreadMessages(chatRoom, member.getId());
+        readUnreadMessages(chatRoom, user.getId());
     }
 
     private void readUnreadMessages(ChatRoom chatRoom, Long memberId) {
-        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndMemberId(chatRoom.getId(), memberId)
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoom.getId(), memberId)
                 .orElseThrow(() -> new RuntimeException("채팅방 참가자를 찾을 수 없습니다"));
         LocalDateTime lastEntryTime = chatRoomMember.getLastEntryTime();
 
@@ -106,15 +106,15 @@ public class ChatRoomService {
 
     @Transactional
     public void exitChatRoom(Long memberId, Long chatRoomId) {
-        Member member = entityFacade.getMember(memberId);
+        User user = entityFacade.getUser(memberId);
 
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
-        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndMemberId(chatRoom.getId(), memberId)
+        ChatRoomMember chatRoomMember = chatRoomMemberRepository.findByChatRoomIdAndUserId(chatRoom.getId(), memberId)
                 .orElseThrow(() -> new RuntimeException("채팅방 참가자를 찾을 수 없습니다"));
 
         chatRoomMember.updateLastEntryTime();
 
-        redisChatUtil.exitChatRoom(chatRoom.getId(), member.getId());
+        redisChatUtil.exitChatRoom(chatRoom.getId(), user.getId());
     }
 }

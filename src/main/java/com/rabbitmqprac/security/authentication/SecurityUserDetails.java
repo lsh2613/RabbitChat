@@ -1,6 +1,6 @@
 package com.rabbitmqprac.security.authentication;
 
-import com.rabbitmqprac.member.Member;
+import com.rabbitmqprac.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,11 +31,11 @@ public final class SecurityUserDetails implements UserDetails {
         this.accountNonLocked = accountNonLocked;
     }
 
-    public static UserDetails from(Member member) {
+    public static UserDetails from(User user) {
         return SecurityUserDetails.builder()
-                .userId(member.getId())
-                .username(member.getNickname())
-                .authorities(List.of(new CustomGrantedAuthority(member.getRole().getType())))
+                .userId(user.getId())
+                .username(user.getUsername())
+                .authorities(List.of(new CustomGrantedAuthority(user.getRole().getType())))
                 .build();
     }
 

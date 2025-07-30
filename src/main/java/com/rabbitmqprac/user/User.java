@@ -1,4 +1,4 @@
-package com.rabbitmqprac.member;
+package com.rabbitmqprac.user;
 
 import com.rabbitmqprac.global.model.DateAuditable;
 import jakarta.persistence.*;
@@ -8,25 +8,25 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name = "MEMBER")
-public class Member extends DateAuditable {
+@Entity(name = "user")
+public class User extends DateAuditable {
 
-    private static String NICKNAME_FORMAT = "MEMBER_%d";
+    private static String USERNAME_FORMAT = "USER_%d";
     private static Integer SEQUENCE_NAME = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "user_id")
     private Long id;
 
-    private String nickname;
+    private String username;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public static Member create() {
-        Member member = new Member();
-        member.nickname = String.format(NICKNAME_FORMAT, SEQUENCE_NAME++);
-        return member;
+    public static User create() {
+        User user = new User();
+        user.username = String.format(USERNAME_FORMAT, SEQUENCE_NAME++);
+        return user;
     }
 }

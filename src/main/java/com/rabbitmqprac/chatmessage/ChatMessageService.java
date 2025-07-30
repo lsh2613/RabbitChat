@@ -7,7 +7,7 @@ import com.rabbitmqprac.chatroommember.ChatRoomMemberRepository;
 import com.rabbitmqprac.global.service.EntityFacade;
 import com.rabbitmqprac.chatmessage.dto.ChatMessageRes;
 import com.rabbitmqprac.chatmessage.dto.MessageRes;
-import com.rabbitmqprac.member.Member;
+import com.rabbitmqprac.user.User;
 import com.rabbitmqprac.util.RabbitPublisher;
 import com.rabbitmqprac.util.RedisChatUtil;
 import com.rabbitmqprac.util.StompHeaderAccessorUtil;
@@ -33,16 +33,16 @@ public class ChatMessageService {
 
     @Transactional
     public void sendMessage(StompHeaderAccessor accessor, ChatMessageReq req) {
-        Long memberId = stompHeaderAccessorUtil.getMemberIdInSession(accessor);
-        Member member = entityFacade.getMember(memberId);
+        Long memberId = stompHeaderAccessorUtil.getUserIdInSession(accessor);
+        User user = entityFacade.getUser(memberId);
 
         Long chatRoomId = stompHeaderAccessorUtil.getChatRoomIdInSession(accessor);
         ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
 
-        ChatMessage chatMessage = saveChatMessage(req, chatRoom, member);
+        ChatMessage chatMessage = saveChatMessage(req, chatRoom, user);
 
         int unreadCnt = calculateUnreadCntAtPublish(chatRoom.getId());
-        sendMessage(member, chatMessage, unreadCnt, chatRoom);
+        sendMessage(user, chatMessage, unreadCnt, chatRoom);
     }
 
     @Transactional(readOnly = true)
@@ -59,16 +59,16 @@ public class ChatMessageService {
                     unreadCnt = 채팅방 유저 수 - 현재 접속 중인 유저 수 - 메시지 생성 시간보다 늦은 시간에 입장한 유저 수
                      */
                     int unreadCnt = calculateUnreadCntAtReadTime(chatRoom.getId(), chatMessage.getCreatedAt());
-                    Member member = entityFacade.getMember(chatMessage.getMemberId());
-                    return ChatMessageRes.createRes(member.getNickname(), chatMessage, unreadCnt);
+                    User user = entityFacade.getUser(chatMessage.getMemberId());
+                    return ChatMessageRes.createRes(user.getUsername(), chatMessage, unreadCnt);
                 })
                 .toList();
 
         return messageResList;
     }
 
-    private ChatMessage saveChatMessage(ChatMessageReq req, ChatRoom chatRoom, Member member) {
-        ChatMessage chatMessage = req.createChatMessage(chatRoom.getId(), member.getId());
+    private ChatMessage saveChatMessage(ChatMessageReq req, ChatRoom chatRoom, User user) {
+        ChatMessage chatMessage = req.createChatMessage(chatRoom.getId(), user.getId());
         chatMessageRepository.save(chatMessage);
         return chatMessage;
     }
@@ -94,13 +94,13 @@ public class ChatMessageService {
 
     private List<LocalDateTime> getLastEntryTimesExcludingOnlineMembers(List<ChatRoomMember> chatRoomMembers, Set<Long> onlineMemberIds) {
         return chatRoomMembers.stream()
-                .filter(chatRoomMember -> !onlineMemberIds.contains(chatRoomMember.getMember().getId()))
+                .filter(chatRoomMember -> !onlineMemberIds.contains(chatRoomMember.getUser().getId()))
                 .map(ChatRoomMember::getLastEntryTime)
                 .toList();
     }
 
-    private void sendMessage(Member member, ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
-        MessageRes messageRes = ChatMessageRes.createRes(member.getNickname(), chatMessage, unreadCnt);
+    private void sendMessage(User user, ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
+        MessageRes messageRes = ChatMessageRes.createRes(user.getUsername(), chatMessage, unreadCnt);
         rabbitPublisher.publish(chatRoom.getId(), messageRes);
     }
 }

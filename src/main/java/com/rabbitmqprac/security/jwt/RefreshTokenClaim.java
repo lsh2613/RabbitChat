@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static com.rabbitmqprac.security.jwt.AccessTokenClaimKeys.MEMBER_ID;
+import static com.rabbitmqprac.security.jwt.AccessTokenClaimKeys.USER_ID;
 import static com.rabbitmqprac.security.jwt.AccessTokenClaimKeys.ROLE;
 
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -14,7 +14,7 @@ public class RefreshTokenClaim implements JwtClaims {
 
     public static RefreshTokenClaim of(Long userId, String role) {
         Map<String, Object> claims = Map.of(
-                MEMBER_ID.getValue(), userId.toString(),
+                USER_ID.getValue(), userId.toString(),
                 ROLE.getValue(), role
         );
         return new RefreshTokenClaim(claims);

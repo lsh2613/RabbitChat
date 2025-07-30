@@ -1,7 +1,7 @@
 package com.rabbitmqprac.security.principal;
 
-import com.rabbitmqprac.member.Member;
-import com.rabbitmqprac.member.Role;
+import com.rabbitmqprac.user.User;
+import com.rabbitmqprac.user.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,25 +9,25 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Getter
-public class MemberPrincipal implements Principal {
-    private final Long memberId;
-    private String nickname;
+public class UserPrincipal implements Principal {
+    private final Long userId;
+    private String username;
     private Role role;
     private LocalDateTime expiresAt;
 
     @Builder
-    private MemberPrincipal(Long memberId, String nickname, Role role, LocalDateTime expiresAt) {
-        this.memberId = memberId;
-        this.nickname = nickname;
+    private UserPrincipal(Long userId, String username, Role role, LocalDateTime expiresAt) {
+        this.userId = userId;
+        this.username = username;
         this.role = role;
         this.expiresAt = expiresAt;
     }
 
-    public static MemberPrincipal from(Member member, LocalDateTime expiresAt) {
-        return MemberPrincipal.builder()
-                .memberId(member.getId())
-                .nickname(member.getNickname())
-                .role(member.getRole())
+    public static UserPrincipal from(User user, LocalDateTime expiresAt) {
+        return UserPrincipal.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .role(user.getRole())
                 .expiresAt(expiresAt)
                 .build();
     }
@@ -42,13 +42,13 @@ public class MemberPrincipal implements Principal {
 
     @Override
     public int hashCode() {
-        int result = memberId.hashCode() * 31;
-        return result + nickname.hashCode() * 31;
+        int result = userId.hashCode() * 31;
+        return result + username.hashCode() * 31;
     }
 
     @Override
     public String getName() {
-        return nickname;
+        return username;
     }
 
     @Override
@@ -59,15 +59,15 @@ public class MemberPrincipal implements Principal {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        MemberPrincipal that = (MemberPrincipal) obj;
-        return memberId.equals(that.memberId);
+        UserPrincipal that = (UserPrincipal) obj;
+        return userId.equals(that.userId);
     }
 
     @Override
     public String toString() {
         return "UserPrincipal{" +
-                "userId=" + memberId +
-                ", username='" + nickname + '\'' +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
                 ", role=" + role +
                 ", expiresAt=" + expiresAt +
                 '}';

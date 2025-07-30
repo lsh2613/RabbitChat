@@ -1,7 +1,7 @@
 package com.rabbitmqprac.chatroommember;
 
 import com.rabbitmqprac.chatroom.ChatRoom;
-import com.rabbitmqprac.member.Member;
+import com.rabbitmqprac.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,15 +23,15 @@ public class ChatRoomMember {
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId", nullable = false)
-    private Member member;
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
     private LocalDateTime lastEntryTime;
 
-    public static ChatRoomMember create(ChatRoom chatRoom, Member member) {
+    public static ChatRoomMember create(ChatRoom chatRoom, User user) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.setChatRoom(chatRoom);
-        chatRoomMember.setMember(member);
+        chatRoomMember.setUser(user);
         chatRoomMember.setLastEntryTime(LocalDateTime.now());
         return chatRoomMember;
     }

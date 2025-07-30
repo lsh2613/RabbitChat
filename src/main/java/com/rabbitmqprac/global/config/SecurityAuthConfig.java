@@ -3,7 +3,7 @@ package com.rabbitmqprac.global.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmqprac.global.handler.JwtAccessDeniedHandler;
 import com.rabbitmqprac.global.handler.JwtAuthenticationEntryPoint;
-import com.rabbitmqprac.member.UserDetailServiceImpl;
+import com.rabbitmqprac.user.UserDetailServiceImpl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

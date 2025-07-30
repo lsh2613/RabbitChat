@@ -24,7 +24,7 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisHost, redisPort);
     }
 
-    // jwt -> memberId
+    // jwt -> userId
     // chatRoomId -> SET {memberId_01, memberId_02, ...}
     @Bean
     public RedisTemplate<String, Long> StringLongRedisTemplate() {

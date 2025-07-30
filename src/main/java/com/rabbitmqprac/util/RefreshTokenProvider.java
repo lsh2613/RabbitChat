@@ -20,7 +20,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
-import static com.rabbitmqprac.security.jwt.AccessTokenClaimKeys.MEMBER_ID;
+import static com.rabbitmqprac.security.jwt.AccessTokenClaimKeys.USER_ID;
 import static com.rabbitmqprac.security.jwt.AccessTokenClaimKeys.ROLE;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class RefreshTokenProvider implements JwtProvider {
     public JwtClaims getJwtClaimsFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return RefreshTokenClaim.of(
-                Long.parseLong(claims.get(MEMBER_ID.getValue(), String.class)),
+                Long.parseLong(claims.get(USER_ID.getValue(), String.class)),
                 claims.get(ROLE.getValue(), String.class)
         );
     }

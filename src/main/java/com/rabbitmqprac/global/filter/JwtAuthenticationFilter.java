@@ -1,6 +1,6 @@
 package com.rabbitmqprac.global.filter;
 
-import com.rabbitmqprac.member.UserDetailServiceImpl;
+import com.rabbitmqprac.user.UserDetailServiceImpl;
 import com.rabbitmqprac.security.exception.JwtErrorCode;
 import com.rabbitmqprac.security.exception.JwtErrorException;
 import com.rabbitmqprac.security.jwt.AccessTokenClaimKeys;
@@ -76,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private UserDetails getUserDetails(String accessToken) {
         JwtClaims claims = accessTokenProvider.getJwtClaimsFromToken(accessToken);
-        String userId = (String) claims.getClaims().get(AccessTokenClaimKeys.MEMBER_ID.getValue());
+        String userId = (String) claims.getClaims().get(AccessTokenClaimKeys.USER_ID.getValue());
         log.debug("User ID: {}", userId);
 
         return userDetailServiceImpl.loadUserByUsername(userId);
