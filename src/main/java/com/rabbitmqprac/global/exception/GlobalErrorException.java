@@ -5,19 +5,19 @@ import com.rabbitmqprac.global.exception.payload.CausedBy;
 import lombok.Getter;
 
 @Getter
-public class GlobalErrorException extends RuntimeException {
-    private final BaseErrorCode baseErrorCode;
+public abstract class GlobalErrorException extends RuntimeException {
+    private final BaseErrorCode errorCode;
 
-    public GlobalErrorException(BaseErrorCode baseErrorCode) {
-        super(baseErrorCode.causedBy().reasonCode().name());
-        this.baseErrorCode = baseErrorCode;
+    public GlobalErrorException(BaseErrorCode errorCode) {
+        super(errorCode.causedBy().reasonCode().name());
+        this.errorCode = errorCode;
     }
 
     public CausedBy causedBy() {
-        return baseErrorCode.causedBy();
+        return errorCode.causedBy();
     }
 
     public String getExplainError() {
-        return baseErrorCode.getExplainError();
+        return errorCode.getExplainError();
     }
 }
