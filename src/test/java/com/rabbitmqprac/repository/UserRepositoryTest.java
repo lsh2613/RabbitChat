@@ -31,7 +31,6 @@ class UserRepositoryTest extends MySQLTestContainer {
     }
 
     @Test
-    @DisplayName("existsByUsername()")
     public void existsByUsername() {
         // given
         String username = user.getUsername();
@@ -44,7 +43,6 @@ class UserRepositoryTest extends MySQLTestContainer {
     }
 
     @Test
-    @DisplayName("findByUsername()")
     public void findByUsername() {
         // given
         String username = user.getUsername();
@@ -55,5 +53,17 @@ class UserRepositoryTest extends MySQLTestContainer {
         // then
         assertTrue(findUser.isPresent());
         assertEquals(findUser.get().getId(), user.getId());
+    }
+
+    @Test
+    public void existsByNickname() {
+        // given
+        String nickname = user.getNickname();
+
+        // when
+        boolean exists = userRepository.existsByNickname(nickname);
+
+        // then
+        assertTrue(exists);
     }
 }
