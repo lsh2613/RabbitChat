@@ -17,13 +17,7 @@ public class GlobalErrorException extends RuntimeException {
         return baseErrorCode.causedBy();
     }
 
-    @Override
-    public String toString() {
-        String code = baseErrorCode.causedBy().getCode();
-        String domain = baseErrorCode.causedBy().getDomain();
-        String message = baseErrorCode.getExplainError();
-        return String.format("GlobalErrorException(code=%s, domain=%s message=%s)",
-                code, domain, message
-        );
+    public String getExplainError() {
+        return baseErrorCode.getExplainError();
     }
 }

@@ -39,9 +39,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(GlobalErrorException.class)
     protected ResponseEntity<ErrorResponse> handleGlobalErrorException(GlobalErrorException e) {
         log.warn("handleGlobalErrorException : {}", e.getMessage());
-        ErrorResponse response = ErrorResponse.of(e.getBaseErrorCode().causedBy().getCode(), e.getBaseErrorCode().getExplainError());
+        CausedBy causedBy = e.causedBy();
+        ErrorResponse response = ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getExplainError());
 
-        return ResponseEntity.status(e.getBaseErrorCode().causedBy().statusCode().getCode()).body(response);
+        return ResponseEntity.status(causedBy.statusCode().getCode()).body(response);
     }
 
     /**
@@ -54,7 +55,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleMissingRequestCookieException(MissingRequestCookieException e) {
         log.warn("handleMissingRequestCookieException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.MISSING_REQUIRED_PARAMETER);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -67,7 +68,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         log.warn("handleHttpRequestMethodNotSupportedException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.INVALID_REQUEST);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -80,7 +81,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleMissingRequestHeaderException(MissingRequestHeaderException e) {
         log.warn("handleMissingRequestHeaderException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.MISSING_REQUIRED_PARAMETER);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -93,7 +94,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.warn("handleMissingServletRequestParameterException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.MISSING_REQUIRED_PARAMETER);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -101,7 +102,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleHandlerMethodValidationException(HandlerMethodValidationException e) {
         log.warn("handleHandlerMethodValidationException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.MISSING_REQUIRED_PARAMETER);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -116,7 +117,7 @@ public class GlobalExceptionHandler {
 
         CausedBy causedBy = CausedBy.of(StatusCode.FORBIDDEN, ReasonCode.ACCESS_TO_THE_REQUESTED_RESOURCE_IS_FORBIDDEN);
 
-        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -168,7 +169,7 @@ public class GlobalExceptionHandler {
         }
 
         CausedBy causedBy = CausedBy.of(StatusCode.UNPROCESSABLE_CONTENT, TYPE_MISMATCH_ERROR_IN_REQUEST_BODY);
-        return ErrorResponse.failure(causedBy.getCode(), causedBy.getReason(), fieldErrors);
+        return ErrorResponse.failure(causedBy.getCode(), causedBy.getReason(), e.getMessage(), fieldErrors);
     }
 
     /**
@@ -180,15 +181,21 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.warn("handleHttpMessageNotReadableException : {}", e.getMessage());
 
-        String code;
         if (e.getCause() instanceof MismatchedInputException mismatchedInputException) {
-            code = String.valueOf(StatusCode.UNPROCESSABLE_CONTENT.getCode() * 10 + TYPE_MISMATCH_ERROR_IN_REQUEST_BODY.getCode());
-            return ResponseEntity.unprocessableEntity().body(ErrorResponse.of(code, mismatchedInputException.getPath().get(0).getFieldName() + " 필드의 값이 유효하지 않습니다."));
+            CausedBy causedBy = CausedBy.of(StatusCode.UNPROCESSABLE_CONTENT, ReasonCode.TYPE_MISMATCH_ERROR_IN_REQUEST_BODY);
+
+            return ResponseEntity.unprocessableEntity().body(
+                    ErrorResponse.of(
+                            causedBy.getCode(),
+                            causedBy.getReason(),
+                            mismatchedInputException.getPath().get(0).getFieldName() + " 필드의 값이 유효하지 않습니다."
+                    )
+            );
         }
 
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.MALFORMED_REQUEST_BODY);
         return ResponseEntity.badRequest().body(
-                ErrorResponse.of(causedBy.getCode(), e.getMessage())
+                ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage())
         );
     }
 
@@ -202,7 +209,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleNoHandlerFoundException(NoHandlerFoundException e) {
         log.warn("handleNoHandlerFoundException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.NOT_FOUND, ReasonCode.INVALID_URL_OR_ENDPOINT);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -215,7 +222,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleNoResourceFoundException(NoResourceFoundException e) {
         log.warn("handleNoResourceFoundException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.NOT_FOUND, ReasonCode.INVALID_URL_OR_ENDPOINT);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -228,7 +235,7 @@ public class GlobalExceptionHandler {
     protected ErrorResponse handleHttpMessageNotWritableException(HttpMessageNotWritableException e) {
         log.warn("handleHttpMessageNotWritableException : {}", e.getMessage());
         CausedBy causedBy = CausedBy.of(StatusCode.INTERNAL_SERVER_ERROR, ReasonCode.UNEXPECTED_ERROR);
-        return ErrorResponse.of(causedBy.getCode(), e.getMessage());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -242,7 +249,7 @@ public class GlobalExceptionHandler {
         log.warn("handleNullPointerException : {}", e.getMessage());
         e.printStackTrace();
         CausedBy causedBy = CausedBy.of(StatusCode.INTERNAL_SERVER_ERROR, ReasonCode.UNEXPECTED_ERROR);
-        return ErrorResponse.of(causedBy.getCode(), StatusCode.INTERNAL_SERVER_ERROR.name());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 
     /**
@@ -256,7 +263,7 @@ public class GlobalExceptionHandler {
         log.warn("handleIllegalArgumentException : {}", e.getMessage());
         e.printStackTrace();
         CausedBy causedBy = CausedBy.of(StatusCode.BAD_REQUEST, ReasonCode.INVALID_REQUEST);
-        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
     // ================================================================================== //
 
@@ -272,6 +279,6 @@ public class GlobalExceptionHandler {
         log.warn("{} : handleException : {}", e.getClass(), e.getMessage());
         e.printStackTrace();
         CausedBy causedBy = CausedBy.of(StatusCode.INTERNAL_SERVER_ERROR, ReasonCode.UNEXPECTED_ERROR, DomainCode.NONE);
-        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason());
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
     }
 }

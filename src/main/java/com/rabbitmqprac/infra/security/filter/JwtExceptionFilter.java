@@ -1,9 +1,10 @@
 package com.rabbitmqprac.infra.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmqprac.global.exception.payload.CausedBy;
 import com.rabbitmqprac.global.exception.payload.ErrorResponse;
-import com.rabbitmqprac.infra.security.exception.JwtErrorException;
 import com.rabbitmqprac.global.util.JwtErrorCodeUtil;
+import com.rabbitmqprac.infra.security.exception.JwtErrorException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,10 +36,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     }
 
     private void sendAuthError(HttpServletResponse response, JwtErrorException e) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(e.getErrorCode().getStatusCode().getCode());
+        CausedBy causedBy = e.causedBy();
 
-        ErrorResponse errorResponse = ErrorResponse.of(e.causedBy().getCode(), e.causedBy().getReason());
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(causedBy.statusCode().getCode());
+        ErrorResponse errorResponse = ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getExplainError());
         objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }
