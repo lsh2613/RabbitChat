@@ -1,4 +1,4 @@
-package com.rabbitmqprac.application.dto.user.res;
+package com.rabbitmqprac.application.dto.auth.res;
 
 public record UserDetailRes(
         Long userId,
