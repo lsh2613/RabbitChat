@@ -10,23 +10,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "user")
 public class User extends DateAuditable {
-
-    private static String USERNAME_FORMAT = "USER_%d";
-    private static Integer SEQUENCE_NAME = 1;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String username;
-
+    @Column(nullable = false)
+    private String password;
+    @Column(nullable = false)
+    private String nickname;
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public static User create() {
+    public static User of(String username, String password, Role role) {
         User user = new User();
-        user.username = String.format(USERNAME_FORMAT, SEQUENCE_NAME++);
+        user.username = username;
+        user.password = password;
+        user.nickname = username;
+        user.role = role;
         return user;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 }

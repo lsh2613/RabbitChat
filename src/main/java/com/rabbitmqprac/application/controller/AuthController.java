@@ -1,18 +1,21 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.dto.auth.req.AuthSignInReq;
+import com.rabbitmqprac.application.dto.auth.req.AuthSignUpReq;
+import com.rabbitmqprac.application.dto.auth.req.AuthUpdatePasswordReq;
 import com.rabbitmqprac.domain.context.auth.service.AuthService;
-import com.rabbitmqprac.infra.security.jwt.Jwts;
 import com.rabbitmqprac.global.util.CookieUtil;
+import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
+import com.rabbitmqprac.infra.security.jwt.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.Map;
@@ -24,9 +27,20 @@ import java.util.Map;
 public class AuthController {
     private final AuthService authService;
 
-    @GetMapping("/sign-in/{userId}")
-    public ResponseEntity<?> signIn(@PathVariable("userId") Long userId) {
-        return createAuthenticatedResponse(authService.signIn(userId));
+    @PostMapping("/sign-up")
+    public ResponseEntity<?> signUp(@RequestBody @Validated AuthSignUpReq authSignUpReq) {
+        return createAuthenticatedResponse(authService.signUp(authSignUpReq));
+    }
+
+    @GetMapping("/sign-in")
+    public ResponseEntity<?> signIn(@RequestBody @Validated AuthSignInReq authSignInReq) {
+        return createAuthenticatedResponse(authService.signIn(authSignInReq));
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity<?> patchPassword(@AuthenticationPrincipal SecurityUserDetails user, @RequestBody @Validated AuthUpdatePasswordReq authUpdatePasswordReq) {
+        authService.updatePassword(user.getUserId(), authUpdatePasswordReq);
+        return ResponseEntity.noContent().build();
     }
 
     private ResponseEntity<?> createAuthenticatedResponse(Pair<Long, Jwts> userInfo) {
