@@ -1,6 +1,7 @@
 package com.rabbitmqprac.domain.persistence.chatroommember.entity;
 
 import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
+import com.rabbitmqprac.domain.persistence.common.model.DateAuditable;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +17,7 @@ public class ChatRoomMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_room_member_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
