@@ -22,7 +22,7 @@ public class ChatMessage {
 
     private Long userId;
 
-    private String message;
+    private String content;
 
     @CreatedDate
     @Column(name = "createdAt", updatable = false)
@@ -32,7 +32,7 @@ public class ChatMessage {
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setChatRoomId(chatRoomId);
         chatMessage.setUserId(userId);
-        chatMessage.setMessage(message);
+        chatMessage.setContent(message);
         chatMessage.setCreatedAt(LocalDateTime.now());
         return chatMessage;
     }

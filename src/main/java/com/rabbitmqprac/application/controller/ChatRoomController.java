@@ -1,14 +1,17 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.dto.chatroom.req.ChatRoomCreateReq;
+import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
+import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
 import com.rabbitmqprac.domain.context.chatroom.service.ChatRoomService;
-import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomCreateRes;
-import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomRes;
-import com.rabbitmqprac.application.dto.chatroom.res.MyChatRoomRes;
-import com.rabbitmqprac.global.annotation.Requester;
+import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,17 +24,18 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/chat-rooms")
-    public ChatRoomCreateRes createChatRoom(@Requester Long memberId) {
-        return chatRoomService.createChatRoom(memberId);
+    public ChatRoomDetailRes create(@AuthenticationPrincipal SecurityUserDetails user,
+                                    @RequestBody @Validated ChatRoomCreateReq chatRoomCreateReq) {
+        return chatRoomService.create(user.getUserId(), chatRoomCreateReq);
     }
 
-    @GetMapping("/my-chat-rooms")
-    public List<MyChatRoomRes> getMyChatRooms(@Requester Long memberId) {
-        return chatRoomService.getMyChatRooms(memberId);
+    @GetMapping("/chat-rooms/me")
+    public List<ChatRoomDetailRes> getMyChatRooms(@AuthenticationPrincipal SecurityUserDetails user) {
+        return chatRoomService.getMyChatRooms(user.getUserId());
     }
 
     @GetMapping("/chat-rooms")
-    public List<ChatRoomRes> getChatRooms() {
+    public List<ChatRoomInfoRes> getChatRooms() {
         return chatRoomService.getChatRooms();
     }
 }

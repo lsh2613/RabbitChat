@@ -26,12 +26,16 @@ public class ChatRoomMember {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.STRING)
+    private ChatRoomMemberRole role;
+
     private LocalDateTime lastExitAt;
 
-    public static ChatRoomMember create(ChatRoom chatRoom, User user) {
+    public static ChatRoomMember of(ChatRoom chatRoom, User user, ChatRoomMemberRole role) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.setChatRoom(chatRoom);
         chatRoomMember.setUser(user);
+        chatRoomMember.setRole(role);
         chatRoomMember.setLastExitAt(LocalDateTime.now());
         return chatRoomMember;
     }

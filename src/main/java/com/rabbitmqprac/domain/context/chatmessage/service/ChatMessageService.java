@@ -1,17 +1,17 @@
 package com.rabbitmqprac.domain.context.chatmessage.service;
 
 import com.rabbitmqprac.application.dto.chatmessage.req.ChatMessageReq;
+import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageRes;
+import com.rabbitmqprac.application.dto.chatmessage.res.MessageRes;
+import com.rabbitmqprac.domain.context.common.service.EntityFacade;
 import com.rabbitmqprac.domain.persistence.chatmessage.entity.ChatMessage;
 import com.rabbitmqprac.domain.persistence.chatmessage.repository.ChatMessageRepository;
 import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
+import com.rabbitmqprac.domain.persistence.chatroom.repository.ChatRoomRedisRepository;
 import com.rabbitmqprac.domain.persistence.chatroommember.entity.ChatRoomMember;
 import com.rabbitmqprac.domain.persistence.chatroommember.repository.ChatRoomMemberRepository;
-import com.rabbitmqprac.domain.context.common.service.EntityFacade;
-import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageRes;
-import com.rabbitmqprac.application.dto.chatmessage.res.MessageRes;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.global.helper.RabbitPublisher;
-import com.rabbitmqprac.domain.persistence.chatroom.repository.ChatRoomRedisRepository;
 import com.rabbitmqprac.global.helper.StompHeaderAccessorHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -36,10 +37,10 @@ public class ChatMessageService {
     @Transactional
     public void sendMessage(StompHeaderAccessor accessor, ChatMessageReq req) {
         Long memberId = stompHeaderAccessorHelper.getUserIdInSession(accessor);
-        User user = entityFacade.getUser(memberId);
+        User user = entityFacade.readUser(memberId);
 
         Long chatRoomId = stompHeaderAccessorHelper.getChatRoomIdInSession(accessor);
-        ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
+        ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
 
         ChatMessage chatMessage = saveChatMessage(req, chatRoom, user);
 
@@ -49,7 +50,7 @@ public class ChatMessageService {
 
     @Transactional(readOnly = true)
     public List<MessageRes> getChatMessages(Long chatRoomId) {
-        ChatRoom chatRoom = entityFacade.getChatRoom(chatRoomId);
+        ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
 
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(chatRoom.getId());
 
@@ -61,7 +62,7 @@ public class ChatMessageService {
                     unreadCnt = 채팅방 유저 수 - 현재 접속 중인 유저 수 - 메시지 생성 시간보다 늦은 시간에 입장한 유저 수
                      */
                     int unreadCnt = calculateUnreadCntAtReadTime(chatRoom.getId(), chatMessage.getCreatedAt());
-                    User user = entityFacade.getUser(chatMessage.getUserId());
+                    User user = entityFacade.readUser(chatMessage.getUserId());
                     return ChatMessageRes.createRes(user.getUsername(), chatMessage, unreadCnt);
                 })
                 .toList();
@@ -104,5 +105,15 @@ public class ChatMessageService {
     private void sendMessage(User user, ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
         MessageRes messageRes = ChatMessageRes.createRes(user.getUsername(), chatMessage, unreadCnt);
         rabbitPublisher.publish(chatRoom.getId(), messageRes);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<ChatMessage> readLastChatMessage(Long chatRoomId) {
+        return chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId);
+    }
+
+    @Transactional(readOnly = true)
+    public int countUnreadMessages(Long chatRoomId, LocalDateTime lastExitAt) {
+        return chatMessageRepository.countByChatRoomIdAndCreatedAtAfter(chatRoomId, lastExitAt);
     }
 }
