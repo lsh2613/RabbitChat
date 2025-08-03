@@ -1,11 +1,10 @@
 package com.rabbitmqprac.domain.context.chatroommember.service;
 
-import com.rabbitmqprac.application.dto.chatroommember.res.ChatRoomMemberRes;
+import com.rabbitmqprac.application.dto.chatroommember.res.ChatRoomMemberDetailRes;
 import com.rabbitmqprac.domain.context.chatroom.exception.ChatRoomErrorCode;
 import com.rabbitmqprac.domain.context.chatroom.exception.ChatRoomErrorException;
 import com.rabbitmqprac.domain.context.common.service.EntityFacade;
 import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
-import com.rabbitmqprac.domain.persistence.chatroom.repository.ChatRoomRepository;
 import com.rabbitmqprac.domain.persistence.chatroommember.entity.ChatRoomMember;
 import com.rabbitmqprac.domain.persistence.chatroommember.entity.ChatRoomMemberRole;
 import com.rabbitmqprac.domain.persistence.chatroommember.repository.ChatRoomMemberRepository;
@@ -21,26 +20,28 @@ import java.util.List;
 public class ChatRoomMemberService {
     private final EntityFacade entityFacade;
     private final ChatRoomMemberRepository chatRoomMemberRepository;
-    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
     public void createAdmin(User user, ChatRoom chatRoom) {
         if (isAlreadyJoined(user, chatRoom))
             throw new ChatRoomErrorException(ChatRoomErrorCode.CONFLICT);
 
-        ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, user, ChatRoomMemberRole.ADMIN);
-        chatRoomMemberRepository.save(chatRoomMember);
+        saveChatRoomMember(chatRoom, user, ChatRoomMemberRole.ADMIN);
     }
 
     @Transactional
-    public void createMember(Long chatRoomId, Long userId) {
+    public void joinChatRoom(Long chatRoomId, Long userId) {
         ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
         User user = entityFacade.readUser(userId);
 
         if (isAlreadyJoined(user, chatRoom))
             throw new ChatRoomErrorException(ChatRoomErrorCode.CONFLICT);
 
-        ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, user, ChatRoomMemberRole.MEMBER);
+        saveChatRoomMember(chatRoom, user, ChatRoomMemberRole.MEMBER);
+    }
+
+    private void saveChatRoomMember(ChatRoom chatRoom, User user, ChatRoomMemberRole role) {
+        ChatRoomMember chatRoomMember = ChatRoomMember.of(chatRoom, user, role);
         chatRoomMemberRepository.save(chatRoomMember);
     }
 
@@ -49,12 +50,11 @@ public class ChatRoomMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomMemberRes> getChatRoomMembers(Long chatRoomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
+    public List<ChatRoomMemberDetailRes> getChatRoomMembers(Long chatRoomId) {
+        ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
 
-        List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllByChatRoomId(chatRoom.getId());
-        return chatRoomMembers.stream().map(ChatRoomMemberRes::of).toList();
+        List<ChatRoomMemberDetailRes> chatRoomMemberDetailRes = chatRoomMemberRepository.findChatRoomMemberNicknameByChatRoomId(chatRoom.getId());
+        return chatRoomMemberDetailRes;
     }
 
     @Transactional(readOnly = true)
