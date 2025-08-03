@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatRoomMember {
+public class ChatRoomMember extends DateAuditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
