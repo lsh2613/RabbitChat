@@ -1,9 +1,10 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.dto.chatroommember.res.ChatRoomMemberDetailRes;
 import com.rabbitmqprac.domain.context.chatroommember.service.ChatRoomMemberService;
-import com.rabbitmqprac.application.dto.chatroommember.res.ChatRoomMemberRes;
-import com.rabbitmqprac.global.annotation.Requester;
+import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +19,13 @@ public class ChatRoomMemberController {
     private final ChatRoomMemberService chatRoomMemberService;
 
     @PostMapping("/chat-rooms/{chatRoomId}/members")
-    public void enterChatRoom(@Requester Long memberId, @PathVariable Long chatRoomId) {
-        chatRoomMemberService.addChatRoomMember(chatRoomId, memberId);
+    public void joinChatRoom(@AuthenticationPrincipal SecurityUserDetails user,
+                             @PathVariable Long chatRoomId) {
+        chatRoomMemberService.joinChatRoom(user.getUserId(), chatRoomId);
     }
 
     @GetMapping("/chat-rooms/{chatRoomId}/members")
-    public List<ChatRoomMemberRes> getChatRoomMembers(@PathVariable Long chatRoomId) {
+    public List<ChatRoomMemberDetailRes> getChatRoomMembers(@PathVariable Long chatRoomId) {
         return chatRoomMemberService.getChatRoomMembers(chatRoomId);
     }
 }

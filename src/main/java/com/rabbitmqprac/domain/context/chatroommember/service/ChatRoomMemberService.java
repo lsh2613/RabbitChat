@@ -1,6 +1,7 @@
 package com.rabbitmqprac.domain.context.chatroommember.service;
 
 import com.rabbitmqprac.application.dto.chatroommember.res.ChatRoomMemberDetailRes;
+import com.rabbitmqprac.application.mapper.ChatRoomMemberMapper;
 import com.rabbitmqprac.domain.context.chatroom.exception.ChatRoomErrorCode;
 import com.rabbitmqprac.domain.context.chatroom.exception.ChatRoomErrorException;
 import com.rabbitmqprac.domain.context.common.service.EntityFacade;
@@ -30,9 +31,9 @@ public class ChatRoomMemberService {
     }
 
     @Transactional
-    public void joinChatRoom(Long chatRoomId, Long userId) {
-        ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
+    public void joinChatRoom(Long userId, Long chatRoomId) {
         User user = entityFacade.readUser(userId);
+        ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
 
         if (isAlreadyJoined(user, chatRoom))
             throw new ChatRoomErrorException(ChatRoomErrorCode.CONFLICT);
@@ -53,8 +54,10 @@ public class ChatRoomMemberService {
     public List<ChatRoomMemberDetailRes> getChatRoomMembers(Long chatRoomId) {
         ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
 
-        List<ChatRoomMemberDetailRes> chatRoomMemberDetailRes = chatRoomMemberRepository.findChatRoomMemberNicknameByChatRoomId(chatRoom.getId());
-        return chatRoomMemberDetailRes;
+        List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllWithUserByChatRoomId(chatRoom.getId());
+        return chatRoomMembers.stream()
+                .map(chatRoomMember -> ChatRoomMemberMapper.toDetailRes(chatRoomMember.getUser()))
+                .toList();
     }
 
     @Transactional(readOnly = true)
