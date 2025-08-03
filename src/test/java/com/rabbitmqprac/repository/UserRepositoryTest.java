@@ -7,7 +7,6 @@ import com.rabbitmqprac.common.helper.EntitySaver;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.domain.persistence.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
