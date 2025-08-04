@@ -1,6 +1,6 @@
 package com.rabbitmqprac.config;
 
-import com.rabbitmqprac.infra.security.interceptor.JwtAuthenticationInterceptor;
+import com.rabbitmqprac.infra.security.interceptor.StompInboundInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final JwtAuthenticationInterceptor jwtAuthenticationInterceptor;
+    private final StompInboundInterceptor stompInboundInterceptor;
 
     @Value("${rabbitmq.host}")
     private String host;
@@ -59,6 +59,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(jwtAuthenticationInterceptor);
+        registration.interceptors(stompInboundInterceptor);
     }
 }
