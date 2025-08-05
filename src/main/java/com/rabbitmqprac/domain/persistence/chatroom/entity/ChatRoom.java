@@ -15,10 +15,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoom extends DateAuditable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_Room_id")
+    @Column(name = "chat_room_id")
     private Long id;
 
     @Column(nullable = false)
