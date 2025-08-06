@@ -7,6 +7,7 @@ import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
 import com.rabbitmqprac.application.mapper.ChatMessageMapper;
 import com.rabbitmqprac.application.mapper.ChatRoomMapper;
 import com.rabbitmqprac.domain.context.chatmessage.service.ChatMessageService;
+import com.rabbitmqprac.domain.context.chatmessagestatus.service.ChatMessageStatusService;
 import com.rabbitmqprac.domain.context.chatroommember.service.ChatRoomMemberService;
 import com.rabbitmqprac.domain.context.common.service.EntityFacade;
 import com.rabbitmqprac.domain.persistence.chatmessage.entity.ChatMessage;
@@ -27,6 +28,7 @@ public class ChatRoomService {
     private final EntityFacade entityFacade;
     private final ChatMessageService chatMessageService;
     private final ChatRoomMemberService chatRoomMemberService;
+    private final ChatMessageStatusService chatMessageStatusService;
     private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
@@ -54,13 +56,16 @@ public class ChatRoomService {
 
                     Optional<ChatMessage> lastMessage = chatMessageService.readLastChatMessage(chatRoom.getId());
                     int chatRoomMemberCount = chatRoomMemberService.countChatRoomMembers(chatRoom.getId());
-                    int unreadMessageCount = chatMessageService.countUnreadMessages(chatRoom.getId(), chatroomMember.getLastExitAt());
+                    Long lastReadMessageId = chatMessageStatusService.readLastReadMessageId(userId, chatRoom.getId());
+                    int unreadMessageCount = chatMessageService.countUnreadMessages(chatRoom.getId(), lastReadMessageId);
 
                     return ChatRoomMapper.toDetailRes(
                             chatRoom,
                             lastMessage.map(ChatMessageMapper::toLastDetailRes).orElse(null),
                             chatRoomMemberCount,
-                            unreadMessageCount);
+                            lastReadMessageId,
+                            unreadMessageCount
+                    );
                 })
                 .toList();
 
