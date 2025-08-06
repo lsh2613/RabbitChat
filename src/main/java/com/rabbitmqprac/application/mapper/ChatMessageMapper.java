@@ -1,17 +1,47 @@
 package com.rabbitmqprac.application.mapper;
 
 import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageDetailRes;
+import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageRes;
+import com.rabbitmqprac.application.dto.chatmessage.res.LastChatMessageDetailRes;
 import com.rabbitmqprac.domain.persistence.chatmessage.entity.ChatMessage;
+import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
+import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.global.annotation.Mapper;
 
 @Mapper
 public class ChatMessageMapper {
-    public static ChatMessageDetailRes toDetailRes(ChatMessage chatMessage) {
+    public static LastChatMessageDetailRes toLastDetailRes(ChatMessage chatMessage) {
+        ChatRoom chatRoom = chatMessage.getChatRoom();
+        User user = chatMessage.getUser();
+        return LastChatMessageDetailRes.of(
+                user.getId(),
+                chatRoom.getId(),
+                chatMessage.getContent(),
+                chatMessage.getCreatedAt()
+        );
+    }
+
+    public static ChatMessageDetailRes toDetailRes(ChatMessage chatMessage, int unreadMemberCnt) {
+        User user = chatMessage.getUser();
         return ChatMessageDetailRes.of(
-                chatMessage.getChatRoomId(),
+                user.getId(),
+                user.getNickname(),
+                chatMessage.getId(),
                 chatMessage.getContent(),
                 chatMessage.getCreatedAt(),
-                chatMessage.getUserId()
+                unreadMemberCnt
+        );
+    }
+
+
+    public static ChatMessageRes toRes(ChatMessage chatMessage, int unreadMemberCnt) {
+        User user = chatMessage.getUser();
+        return ChatMessageRes.of(
+                user.getId(),
+                user.getNickname(),
+                chatMessage.getContent(),
+                chatMessage.getCreatedAt(),
+                unreadMemberCnt
         );
     }
 }

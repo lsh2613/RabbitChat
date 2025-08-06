@@ -45,7 +45,8 @@ public class SecurityConfig {
                         auth -> defaultAuthorizeHttpRequests(auth)
                                 .requestMatchers(WebSecurityUrls.SWAGGER_ENDPOINTS).permitAll()
                                 .anyRequest().authenticated()
-                ).build();
+                )
+                .build();
     }
 
     private HttpSecurity defaultSecurity(HttpSecurity http) throws Exception {
@@ -70,8 +71,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, WebSecurityUrls.READ_ONLY_PUBLIC_ENDPOINTS).permitAll()
 //                .requestMatchers(PUBLIC_ENDPOINTS).permitAll() //TODO 권한 필요한 API 추가 후 주석 해제
 //                .requestMatchers(AUTHENTICATED_ENDPOINTS).authenticated()
+                .requestMatchers(WebSecurityUrls.PUBLIC_STOMP_ENDPOINTS).permitAll()
                 .requestMatchers(WebSecurityUrls.ANONYMOUS_ENDPOINTS).anonymous();
-
-
     }
 }

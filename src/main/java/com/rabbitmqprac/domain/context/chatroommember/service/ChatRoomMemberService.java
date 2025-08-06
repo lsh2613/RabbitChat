@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -68,5 +69,15 @@ public class ChatRoomMemberService {
     @Transactional(readOnly = true)
     public int countChatRoomMembers(Long chatRoomId) {
         return chatRoomMemberRepository.countByChatRoomId(chatRoomId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExists(Long chatRoomId, Long userId) {
+        return chatRoomMemberRepository.existsByChatRoomIdAndUserId(chatRoomId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Long> readUserIdsByChatRoomId(Long chatRoomId) {
+        return chatRoomMemberRepository.findUserIdsByChatRoomId(chatRoomId);
     }
 }

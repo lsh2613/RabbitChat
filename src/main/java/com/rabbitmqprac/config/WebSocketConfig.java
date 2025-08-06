@@ -1,6 +1,6 @@
 package com.rabbitmqprac.config;
 
-import com.rabbitmqprac.infra.security.interceptor.StompInboundInterceptor;
+import com.rabbitmqprac.infra.stomp.interceptor.StompInboundInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

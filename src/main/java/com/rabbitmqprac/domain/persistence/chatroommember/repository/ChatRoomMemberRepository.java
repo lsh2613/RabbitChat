@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, Long> {
     List<ChatRoomMember> findAllByUserId(Long userId);
@@ -22,4 +23,9 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
     List<ChatRoomMember> findAllWithUserByChatRoomId(@Param("chatRoomId") Long chatRoomId);
 
     boolean existsByChatRoomAndUser(ChatRoom chatRoom, User user);
+
+    boolean existsByChatRoomIdAndUserId(Long chatRoomId, Long userId);
+
+    @Query("SELECT crm.user.id FROM ChatRoomMember crm WHERE crm.chatRoom.id = :chatRoomId")
+    Set<Long> findUserIdsByChatRoomId(Long chatRoomId);
 }

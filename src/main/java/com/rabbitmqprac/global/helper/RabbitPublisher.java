@@ -1,6 +1,6 @@
 package com.rabbitmqprac.global.helper;
 
-import com.rabbitmqprac.application.dto.chatmessage.res.MessageRes;
+import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -12,8 +12,8 @@ public class RabbitPublisher {
 
     private static final String ROUTING_KEY_PREFIX = "room.";
 
-    public void publish(Long chatRoomId, MessageRes messageRes) {
+    public void publish(Long chatRoomId, ChatMessageRes chatMessageRes) {
         String routingKey = ROUTING_KEY_PREFIX + chatRoomId;
-        rabbitTemplate.convertAndSend(routingKey, messageRes);
+        rabbitTemplate.convertAndSend(routingKey, chatMessageRes);
     }
 }

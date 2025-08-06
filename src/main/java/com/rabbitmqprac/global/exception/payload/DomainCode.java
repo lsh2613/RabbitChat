@@ -7,7 +7,7 @@ public enum DomainCode implements BaseCode {
     NONE(0),
     JWT(1),
     USER(2),
-    ;
+    USER_SESSION(3);
 
     private final int code;
 

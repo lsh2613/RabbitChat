@@ -1,20 +1,21 @@
 package com.rabbitmqprac.domain.context.chatmessage.service;
 
 import com.rabbitmqprac.application.dto.chatmessage.req.ChatMessageReq;
+import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageDetailRes;
 import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageRes;
-import com.rabbitmqprac.application.dto.chatmessage.res.MessageRes;
+import com.rabbitmqprac.application.mapper.ChatMessageMapper;
+import com.rabbitmqprac.domain.context.chatmessagestatus.service.ChatMessageStatusService;
+import com.rabbitmqprac.domain.context.chatroommember.service.ChatRoomMemberService;
 import com.rabbitmqprac.domain.context.common.service.EntityFacade;
+import com.rabbitmqprac.domain.context.usersession.service.UserSessionService;
 import com.rabbitmqprac.domain.persistence.chatmessage.entity.ChatMessage;
 import com.rabbitmqprac.domain.persistence.chatmessage.repository.ChatMessageRepository;
 import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
-import com.rabbitmqprac.domain.persistence.chatroom.repository.ChatRoomRedisRepository;
-import com.rabbitmqprac.domain.persistence.chatroommember.entity.ChatRoomMember;
-import com.rabbitmqprac.domain.persistence.chatroommember.repository.ChatRoomMemberRepository;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
+import com.rabbitmqprac.domain.persistence.usersession.entity.UserSession;
+import com.rabbitmqprac.domain.persistence.usersession.entity.UserStatus;
 import com.rabbitmqprac.global.helper.RabbitPublisher;
-import com.rabbitmqprac.global.helper.StompHeaderAccessorHelper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,89 +23,145 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
-
     private final EntityFacade entityFacade;
+    private final ChatRoomMemberService chatRoomMemberService;
+    private final ChatMessageStatusService chatMessageStatusService;
+    private final UserSessionService userSessionService;
     private final ChatMessageRepository chatMessageRepository;
-    private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final RabbitPublisher rabbitPublisher;
-    private final ChatRoomRedisRepository chatRoomRedisRepository;
-    private final StompHeaderAccessorHelper stompHeaderAccessorHelper;
 
     @Transactional
-    public void sendMessage(StompHeaderAccessor accessor, ChatMessageReq req) {
-        Long memberId = stompHeaderAccessorHelper.getUserIdInSession(accessor);
-        User user = entityFacade.readUser(memberId);
-
-        Long chatRoomId = stompHeaderAccessorHelper.getChatRoomIdInSession(accessor);
+    public void sendMessage(Long userId, Long chatRoomId, ChatMessageReq req) {
+        User user = entityFacade.readUser(userId);
         ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
 
         ChatMessage chatMessage = saveChatMessage(req, chatRoom, user);
 
-        int unreadCnt = calculateUnreadCntAtPublish(chatRoom.getId());
-        sendMessage(user, chatMessage, unreadCnt, chatRoom);
+        int unreadMemberCnt = calculateUnreadMemberCntAtSending(chatRoom.getId());
+        sendMessage(chatMessage, unreadMemberCnt, chatRoom);
     }
 
     @Transactional(readOnly = true)
-    public List<MessageRes> getChatMessages(Long chatRoomId) {
-        ChatRoom chatRoom = entityFacade.readChatRoom(chatRoomId);
+    public List<ChatMessageDetailRes> readChatMessages(Long userId, Long chatRoomId, Long lastChatMessageId, int size) {
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
+                chatRoomId, lastChatMessageId, size + 1
+        );
 
-        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(chatRoom.getId());
+        boolean hasNext = chatMessages.size() > size;
+        if (hasNext) {
+            chatMessages = chatMessages.subList(0, size);
+        }
 
-        List<MessageRes> messageResList = chatMessages.stream()
+        List<ChatMessageDetailRes> result = chatMessages.stream()
                 .map(chatMessage -> {
-                    /*
-                    현재 접속 중인 채팅방 유저를 제외하고 나머지 채팅방 유저의 마지막 입장 시간을 가져옴
-                    그 중에서 메시지 생성 시간보다 늦은 시간에 입장한 유저(해당 메시지를 읽지 않았다는 의미)의 수를 세어줌
-                    unreadCnt = 채팅방 유저 수 - 현재 접속 중인 유저 수 - 메시지 생성 시간보다 늦은 시간에 입장한 유저 수
-                     */
-                    int unreadCnt = calculateUnreadCntAtReadTime(chatRoom.getId(), chatMessage.getCreatedAt());
-                    User user = entityFacade.readUser(chatMessage.getUserId());
-                    return ChatMessageRes.createRes(user.getUsername(), chatMessage, unreadCnt);
+                    int unreadMemberCnt = calculateUnreadMemberCntAtReading(chatRoomId, chatMessage.getId());
+                    return ChatMessageMapper.toDetailRes(chatMessage, unreadMemberCnt);
                 })
                 .toList();
 
-        return messageResList;
+        Long lastElementId = result.getLast().chatMessageId();
+        if (existsUnreadMessage(userId, chatRoomId, lastElementId)) {
+            chatMessageStatusService.saveLastReadMessageId(userId, chatRoomId, lastElementId);
+            // todo 만약 해당 채팅방에 activeMember가 존재한다면 데이터 싱크를 맞추기 위해 ChatSyncRequestMessage 전송
+        }
+
+        return result;
+    }
+
+    private boolean existsUnreadMessage(Long userId, Long chatRoomId, Long lastElementId) {
+        Long lastReadMessageId = chatMessageStatusService.readLastReadMessageId(userId, chatRoomId);
+
+        return lastElementId > lastReadMessageId;
     }
 
     private ChatMessage saveChatMessage(ChatMessageReq req, ChatRoom chatRoom, User user) {
-        ChatMessage chatMessage = req.createChatMessage(chatRoom.getId(), user.getId());
-        chatMessageRepository.save(chatMessage);
-        return chatMessage;
+        ChatMessage chatMessage = req.toChatMessage(chatRoom, user);
+        return chatMessageRepository.save(chatMessage);
     }
 
-    private int calculateUnreadCntAtPublish(Long chatRoomId) {
-        int onlineChatRoomMemberCnt = chatRoomRedisRepository.getOnlineChatRoomMemberCnt(chatRoomId);
-        int chatRoomMemberCnt = chatRoomMemberRepository.countByChatRoomId(chatRoomId);
-        int unreadCnt = chatRoomMemberCnt - onlineChatRoomMemberCnt;
-        return unreadCnt;
+    /**
+     * 메시지 전송 시점에 해당 메시지에 대해 읽지 않은 유저의 수를 계산한다.
+     *
+     * @return 채팅방 전체 인원 - 현재 채팅방에 접속 중인 인원
+     */
+    private int calculateUnreadMemberCntAtSending(Long chatRoomId) {
+        Set<Long> memberIds = getChatRoomMemberIds(chatRoomId);
+        List<UserSession> userSessions = getUserSessions(memberIds);
+        Set<Long> activeMemberIds = getActiveMemberIds(userSessions, chatRoomId);
+
+        // todo UserSessions 중 status = ACTIVE_CHAT_ROOM_LIST or ACTIVE_CHAT_ROOM이 아닌 유저에게 푸시 알림
+
+        return memberIds.size() - activeMemberIds.size();
     }
 
-    private int calculateUnreadCntAtReadTime(Long chatRoomId, LocalDateTime messageCreatedAt) {
-        List<ChatRoomMember> chatRoomMembers = chatRoomMemberRepository.findAllByChatRoomId(chatRoomId);
-        Set<Long> onlineChatRoomMembers = chatRoomRedisRepository.getOnlineChatRoomMembers(chatRoomId);
-        List<LocalDateTime> lastExitAts = getLastExitAtsExcludingOnlineMembers(chatRoomMembers, onlineChatRoomMembers);
+    /**
+     * 메시지 조회 시점에 각 메시지에 대해 읽지 않은 유저의 수 계산한다.
+     *
+     * @return 채팅방 전체 인원 - 현재 채팅방에 접속 중인 인원 - 비접속 인원 중 마지막으로 읽은 메시지가 chatMessageId보다 큰 인원
+     */
+    private int calculateUnreadMemberCntAtReading(Long chatRoomId, Long chatMessageId) {
+        Set<Long> memberIds = getChatRoomMemberIds(chatRoomId);
+        List<UserSession> userSessions = getUserSessions(memberIds);
+        Set<Long> activeMemberIds = getActiveMemberIds(userSessions, chatRoomId);
+        Set<Long> inactiveMemberIds = getInactiveMemberIds(memberIds, activeMemberIds);
 
-        int memberCntAfterMessageCreated = (int) lastExitAts.stream()
-                .filter(time -> time.isAfter(messageCreatedAt))
+//        List<LocalDateTime> lastExitAts = chatRoomMemberService.readLastExitAtByChatRoomIdAndUserIds(chatRoomId, inactiveMemberIds);
+//        int memberCntAfterMessageCreated = (int) lastExitAts.stream()
+//                .filter(lastExitAt -> lastExitAt.isAfter(messageCreatedAt))
+//                .count();
+//
+//        return memberIds.size() - activeMemberIds.size() - memberCntAfterMessageCreated;
+
+        List<Long> lastReadMessageIds = inactiveMemberIds.stream()
+                .map(userId -> chatMessageStatusService.readLastReadMessageId(userId, chatRoomId))
+                .toList();
+
+
+        int memberCntGraterThanChatMessageId = (int) lastReadMessageIds.stream()
+                .filter(lastReadMessageId -> lastReadMessageId > chatMessageId)
                 .count();
 
-        return chatRoomMembers.size() - onlineChatRoomMembers.size() - memberCntAfterMessageCreated;
+        return memberIds.size() - activeMemberIds.size() - memberCntGraterThanChatMessageId;
     }
 
-    private List<LocalDateTime> getLastExitAtsExcludingOnlineMembers(List<ChatRoomMember> chatRoomMembers, Set<Long> onlineMemberIds) {
-        return chatRoomMembers.stream()
-                .filter(chatRoomMember -> !onlineMemberIds.contains(chatRoomMember.getUser().getId()))
-                .map(ChatRoomMember::getLastExitAt)
+    private List<UserSession> getUserSessions(Set<Long> memberIds) {
+        List<UserSession> userSessions = memberIds.stream()
+                .map(userSessionService::read)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .toList();
+        return userSessions;
     }
 
-    private void sendMessage(User user, ChatMessage chatMessage, int unreadCnt, ChatRoom chatRoom) {
-        MessageRes messageRes = ChatMessageRes.createRes(user.getUsername(), chatMessage, unreadCnt);
-        rabbitPublisher.publish(chatRoom.getId(), messageRes);
+    private Set<Long> getChatRoomMemberIds(Long chatRoomId) {
+        return chatRoomMemberService.readUserIdsByChatRoomId(chatRoomId);
+    }
+
+    private Set<Long> getActiveMemberIds(List<UserSession> userSessions, Long chatRoomId) {
+        return userSessions.stream()
+                .filter(userSession ->
+                        userSession.getStatus().equals(UserStatus.ACTIVE_CHAT_ROOM)
+                                && userSession.getCurrentChatRoomId().equals(chatRoomId)
+                )
+                .map(UserSession::getUserId)
+                .collect(Collectors.toSet());
+    }
+
+    private static Set<Long> getInactiveMemberIds(Set<Long> memberIds, Set<Long> onlineMemberIds) {
+        Set<Long> offlineMemberIds = memberIds.stream()
+                .filter(id -> !onlineMemberIds.contains(id))
+                .collect(Collectors.toSet());
+        return offlineMemberIds;
+    }
+
+    private void sendMessage(ChatMessage chatMessage, int unreadMemberCnt, ChatRoom chatRoom) {
+        ChatMessageRes chatMessageRes = ChatMessageMapper.toRes(chatMessage, unreadMemberCnt);
+        rabbitPublisher.publish(chatRoom.getId(), chatMessageRes);
     }
 
     @Transactional(readOnly = true)
@@ -113,7 +170,7 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public int countUnreadMessages(Long chatRoomId, LocalDateTime lastExitAt) {
-        return chatMessageRepository.countByChatRoomIdAndCreatedAtAfter(chatRoomId, lastExitAt);
+    public int countUnreadMessages(Long chatRoomId, Long lastReadMessageId) {
+        return chatMessageRepository.countByChatRoomIdAndIdGreaterThan(chatRoomId, lastReadMessageId);
     }
 }

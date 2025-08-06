@@ -1,7 +1,7 @@
 package com.rabbitmqprac.infra.security.principal;
 
-import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.domain.persistence.user.entity.Role;
+import com.rabbitmqprac.domain.persistence.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class UserPrincipal implements Principal {
-    private final Long userId;
+    private Long userId;
     private String username;
     private Role role;
     private LocalDateTime expiresAt;
@@ -23,7 +23,7 @@ public class UserPrincipal implements Principal {
         this.expiresAt = expiresAt;
     }
 
-    public static UserPrincipal from(User user, LocalDateTime expiresAt) {
+    public static UserPrincipal of(User user, LocalDateTime expiresAt) {
         return UserPrincipal.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
@@ -48,7 +48,7 @@ public class UserPrincipal implements Principal {
 
     @Override
     public String getName() {
-        return username;
+        return userId.toString();
     }
 
     @Override

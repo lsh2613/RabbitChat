@@ -45,6 +45,7 @@ dependencies {
     // 객체-JSON에 대해 직렬화/역직렬화
     implementation 'com.fasterxml.jackson.core:jackson-core:latest.release'
     implementation 'com.fasterxml.jackson.core:jackson-databind:latest.release'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:latest.release'
 
     // 채팅 구현
     implementation 'org.springframework.boot:spring-boot-starter-websocket' // ws
@@ -52,9 +53,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-reactor-netty:3.0.0' // 서버 <-> rabbitmq의 비동기 네트워크 처리
 
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
-
-    // mongoDB
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'

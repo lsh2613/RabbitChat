@@ -1,39 +1,47 @@
 package com.rabbitmqprac.domain.persistence.chatmessage.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.time.LocalDateTime;
+import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
+import com.rabbitmqprac.domain.persistence.common.model.DateAuditable;
+import com.rabbitmqprac.domain.persistence.user.entity.User;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
-@Setter
 @NoArgsConstructor
-@Document(collection = "chat_message")
 @ToString
-public class ChatMessage {
-
+@Entity
+public class ChatMessage extends DateAuditable {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "chat_message_id")
+    private Long id;
 
-    private Long chatRoomId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id", nullable = false)
+    private ChatRoom chatRoom;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private String content;
 
-    @CreatedDate
-    @Column(name = "createdAt", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static ChatMessage create(Long chatRoomId, Long userId, String message) {
+    public static ChatMessage of(ChatRoom chatRoom, User user, String content) {
         ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setChatRoomId(chatRoomId);
-        chatMessage.setUserId(userId);
-        chatMessage.setContent(message);
-        chatMessage.setCreatedAt(LocalDateTime.now());
+        chatMessage.chatRoom = chatRoom;
+        chatMessage.user = user;
+        chatMessage.content = content;
+        return chatMessage;
+    }
+
+    public static ChatMessage of(Long id, ChatRoom chatRoom, User user, String content) {
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.id = id;
+        chatMessage.chatRoom = chatRoom;
+        chatMessage.user = user;
+        chatMessage.content = content;
         return chatMessage;
     }
 }

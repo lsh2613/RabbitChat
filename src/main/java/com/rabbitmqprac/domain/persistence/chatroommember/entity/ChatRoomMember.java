@@ -4,12 +4,12 @@ import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
 import com.rabbitmqprac.domain.persistence.common.model.DateAuditable;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "ChatRoomMember")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,29 +21,22 @@ public class ChatRoomMember extends DateAuditable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatRoomId", nullable = false)
+    @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Enumerated(EnumType.STRING)
     private ChatRoomMemberRole role;
-
-    private LocalDateTime lastExitAt;
 
     public static ChatRoomMember of(ChatRoom chatRoom, User user, ChatRoomMemberRole role) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.setChatRoom(chatRoom);
         chatRoomMember.setUser(user);
         chatRoomMember.setRole(role);
-        chatRoomMember.setLastExitAt(LocalDateTime.now());
         return chatRoomMember;
-    }
-
-    public void updateLastExitAt() {
-        this.lastExitAt = LocalDateTime.now();
     }
 
 }
