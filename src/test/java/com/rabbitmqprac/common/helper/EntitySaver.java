@@ -1,5 +1,7 @@
 package com.rabbitmqprac.common.helper;
 
+import com.rabbitmqprac.domain.persistence.chatmessage.entity.ChatMessage;
+import com.rabbitmqprac.domain.persistence.chatmessage.repository.ChatMessageRepository;
 import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
 import com.rabbitmqprac.domain.persistence.chatroom.repository.ChatRoomRepository;
 import com.rabbitmqprac.domain.persistence.chatroommember.entity.ChatRoomMember;
@@ -17,6 +19,8 @@ public class EntitySaver {
     private ChatRoomRepository chatRoomRepository;
     @Autowired
     private ChatRoomMemberRepository chatRoomMemberRepository;
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
 
     public User saveUser(User user) {
         return userRepository.save(user);
@@ -28,5 +32,9 @@ public class EntitySaver {
 
     public ChatRoomMember saveChatRoomMember(ChatRoomMember chatRoomMember) {
         return chatRoomMemberRepository.save(chatRoomMember);
+    }
+
+    public ChatMessage saveChatMessage(ChatMessage chatMessage) {
+        return chatMessageRepository.save(chatMessage);
     }
 }
