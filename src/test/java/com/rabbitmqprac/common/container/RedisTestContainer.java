@@ -3,8 +3,10 @@ package com.rabbitmqprac.common.container;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+@Testcontainers
 public abstract class RedisTestContainer {
     private static final String REDIS_CONTAINER_NAME = "redis:7.4";
     private static final GenericContainer<?> REDIS_CONTAINER;
