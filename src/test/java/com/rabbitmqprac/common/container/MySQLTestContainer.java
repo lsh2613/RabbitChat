@@ -7,7 +7,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
-public class MySQLTestContainer {
+public abstract class MySQLTestContainer {
     private static final String MYSQL_CONTAINER_IMAGE = "mysql:8.0.36";
 
     private static final MySQLContainer<?> MYSQL_CONTAINER;
@@ -25,7 +25,7 @@ public class MySQLTestContainer {
     }
 
     @DynamicPropertySource
-    public static void setRedisProperties(DynamicPropertyRegistry registry) {
+    public static void setMySQLProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url",
                 () -> String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&characterEncoding=utf8",
                         MYSQL_CONTAINER.getHost(),
