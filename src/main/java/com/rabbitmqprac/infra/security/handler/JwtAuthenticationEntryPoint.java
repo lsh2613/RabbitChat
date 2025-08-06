@@ -19,7 +19,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.warn("commence error: {}", authException.getMessage());
+        log.warn("commence error: {}, request method: {}, request url: {}", authException.getMessage(), request.getMethod(), request.getRequestURI());
         CausedBy causedBy = CausedBy.of(StatusCode.UNAUTHORIZED, ReasonCode.MISSING_OR_INVALID_AUTHENTICATION_CREDENTIALS, DomainCode.JWT);
 
         response.setContentType("application/json;charset=UTF-8");
