@@ -58,7 +58,7 @@ public class ChatRoomService {
 
                     return ChatRoomMapper.toDetailRes(
                             chatRoom,
-                            lastMessage.map(ChatMessageMapper::toDetailRes).orElse(null),
+                            lastMessage.map(ChatMessageMapper::toLastDetailRes).orElse(null),
                             chatRoomMemberCount,
                             unreadMessageCount);
                 })
@@ -72,14 +72,8 @@ public class ChatRoomService {
     public List<ChatRoomInfoRes> getChatRooms() {
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
         List<ChatRoomInfoRes> chatRoomInfoResList = chatRooms.stream().map(chatRoom -> {
-                    Optional<ChatMessage> lastMessage = chatMessageService.readLastChatMessage(chatRoom.getId());
                     int chatRoomMemberCount = chatRoomMemberService.countChatRoomMembers(chatRoom.getId());
-
-                    return ChatRoomMapper.toInfoRes(
-                            chatRoom,
-                            lastMessage.map(ChatMessageMapper::toDetailRes).orElse(null),
-                            chatRoomMemberCount
-                    );
+                    return ChatRoomMapper.toInfoRes(chatRoom, chatRoomMemberCount);
                 })
                 .toList();
 
