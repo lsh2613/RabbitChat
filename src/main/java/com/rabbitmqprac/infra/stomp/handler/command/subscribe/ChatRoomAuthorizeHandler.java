@@ -17,13 +17,18 @@ public class ChatRoomAuthorizeHandler implements SubscribeCommandHandler {
     private final ResourceAccessRegistry resourceAccessRegistry;
     private final UserSessionService userSessionService;
 
+    private static final String USER_EXCHANGE_PREFIX = "/user";
+
     @Override
     public void handle(Message<?> message, StompHeaderAccessor accessor) {
         String destination = accessor.getDestination();
+
+        if (isDestinationForUser(destination)) {
+            log.info("[Exchange 권한 검사] userId={}에 대한 {} 권한 검사 통과", accessor.getUser().getName(), destination);
+            return;
+        }
+
         Long chatRoomId = extractChatRoomId(destination);
-
-        // todo user prefix라면 체크 무시
-
         resourceAccessRegistry.getChecker(destination).ifPresent(checker -> {
             if (checker.hasPermission(chatRoomId, accessor.getUser())) {
                 Long userId = Long.parseLong(accessor.getUser().getName());
@@ -34,6 +39,10 @@ public class ChatRoomAuthorizeHandler implements SubscribeCommandHandler {
                 throw new StompErrorException(StompErrorCode.UNAUTHORIZED_TO_SUBSCRIBE);
             }
         });
+    }
+
+    private boolean isDestinationForUser(String destination) {
+        return destination != null && destination.startsWith(USER_EXCHANGE_PREFIX);
     }
 
     /**
