@@ -1,4 +1,4 @@
-package com.rabbitmqprac.infra.stomp.handler.subscribe;
+package com.rabbitmqprac.infra.stomp.handler.command.subscribe;
 
 import com.rabbitmqprac.domain.context.usersession.service.UserSessionService;
 import com.rabbitmqprac.infra.security.common.registry.ResourceAccessRegistry;

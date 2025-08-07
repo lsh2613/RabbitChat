@@ -1,6 +1,6 @@
-package com.rabbitmqprac.infra.stomp.handler.connect;
+package com.rabbitmqprac.infra.stomp.handler.command.connect;
 
-import com.rabbitmqprac.infra.stomp.handler.StompCommandHandler;
+import com.rabbitmqprac.infra.stomp.handler.command.StompCommandHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 
 public interface ConnectCommandHandler extends StompCommandHandler {

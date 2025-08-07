@@ -1,4 +1,4 @@
-package com.rabbitmqprac.infra.stomp.handler;
+package com.rabbitmqprac.infra.stomp.handler.command;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;

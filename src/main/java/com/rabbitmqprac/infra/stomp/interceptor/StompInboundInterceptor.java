@@ -1,7 +1,7 @@
 package com.rabbitmqprac.infra.stomp.interceptor;
 
-import com.rabbitmqprac.infra.stomp.handler.StompCommandHandler;
-import com.rabbitmqprac.infra.stomp.handler.StompCommandHandlerFactory;
+import com.rabbitmqprac.infra.stomp.handler.command.StompCommandHandler;
+import com.rabbitmqprac.infra.stomp.handler.command.StompCommandHandlerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;

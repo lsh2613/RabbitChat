@@ -1,4 +1,4 @@
-package com.rabbitmqprac.infra.stomp.handler;
+package com.rabbitmqprac.infra.stomp.handler.command;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

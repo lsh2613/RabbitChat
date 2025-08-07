@@ -1,4 +1,4 @@
-package com.rabbitmqprac.infra.stomp.handler.connect;
+package com.rabbitmqprac.infra.stomp.handler.command.connect;
 
 import com.rabbitmqprac.domain.context.user.service.UserService;
 import com.rabbitmqprac.domain.context.usersession.service.UserSessionService;

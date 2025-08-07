@@ -1,4 +1,4 @@
-package com.rabbitmqprac.infra.stomp.handler.disconnect;
+package com.rabbitmqprac.infra.stomp.handler.command.disconnect;
 
 import com.rabbitmqprac.domain.context.usersession.service.UserSessionService;
 import com.rabbitmqprac.domain.persistence.usersession.entity.UserStatus;
