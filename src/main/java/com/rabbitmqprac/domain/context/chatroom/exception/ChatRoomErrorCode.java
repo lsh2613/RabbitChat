@@ -12,7 +12,7 @@ public enum ChatRoomErrorCode implements BaseErrorCode {
     private final StatusCode statusCode;
     private final ReasonCode reasonCode;
     private final String message;
-    private final DomainCode domainCode = DomainCode.USER;
+    private final DomainCode domainCode = DomainCode.CHAT_ROOM;
 
     @Override
     public CausedBy causedBy() {
