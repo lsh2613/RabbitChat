@@ -1,5 +1,6 @@
 package com.rabbitmqprac.config;
 
+import com.rabbitmqprac.infra.stomp.interceptor.StompExceptionInterceptor;
 import com.rabbitmqprac.infra.stomp.interceptor.StompInboundInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +16,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
     private final StompInboundInterceptor stompInboundInterceptor;
+    private final StompExceptionInterceptor stompExceptionInterceptor;
 
     @Value("${rabbitmq.host}")
     private String host;
@@ -36,6 +37,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // socketJs 클라이언트가 WebSocket 핸드셰이크를 하기 위해 연결할 endpoint를 지정할 수 있다.
         registry.addEndpoint("/chat/inbox")
                 .setAllowedOriginPatterns("*"); // cors 허용을 위해 꼭 설정해주어야 함. setCredential() 설정시에 AllowedOrigin 과 같이 사용될 경우 오류가 날 수 있으므로 OriginPatterns 설정으로 사용하였음
+
+        registry.setErrorHandler(stompExceptionInterceptor);
     }
 
     @Override
@@ -55,6 +58,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // publish
         registry.setApplicationDestinationPrefixes("/pub");
 
+        registry.setUserDestinationPrefix("/user");
     }
 
     @Override
