@@ -1,7 +1,7 @@
 package com.rabbitmqprac.infra.security.constant;
 
 public final class WebSecurityUrls {
-    public static final String[] READ_ONLY_PUBLIC_ENDPOINTS = {"/favicon.ico", "/v1/duplicate/**"};
+    public static final String[] READ_ONLY_PUBLIC_ENDPOINTS = {"/favicon.ico", "/chat-rooms"};
     public static final String[] PUBLIC_ENDPOINTS = {"/"};
     public static final String[] ANONYMOUS_ENDPOINTS = {"/auth/sign-in", "/auth/sign-up"};
     public static final String[] AUTHENTICATED_ENDPOINTS = {"/"};
