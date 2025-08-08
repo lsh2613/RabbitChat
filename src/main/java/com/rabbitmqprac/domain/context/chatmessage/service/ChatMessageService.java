@@ -64,10 +64,12 @@ public class ChatMessageService {
                 })
                 .toList();
 
-        Long lastElementId = result.getLast().chatMessageId();
-        if (existsUnreadMessage(userId, chatRoomId, lastElementId)) {
-            chatMessageStatusService.saveLastReadMessageId(userId, chatRoomId, lastElementId);
-            // todo 만약 해당 채팅방에 activeMember가 존재한다면 데이터 싱크를 맞추기 위해 ChatSyncRequestMessage 전송
+        if (!result.isEmpty()) {
+            Long lastElementId = result.getLast().chatMessageId();
+            if (existsUnreadMessage(userId, chatRoomId, lastElementId)) {
+                chatMessageStatusService.saveLastReadMessageId(userId, chatRoomId, lastElementId);
+                // todo 만약 해당 채팅방에 activeMember가 존재한다면 데이터 싱크를 맞추기 위해 ChatSyncRequestMessage 전송
+            }
         }
 
         return result;
