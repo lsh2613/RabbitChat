@@ -32,7 +32,7 @@ public class AuthController {
         return createAuthenticatedResponse(authService.signUp(authSignUpReq));
     }
 
-    @GetMapping("/sign-in")
+    @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody @Validated AuthSignInReq authSignInReq) {
         return createAuthenticatedResponse(authService.signIn(authSignInReq));
     }
