@@ -14,14 +14,17 @@ public record ChatRoomInfoRes(
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime createdAt,
 
-        int currentCapacity
+        int currentCapacity,
+
+        Boolean isJoined
 ) {
     public static ChatRoomInfoRes of(Long chatRoomId,
                                      String title,
                                      Integer maxCapacity,
                                      LocalDateTime createdAt,
-                                     int currentCapacity
+                                     int currentCapacity,
+                                     Boolean isJoined
     ) {
-        return new ChatRoomInfoRes(chatRoomId, title, maxCapacity, createdAt, currentCapacity);
+        return new ChatRoomInfoRes(chatRoomId, title, maxCapacity, createdAt, currentCapacity, isJoined);
     }
 }

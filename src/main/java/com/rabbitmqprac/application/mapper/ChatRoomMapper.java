@@ -39,13 +39,14 @@ public final class ChatRoomMapper {
         );
     }
 
-    public static ChatRoomInfoRes toInfoRes(ChatRoom chatRoom, int currentCapacity) {
+    public static ChatRoomInfoRes toInfoRes(ChatRoom chatRoom, int currentCapacity, Boolean isJoined) {
         return ChatRoomInfoRes.of(
                 chatRoom.getId(),
                 chatRoom.getTitle(),
                 chatRoom.getMaxCapacity(),
                 chatRoom.getCreatedAt(),
-                currentCapacity
+                currentCapacity,
+                isJoined
         );
     }
 }

@@ -72,16 +72,16 @@ public class ChatRoomService {
         return chatRoomDetailResList;
     }
 
-    // todo 페이징 적용 필요
     @Transactional(readOnly = true)
-    public List<ChatRoomInfoRes> getChatRooms() {
+    public List<ChatRoomInfoRes> getChatRooms(Optional<Long> userId) {
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
-        List<ChatRoomInfoRes> chatRoomInfoResList = chatRooms.stream().map(chatRoom -> {
+
+        return chatRooms.stream()
+                .map(chatRoom -> {
                     int chatRoomMemberCount = chatRoomMemberService.countChatRoomMembers(chatRoom.getId());
-                    return ChatRoomMapper.toInfoRes(chatRoom, chatRoomMemberCount);
+                    boolean isJoined = userId.isPresent() && chatRoomMemberService.isExists(chatRoom.getId(), userId.get());
+                    return ChatRoomMapper.toInfoRes(chatRoom, chatRoomMemberCount, isJoined);
                 })
                 .toList();
-
-        return chatRoomInfoResList;
     }
 }

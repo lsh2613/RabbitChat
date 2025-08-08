@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +37,8 @@ public class ChatRoomController {
     }
 
     @GetMapping("/chat-rooms")
-    public List<ChatRoomInfoRes> getChatRooms() {
-        return chatRoomService.getChatRooms();
+    public List<ChatRoomInfoRes> getChatRooms(@AuthenticationPrincipal SecurityUserDetails user) {
+        return chatRoomService.getChatRooms(Optional.ofNullable(Objects.isNull(user) ? null : user.getUserId())
+        );
     }
 }
