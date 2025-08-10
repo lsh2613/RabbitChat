@@ -4,18 +4,16 @@ import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageDetailRes;
 import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageRes;
 import com.rabbitmqprac.application.dto.chatmessage.res.LastChatMessageDetailRes;
 import com.rabbitmqprac.domain.persistence.chatmessage.entity.ChatMessage;
-import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.global.annotation.Mapper;
 
 @Mapper
 public class ChatMessageMapper {
     public static LastChatMessageDetailRes toLastDetailRes(ChatMessage chatMessage) {
-        ChatRoom chatRoom = chatMessage.getChatRoom();
         User user = chatMessage.getUser();
         return LastChatMessageDetailRes.of(
                 user.getId(),
-                chatRoom.getId(),
+                chatMessage.getId(),
                 chatMessage.getContent(),
                 chatMessage.getCreatedAt()
         );
