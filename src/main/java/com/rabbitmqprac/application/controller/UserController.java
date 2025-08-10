@@ -30,7 +30,7 @@ public class UserController {
         return userService.getUserDetails();
     }
 
-    @GetMapping("/users/nickname")
+    @GetMapping("/users/username")
     public Map<String, Boolean> isDuplicatedUsername(@RequestParam @Validated String username) {
         return Map.of("isDuplicated", userService.isDuplicatedUsername(username));
     }
