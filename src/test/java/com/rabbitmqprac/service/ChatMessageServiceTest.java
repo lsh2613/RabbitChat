@@ -108,7 +108,7 @@ public class ChatMessageServiceTest {
                 given(chatMessageStatusService.readLastReadMessageId(any(Long.class), any(Long.class))).willReturn(0L);
 
                 // when
-                chatMessageService.readChatMessages(user.getId(), chatRoom.getId(), 0L, 1);
+                chatMessageService.readChatMessagesBefore(user.getId(), chatRoom.getId(), 0L, 1);
 
                 // then
                 verify(chatMessageStatusService).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));

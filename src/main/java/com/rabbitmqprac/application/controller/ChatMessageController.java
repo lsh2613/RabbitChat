@@ -35,11 +35,11 @@ public class ChatMessageController {
         chatMessageService.sendMessage(principal.getUserId(), chatRoomId, message);
     }
 
-    @GetMapping("/chat-rooms/{chatRoomId}/messages")
-    public List<ChatMessageDetailRes> getChatMessages(@AuthenticationPrincipal SecurityUserDetails user,
-                                                      @PathVariable Long chatRoomId,
-                                                      @RequestParam(value = "lastChatMessageId", defaultValue = "0") Long lastMessageId,
-                                                      @RequestParam(value = "size", defaultValue = "30") int size
+    @GetMapping("/chat-rooms/{chatRoomId}/messages/before")
+    public List<ChatMessageDetailRes> readChatMessagesBefore(@AuthenticationPrincipal SecurityUserDetails user,
+                                                             @PathVariable Long chatRoomId,
+                                                             @RequestParam(value = "lastChatMessageId", defaultValue = "0") Long lastMessageId,
+                                                             @RequestParam(value = "size", defaultValue = "30") int size
     ) {
         return chatMessageService.readChatMessages(user.getUserId(), chatRoomId, lastMessageId, size);
     }

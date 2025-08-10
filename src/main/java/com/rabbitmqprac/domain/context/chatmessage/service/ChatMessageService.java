@@ -47,7 +47,7 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageDetailRes> readChatMessages(Long userId, Long chatRoomId, Long lastChatMessageId, int size) {
+    public List<ChatMessageDetailRes> readChatMessagesBefore(Long userId, Long chatRoomId, Long lastChatMessageId, int size) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
                 chatRoomId, lastChatMessageId, size + 1
         );
@@ -57,12 +57,7 @@ public class ChatMessageService {
             chatMessages = chatMessages.subList(0, size);
         }
 
-        List<ChatMessageDetailRes> result = chatMessages.stream()
-                .map(chatMessage -> {
-                    int unreadMemberCnt = calculateUnreadMemberCntAtReading(chatRoomId, chatMessage.getId());
-                    return ChatMessageMapper.toDetailRes(chatMessage, unreadMemberCnt);
-                })
-                .toList();
+        List<ChatMessageDetailRes> result = covertToDetailRes(chatRoomId, chatMessages);
 
         if (!result.isEmpty()) {
             Long lastElementId = result.getLast().chatMessageId();
