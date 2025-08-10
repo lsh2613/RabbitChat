@@ -41,6 +41,14 @@ public class ChatMessageController {
                                                              @RequestParam(value = "lastChatMessageId", defaultValue = "0") Long lastMessageId,
                                                              @RequestParam(value = "size", defaultValue = "30") int size
     ) {
-        return chatMessageService.readChatMessages(user.getUserId(), chatRoomId, lastMessageId, size);
+        return chatMessageService.readChatMessagesBefore(user.getUserId(), chatRoomId, lastMessageId, size);
+    }
+
+    @GetMapping("/chat-rooms/{chatRoomId}/messages/between")
+    public List<ChatMessageDetailRes> readChatMessagesBetween(@PathVariable Long chatRoomId,
+                                                              @RequestParam Long from,
+                                                              @RequestParam Long to
+    ) {
+        return chatMessageService.readChatMessagesBetween(chatRoomId, from, to);
     }
 }

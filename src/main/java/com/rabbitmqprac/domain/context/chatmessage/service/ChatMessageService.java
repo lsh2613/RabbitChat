@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -162,5 +161,21 @@ public class ChatMessageService {
     @Transactional(readOnly = true)
     public int countUnreadMessages(Long chatRoomId, Long lastReadMessageId) {
         return chatMessageRepository.countByChatRoomIdAndIdGreaterThan(chatRoomId, lastReadMessageId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatMessageDetailRes> readChatMessagesBetween(Long chatRoomId, Long from, Long to) {
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdAndIdBetween(chatRoomId, from, to);
+
+        return covertToDetailRes(chatRoomId, chatMessages);
+    }
+
+    private List<ChatMessageDetailRes> covertToDetailRes(Long chatRoomId, List<ChatMessage> chatMessages) {
+        return chatMessages.stream()
+                .map(chatMessage -> {
+                    int unreadMemberCnt = calculateUnreadMemberCntAtReading(chatRoomId, chatMessage.getId());
+                    return ChatMessageMapper.toDetailRes(chatMessage, unreadMemberCnt);
+                })
+                .toList();
     }
 }
