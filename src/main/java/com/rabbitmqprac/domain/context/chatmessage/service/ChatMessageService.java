@@ -46,7 +46,7 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageDetailRes> readChatMessagesBefore(Long userId, Long chatRoomId, Long lastChatMessageId, int size) {
+    public List<ChatMessageDetailRes> readChatMessagesBefore(Long chatRoomId, Long lastChatMessageId, int size) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
                 chatRoomId, lastChatMessageId, size + 1
         );
@@ -56,23 +56,7 @@ public class ChatMessageService {
             chatMessages = chatMessages.subList(0, size);
         }
 
-        List<ChatMessageDetailRes> result = covertToDetailRes(chatRoomId, chatMessages);
-
-        if (!result.isEmpty()) {
-            Long lastElementId = result.getLast().chatMessageId();
-            if (existsUnreadMessage(userId, chatRoomId, lastElementId)) {
-                chatMessageStatusService.saveLastReadMessageId(userId, chatRoomId, lastElementId);
-                // todo 만약 해당 채팅방에 activeMember가 존재한다면 데이터 싱크를 맞추기 위해 ChatSyncRequestMessage 전송
-            }
-        }
-
-        return result;
-    }
-
-    private boolean existsUnreadMessage(Long userId, Long chatRoomId, Long lastElementId) {
-        Long lastReadMessageId = chatMessageStatusService.readLastReadMessageId(userId, chatRoomId);
-
-        return lastElementId > lastReadMessageId;
+        return covertToDetailRes(chatRoomId, chatMessages);
     }
 
     private ChatMessage saveChatMessage(ChatMessageReq req, ChatRoom chatRoom, User user) {
@@ -164,10 +148,19 @@ public class ChatMessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatMessageDetailRes> readChatMessagesBetween(Long chatRoomId, Long from, Long to) {
+    public List<ChatMessageDetailRes> readChatMessagesBetween(Long userId, Long chatRoomId, Long from, Long to) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdAndIdBetween(chatRoomId, from, to);
 
-        return covertToDetailRes(chatRoomId, chatMessages);
+        List<ChatMessageDetailRes> result = covertToDetailRes(chatRoomId, chatMessages);
+        if (!result.isEmpty()) {
+            Long lastElementId = result.getLast().chatMessageId();
+            if (existsUnreadMessage(userId, chatRoomId, lastElementId)) {
+                chatMessageStatusService.saveLastReadMessageId(userId, chatRoomId, lastElementId);
+                // todo 만약 해당 채팅방에 activeMember가 존재한다면 데이터 싱크를 맞추기 위해 ChatSyncRequestMessage 전송
+            }
+        }
+
+        return result;
     }
 
     private List<ChatMessageDetailRes> covertToDetailRes(Long chatRoomId, List<ChatMessage> chatMessages) {
@@ -177,5 +170,11 @@ public class ChatMessageService {
                     return ChatMessageMapper.toDetailRes(chatMessage, unreadMemberCnt);
                 })
                 .toList();
+    }
+
+    private boolean existsUnreadMessage(Long userId, Long chatRoomId, Long lastElementId) {
+        Long lastReadMessageId = chatMessageStatusService.readLastReadMessageId(userId, chatRoomId);
+
+        return lastElementId > lastReadMessageId;
     }
 }

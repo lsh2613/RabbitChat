@@ -36,19 +36,19 @@ public class ChatMessageController {
     }
 
     @GetMapping("/chat-rooms/{chatRoomId}/messages/before")
-    public List<ChatMessageDetailRes> readChatMessagesBefore(@AuthenticationPrincipal SecurityUserDetails user,
-                                                             @PathVariable Long chatRoomId,
+    public List<ChatMessageDetailRes> readChatMessagesBefore(@PathVariable Long chatRoomId,
                                                              @RequestParam(value = "lastChatMessageId", defaultValue = "0") Long lastMessageId,
                                                              @RequestParam(value = "size", defaultValue = "30") int size
     ) {
-        return chatMessageService.readChatMessagesBefore(user.getUserId(), chatRoomId, lastMessageId, size);
+        return chatMessageService.readChatMessagesBefore(chatRoomId, lastMessageId, size);
     }
 
     @GetMapping("/chat-rooms/{chatRoomId}/messages/between")
-    public List<ChatMessageDetailRes> readChatMessagesBetween(@PathVariable Long chatRoomId,
+    public List<ChatMessageDetailRes> readChatMessagesBetween(@AuthenticationPrincipal SecurityUserDetails user,
+                                                              @PathVariable Long chatRoomId,
                                                               @RequestParam Long from,
                                                               @RequestParam Long to
     ) {
-        return chatMessageService.readChatMessagesBetween(chatRoomId, from, to);
+        return chatMessageService.readChatMessagesBetween(user.getUserId(), chatRoomId, from, to);
     }
 }

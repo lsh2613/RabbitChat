@@ -28,8 +28,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ChatMessageService 테스트")
@@ -93,27 +92,52 @@ public class ChatMessageServiceTest {
     }
 
     @Nested
-    @DisplayName("채팅 메시지 조회 시나리오")
-    class ReadMessageScenario {
+    @DisplayName("채팅 메시지 범위 조회 시나리오")
+    class ReadMessageBetweenScenario {
         @Nested
-        @DisplayName("채팅 메시지 조회 성공 시나리오")
-        class ReadMessageSuccessScenario {
+        @DisplayName("채팅 메시지 범위 조회 성공 시나리오")
+        class ReadMessageBetweenSuccessScenario {
             @Test
-            @DisplayName("성공")
-            void readMessageSuccess() {
+            @DisplayName("안 읽은 메시지가 존재하는 경우")
+            void readMessageBetweenSuccessWhenExistsUnReadMessage() {
                 // given
-                given(chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(any(Long.class), any(Long.class), any(Integer.class)))
+                final Long from = 2L;
+                final Long to = 10L;
+                final Long chatRoomId = CHAT_ROOM_FIXTURE.getId(); // 미리 값을 저장
+
+                given(chatMessageRepository.findByChatRoomIdAndIdBetween(user.getId(), from, to))
                         .willReturn(List.of(chatMessage));
 
-                given(chatMessageStatusService.readLastReadMessageId(any(Long.class), any(Long.class))).willReturn(0L);
+                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoomId))
+                        .willReturn(chatRoomId - 1); // 직접 값 사용
 
                 // when
-                chatMessageService.readChatMessagesBefore(user.getId(), chatRoom.getId(), 0L, 1);
+                chatMessageService.readChatMessagesBetween(user.getId(), chatRoomId, from, to);
 
                 // then
                 verify(chatMessageStatusService).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));
             }
+
+            @Test
+            @DisplayName("안 읽은 메시지가 존재하지 않는 경우")
+            void readMessageBetweenSuccessWhenNotExistsUnReadMessage() {
+                // given
+                final Long from = 2L;
+                final Long to = 10L;
+                final Long chatRoomId = CHAT_ROOM_FIXTURE.getId(); // 미리 값을 저장
+
+                given(chatMessageRepository.findByChatRoomIdAndIdBetween(user.getId(), from, to))
+                        .willReturn(List.of(chatMessage));
+
+                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoomId))
+                        .willReturn(chatRoomId + 1); // 직접 값 사용
+
+                // when
+                chatMessageService.readChatMessagesBetween(user.getId(), chatRoomId, from, to);
+
+                // then
+                verify(chatMessageStatusService, never()).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));
+            }
         }
     }
 }
-
