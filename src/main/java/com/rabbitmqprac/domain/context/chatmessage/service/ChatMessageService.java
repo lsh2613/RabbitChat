@@ -112,13 +112,6 @@ public class ChatMessageService {
         Set<Long> activeMemberIds = getActiveMemberIds(userSessions, chatRoomId);
         Set<Long> inactiveMemberIds = getInactiveMemberIds(memberIds, activeMemberIds);
 
-//        List<LocalDateTime> lastExitAts = chatRoomMemberService.readLastExitAtByChatRoomIdAndUserIds(chatRoomId, inactiveMemberIds);
-//        int memberCntAfterMessageCreated = (int) lastExitAts.stream()
-//                .filter(lastExitAt -> lastExitAt.isAfter(messageCreatedAt))
-//                .count();
-//
-//        return memberIds.size() - activeMemberIds.size() - memberCntAfterMessageCreated;
-
         List<Long> lastReadMessageIds = inactiveMemberIds.stream()
                 .map(userId -> chatMessageStatusService.readLastReadMessageId(userId, chatRoomId))
                 .toList();
