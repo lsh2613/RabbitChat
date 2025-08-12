@@ -1,6 +1,8 @@
-package com.rabbitmqprac.global.exception;
+package com.rabbitmqprac.global.advice;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.rabbitmqprac.global.exception.CustomValidationException;
+import com.rabbitmqprac.global.exception.GlobalErrorException;
 import com.rabbitmqprac.global.exception.payload.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +32,7 @@ import static com.rabbitmqprac.global.exception.payload.ReasonCode.TYPE_MISMATCH
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionAdvice {
     /**
      * Custom Exception을 처리하는 메서드
      *

@@ -1,4 +1,4 @@
-package com.rabbitmqprac.global.handler;
+package com.rabbitmqprac.global.advice;
 
 import com.rabbitmqprac.global.exception.GlobalErrorException;
 import com.rabbitmqprac.infra.stomp.common.dto.ServerSideMessage;
@@ -13,7 +13,7 @@ import java.security.Principal;
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
-public class WebSocketGlobalExceptionHandler {
+public class WebSocketGlobalExceptionAdvice {
     private final SimpMessagingTemplate template;
     private static final String ERROR_DESTINATION = "/queue/errors";
 
