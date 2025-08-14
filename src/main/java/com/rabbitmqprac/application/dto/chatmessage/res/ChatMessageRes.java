@@ -13,7 +13,7 @@ public record ChatMessageRes(
         Long userId,
         String nickname,
 
-        String message,
+        String content,
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime createdAt,
