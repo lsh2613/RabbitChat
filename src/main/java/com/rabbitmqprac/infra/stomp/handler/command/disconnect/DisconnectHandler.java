@@ -9,6 +9,8 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -19,6 +21,10 @@ public class DisconnectHandler implements DisconnectCommandHandler {
     public void handle(Message<?> message, StompHeaderAccessor accessor) {
         UserPrincipal principal = (UserPrincipal) accessor.getUser();
 
-        userSessionService.updateUserStatus(principal.getUserId(), UserStatus.INACTIVE);
+        if (Objects.nonNull(principal)) {
+            Long userId = principal.getUserId();
+            if (Objects.nonNull(userId))
+                userSessionService.updateUserStatus(userId, UserStatus.INACTIVE);
+        }
     }
 }
