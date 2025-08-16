@@ -47,7 +47,7 @@ public class ChatMessageService {
 
     @Transactional(readOnly = true)
     public List<ChatMessageDetailRes> readChatMessagesBefore(Long chatRoomId, Long lastChatMessageId, int size) {
-        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdBefore(
                 chatRoomId, lastChatMessageId, size + 1
         );
 

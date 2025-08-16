@@ -20,7 +20,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, String
             WHERE cm.chatRoom.id = :chatRoomId AND cm.id < :lastMessageId
             ORDER BY cm.createdAt ASC LIMIT :size
             """)
-    List<ChatMessage> findByChatRoomIdOrderByCreatedAtAsc(Long chatRoomId, Long lastMessageId, int size);
+    List<ChatMessage> findByChatRoomIdBefore(Long chatRoomId, Long lastMessageId, int size);
 
     List<ChatMessage> findByChatRoomIdAndIdBetween(Long chatRoomId, Long idAfter, Long idBefore);
 }
