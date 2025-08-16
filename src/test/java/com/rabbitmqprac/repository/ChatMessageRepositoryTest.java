@@ -54,16 +54,21 @@ public class ChatMessageRepositoryTest extends MySQLTestContainer {
         assertThat(chatMessage.get().getUser().getId()).isEqualTo(user.getId());
     }
 
+    /**
+     * chatMessage1, chatMessage2, chatMessage3 중 id가 가장 큰 chatMessage3를 기준으로
+     * chatRoom의 메시지 중 id가 chatMessage3보다 작은 메시지 2개를 조회한다.
+     * 따라서 chatMessage1, chatMessage2가 조회된다.
+     */
     @Test
-    void findByChatRoomIdOrderByCreatedAtAsc() {
+    void findByChatRoomIdBefore() {
         // given
 
         // when
-        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdOrderByCreatedAtAsc(
-                chatRoom.getId(), 0L, 2
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdBefore(
+                chatRoom.getId(), chatMessage3.getId(), 2
         );
 
         // then
-        assertThat(chatMessages.size()).isEqualTo(2);
+        assertThat(chatMessages).containsExactly(chatMessage1, chatMessage2);
     }
 }

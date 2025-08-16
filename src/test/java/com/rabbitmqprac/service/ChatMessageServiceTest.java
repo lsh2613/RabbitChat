@@ -103,16 +103,15 @@ public class ChatMessageServiceTest {
                 // given
                 final Long from = 2L;
                 final Long to = 10L;
-                final Long chatRoomId = CHAT_ROOM_FIXTURE.getId(); // 미리 값을 저장
-
                 given(chatMessageRepository.findByChatRoomIdAndIdBetween(user.getId(), from, to))
                         .willReturn(List.of(chatMessage));
 
-                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoomId))
-                        .willReturn(chatRoomId - 1); // 직접 값 사용
+                long lastMessageId = chatRoom.getId() - 1; // chatRoomId보다 작은 값
+                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoom.getId()))
+                        .willReturn(lastMessageId);
 
                 // when
-                chatMessageService.readChatMessagesBetween(user.getId(), chatRoomId, from, to);
+                chatMessageService.readChatMessagesBetween(user.getId(), chatRoom.getId(), from, to);
 
                 // then
                 verify(chatMessageStatusService).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));
@@ -124,16 +123,15 @@ public class ChatMessageServiceTest {
                 // given
                 final Long from = 2L;
                 final Long to = 10L;
-                final Long chatRoomId = CHAT_ROOM_FIXTURE.getId(); // 미리 값을 저장
-
                 given(chatMessageRepository.findByChatRoomIdAndIdBetween(user.getId(), from, to))
                         .willReturn(List.of(chatMessage));
 
-                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoomId))
-                        .willReturn(chatRoomId + 1); // 직접 값 사용
+                long lastMessageId = chatRoom.getId() + 1;  // chatRoomId보다 큰 값
+                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoom.getId()))
+                        .willReturn(lastMessageId);
 
                 // when
-                chatMessageService.readChatMessagesBetween(user.getId(), chatRoomId, from, to);
+                chatMessageService.readChatMessagesBetween(user.getId(), chatRoom.getId(), from, to);
 
                 // then
                 verify(chatMessageStatusService, never()).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));
@@ -141,3 +139,4 @@ public class ChatMessageServiceTest {
         }
     }
 }
+
