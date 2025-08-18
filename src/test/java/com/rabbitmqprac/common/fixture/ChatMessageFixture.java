@@ -10,8 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ChatMessageFixture {
     FIRST_CHAT_MESSAGE(1L, "first_content"),
-    SECOND_CHAT_MESSAGE(2L, "second_content"),
-    ;
+    SECOND_CHAT_MESSAGE(2L, "second_content");
 
     private final Long id;
     private final String content;

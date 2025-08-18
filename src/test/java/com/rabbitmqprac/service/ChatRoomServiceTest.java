@@ -90,10 +90,10 @@ class ChatRoomServiceTest {
             given(entityFacade.readUser(user.getId())).willThrow(new ChatRoomErrorException(ChatRoomErrorCode.NOT_FOUND));
 
             // when
-            ChatRoomErrorException e = assertThrows(ChatRoomErrorException.class, () -> chatRoomService.create(user.getId(), req));
+            ChatRoomErrorException ex = assertThrows(ChatRoomErrorException.class, () -> chatRoomService.create(user.getId(), req));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(ChatRoomErrorCode.NOT_FOUND);
+            assertThat(ex.getErrorCode()).isEqualTo(ChatRoomErrorCode.NOT_FOUND);
         }
     }
 
@@ -125,10 +125,10 @@ class ChatRoomServiceTest {
             given(entityFacade.readUser(user.getId())).willThrow(new ChatRoomErrorException(ChatRoomErrorCode.NOT_FOUND));
 
             // when
-            ChatRoomErrorException e = assertThrows(ChatRoomErrorException.class, () -> chatRoomService.getMyChatRooms(user.getId()));
+            ChatRoomErrorException ex = assertThrows(ChatRoomErrorException.class, () -> chatRoomService.getMyChatRooms(user.getId()));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(ChatRoomErrorCode.NOT_FOUND);
+            assertThat(ex.getErrorCode()).isEqualTo(ChatRoomErrorCode.NOT_FOUND);
         }
     }
 

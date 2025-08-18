@@ -75,7 +75,9 @@ public class AccessTokenProvider implements JwtProvider {
             Claims claims = getClaimsFromToken(token);
             return claims.getExpiration().before(new Date());
         } catch (JwtErrorException e) {
-            if (JwtErrorCode.EXPIRED_TOKEN.equals(e.getErrorCode())) return true;
+            if (JwtErrorCode.EXPIRED_TOKEN.equals(e.getErrorCode())) {
+                return true;
+            }
             throw e;
         }
     }

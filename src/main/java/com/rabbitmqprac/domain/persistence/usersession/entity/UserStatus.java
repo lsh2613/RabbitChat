@@ -10,8 +10,7 @@ public enum UserStatus {
     ACTIVE_CHAT_ROOM_LIST("채팅방 리스트 뷰"),
     ACTIVE_CHAT_ROOM("채팅방 뷰"),
     BACKGROUND("백그라운드"),
-    INACTIVE("비활성화"),
-    ;
+    INACTIVE("비활성화");
 
     private final String type;
 

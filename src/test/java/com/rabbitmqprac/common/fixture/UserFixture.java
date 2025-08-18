@@ -9,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum UserFixture {
     FIRST_USER(1L, "user_1", "password_1", Role.USER),
-    SECOND_USER(2L, "user_2", "password_2", Role.USER),
-    ;
+    SECOND_USER(2L, "user_2", "password_2", Role.USER);
 
     private final Long id;
     private final String username;

@@ -68,10 +68,10 @@ class UserServiceTest {
             given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.TRUE);
 
             // when
-            UserErrorException e = assertThrows(UserErrorException.class, () -> userService.saveUserWithEncryptedPassword(req));
+            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.saveUserWithEncryptedPassword(req));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
+            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
         }
     }
 
@@ -102,10 +102,10 @@ class UserServiceTest {
             given(userRepository.findById(user.getId())).willReturn(Optional.empty());
 
             // when
-            UserErrorException e = assertThrows(UserErrorException.class, () -> userService.readUser(user.getId()));
+            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.readUser(user.getId()));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
         }
     }
 
@@ -156,10 +156,10 @@ class UserServiceTest {
             given(userRepository.findById(user.getId())).willReturn(Optional.empty());
 
             // when
-            UserErrorException e = assertThrows(UserErrorException.class, () -> userService.getUserDetail(user.getId()));
+            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.getUserDetail(user.getId()));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
         }
     }
 
@@ -190,10 +190,10 @@ class UserServiceTest {
             given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.empty());
 
             // when
-            UserErrorException e = assertThrows(UserErrorException.class, () -> userService.readUserByUsername(user.getUsername()));
+            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.readUserByUsername(user.getUsername()));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
         }
     }
 
@@ -227,10 +227,10 @@ class UserServiceTest {
             given(userRepository.findById(user.getId())).willReturn(Optional.empty());
 
             // when
-            UserErrorException e = assertThrows(UserErrorException.class, () -> userService.updateNickname(user.getId(), req));
+            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.updateNickname(user.getId(), req));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
         }
 
         @Test
@@ -242,10 +242,10 @@ class UserServiceTest {
             given(userRepository.existsByNickname(req.nickname())).willReturn(Boolean.TRUE);
 
             // when
-            UserErrorException e = assertThrows(UserErrorException.class, () -> userService.updateNickname(user.getId(), req));
+            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.updateNickname(user.getId(), req));
 
             // then
-            assertThat(e.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
+            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
         }
     }
 

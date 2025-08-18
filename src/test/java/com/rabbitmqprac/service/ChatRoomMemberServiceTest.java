@@ -72,10 +72,10 @@ class ChatRoomMemberServiceTest {
                 given(chatRoomMemberRepository.existsByChatRoomAndUser(chatRoom, user)).willReturn(true);
 
                 // when
-                ChatRoomErrorException e = assertThrows(ChatRoomErrorException.class, () -> chatRoomMemberService.createAdmin(user, chatRoom));
+                ChatRoomErrorException ex = assertThrows(ChatRoomErrorException.class, () -> chatRoomMemberService.createAdmin(user, chatRoom));
 
                 // then
-                assertThat(e.getErrorCode()).isEqualTo(ChatRoomErrorCode.CONFLICT);
+                assertThat(ex.getErrorCode()).isEqualTo(ChatRoomErrorCode.CONFLICT);
             }
         }
     }
@@ -114,10 +114,10 @@ class ChatRoomMemberServiceTest {
                 given(chatRoomMemberRepository.existsByChatRoomAndUser(chatRoom, user)).willReturn(true);
 
                 // when
-                ChatRoomErrorException e = assertThrows(ChatRoomErrorException.class, () -> chatRoomMemberService.joinChatRoom(user.getId(), chatRoom.getId()));
+                ChatRoomErrorException ex = assertThrows(ChatRoomErrorException.class, () -> chatRoomMemberService.joinChatRoom(user.getId(), chatRoom.getId()));
 
                 // then
-                assertThat(e.getErrorCode()).isEqualTo(ChatRoomErrorCode.CONFLICT);
+                assertThat(ex.getErrorCode()).isEqualTo(ChatRoomErrorCode.CONFLICT);
             }
         }
     }

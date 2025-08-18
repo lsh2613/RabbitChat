@@ -39,7 +39,7 @@ public class RedisConfig {
     // jwt -> userId
     // chatRoomId -> SET {memberId_01, memberId_02, ...}
     @Bean
-    public RedisTemplate<String, Long> StringLongRedisTemplate() {
+    public RedisTemplate<String, Long> stringLongRedisTemplate() {
         RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
