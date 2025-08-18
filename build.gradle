@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.7'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'checkstyle'
+    id 'jacoco'
 }
 
 group = 'com'
@@ -87,4 +88,20 @@ checkstyle {
     configFile = file("config/checkstyle/rules.xml")
     configProperties = ["suppressionFile" : "config/checkstyle/suppressions.xml"]
     maxWarnings = 0
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, includes: [
+                    // Service 계층 (핵심 비즈니스 로직)
+                    '**/domain/context/**/service/**/*.class'
+            ])
+        }))
+    }
 }
