@@ -1,13 +1,16 @@
 package com.rabbitmqprac.domain.context.usersession.exception;
 
-import com.rabbitmqprac.global.exception.payload.*;
+import com.rabbitmqprac.global.exception.payload.BaseErrorCode;
+import com.rabbitmqprac.global.exception.payload.CausedBy;
+import com.rabbitmqprac.global.exception.payload.DomainCode;
+import com.rabbitmqprac.global.exception.payload.ReasonCode;
+import com.rabbitmqprac.global.exception.payload.StatusCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum UserSessionErrorCode implements BaseErrorCode {
     /* 404 NOT FOUND */
-    NOT_FOUND(StatusCode.NOT_FOUND, ReasonCode.REQUESTED_RESOURCE_NOT_FOUND, "유저 세션을 찾을 수 없습니다."),
-    ;
+    NOT_FOUND(StatusCode.NOT_FOUND, ReasonCode.REQUESTED_RESOURCE_NOT_FOUND, "유저 세션을 찾을 수 없습니다.");
 
     private final StatusCode statusCode;
     private final ReasonCode reasonCode;

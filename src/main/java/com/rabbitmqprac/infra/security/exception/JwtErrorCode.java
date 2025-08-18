@@ -1,12 +1,24 @@
 package com.rabbitmqprac.infra.security.exception;
 
-
-import com.rabbitmqprac.global.exception.payload.*;
+import com.rabbitmqprac.global.exception.payload.BaseErrorCode;
+import com.rabbitmqprac.global.exception.payload.CausedBy;
+import com.rabbitmqprac.global.exception.payload.DomainCode;
+import com.rabbitmqprac.global.exception.payload.ReasonCode;
+import com.rabbitmqprac.global.exception.payload.StatusCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import static com.rabbitmqprac.global.exception.payload.ReasonCode.*;
-import static com.rabbitmqprac.global.exception.payload.StatusCode.*;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.ACCESS_TO_THE_REQUESTED_RESOURCE_IS_FORBIDDEN;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.EXPIRED_OR_REVOKED_TOKEN;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.INSUFFICIENT_PERMISSIONS;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.INVALID_REQUEST_SYNTAX;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.MISSING_OR_INVALID_AUTHENTICATION_CREDENTIALS;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.USER_ACCOUNT_SUSPENDED_OR_BANNED;
+import static com.rabbitmqprac.global.exception.payload.ReasonCode.WITHOUT_OWNERSHIP;
+import static com.rabbitmqprac.global.exception.payload.StatusCode.BAD_REQUEST;
+import static com.rabbitmqprac.global.exception.payload.StatusCode.FORBIDDEN;
+import static com.rabbitmqprac.global.exception.payload.StatusCode.INTERNAL_SERVER_ERROR;
+import static com.rabbitmqprac.global.exception.payload.StatusCode.UNAUTHORIZED;
 
 
 @Getter
@@ -24,9 +36,9 @@ public enum JwtErrorCode implements BaseErrorCode {
     FAILED_AUTHENTICATION(UNAUTHORIZED, MISSING_OR_INVALID_AUTHENTICATION_CREDENTIALS, "인증에 실패하였습니다"),
     EXPIRED_TOKEN(UNAUTHORIZED, EXPIRED_OR_REVOKED_TOKEN, "사용기간이 만료된 토큰입니다"),
     INSUFFICIENT_PERMISSIONS_TOKEN(UNAUTHORIZED, INSUFFICIENT_PERMISSIONS, "자원에 대한 충분한 권한이 없습니다."),
-    TAMPERED_TOKEN(UNAUTHORIZED, TAMPERED_OR_MALFORMED_TOKEN, "서명이 조작된 토큰입니다"),
-    MALFORMED_TOKEN(UNAUTHORIZED, TAMPERED_OR_MALFORMED_TOKEN, "비정상적인 토큰입니다"),
-    UNSUPPORTED_JWT_TOKEN(UNAUTHORIZED, TAMPERED_OR_MALFORMED_TOKEN, "지원하지 않는 토큰입니다"),
+    TAMPERED_TOKEN(UNAUTHORIZED, ReasonCode.TAMPERED_OR_MALFORMED_TOKEN, "서명이 조작된 토큰입니다"),
+    MALFORMED_TOKEN(UNAUTHORIZED, ReasonCode.TAMPERED_OR_MALFORMED_TOKEN, "비정상적인 토큰입니다"),
+    UNSUPPORTED_JWT_TOKEN(UNAUTHORIZED, ReasonCode.TAMPERED_OR_MALFORMED_TOKEN, "지원하지 않는 토큰입니다"),
     WITHOUT_OWNERSHIP_REFRESH_TOKEN(UNAUTHORIZED, WITHOUT_OWNERSHIP, "소유권이 없는 리프레시 토큰입니다"),
 
     /**
@@ -40,7 +52,7 @@ public enum JwtErrorCode implements BaseErrorCode {
      * 500 INTERNAL_SERVER_ERROR: 서버 내부 에러
      */
     INVALID_JWT_DTO_FORMAT(INTERNAL_SERVER_ERROR, ReasonCode.UNEXPECTED_ERROR, "서버 내부 에러가 발생했습니다."),
-    UNEXPECTED_ERROR(INTERNAL_SERVER_ERROR, ReasonCode.UNEXPECTED_ERROR, "예상치 못한 에러가 발생했습니다.");;
+    UNEXPECTED_ERROR(INTERNAL_SERVER_ERROR, ReasonCode.UNEXPECTED_ERROR, "예상치 못한 에러가 발생했습니다.");
 
     private final StatusCode statusCode;
     private final ReasonCode reasonCode;

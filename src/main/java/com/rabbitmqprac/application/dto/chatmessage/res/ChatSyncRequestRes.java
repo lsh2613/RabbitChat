@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class ChatSyncRequestRes extends MessageRes {
 
-    static private final MessageType messageType = MessageType.CHAT_SYNC_REQUEST;
+    private static final MessageType messageType = MessageType.CHAT_SYNC_REQUEST;
 
     private ChatSyncRequestRes() {
         super(messageType);

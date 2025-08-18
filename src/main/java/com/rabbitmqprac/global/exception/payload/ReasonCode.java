@@ -54,8 +54,7 @@ public enum ReasonCode implements BaseCode {
     TYPE_MISMATCH_ERROR_IN_REQUEST_BODY(2),
 
     /* 500_INTERNAL_SERVER_ERROR */
-    UNEXPECTED_ERROR(0),
-    ;
+    UNEXPECTED_ERROR(0);
 
     private final int code;
 

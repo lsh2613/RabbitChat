@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches: [ dev, develop ]
+    paths:
+      - '**'
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Check lint
+        run: ./gradlew checkstyleMain checkstyleTest
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Create test coverage report
+        run: ./gradlew jacocoTestReport
+
+      - name: Register the test coverage as a comment on PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6
+        with:
+          comment-type: both
+          title: 📊 Test Coverage Report
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          update-comment: true # 이미 커버리지 코맨트 있으면 새로 생성하지 않고 기존 코맨트 수정
+          min-coverage-overall: 60       # 전체 커버리지 60% 이상이면 ✅
+          min-coverage-changed-files: 60 # 변경된 파일은 60% 이상이면 ✅
+          pass-emoji: '✅'
+          fail-emoji: '❌'

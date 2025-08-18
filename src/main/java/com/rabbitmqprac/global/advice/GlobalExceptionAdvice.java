@@ -3,7 +3,11 @@ package com.rabbitmqprac.global.advice;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.rabbitmqprac.global.exception.CustomValidationException;
 import com.rabbitmqprac.global.exception.GlobalErrorException;
-import com.rabbitmqprac.global.exception.payload.*;
+import com.rabbitmqprac.global.exception.payload.CausedBy;
+import com.rabbitmqprac.global.exception.payload.DomainCode;
+import com.rabbitmqprac.global.exception.payload.ErrorResponse;
+import com.rabbitmqprac.global.exception.payload.ReasonCode;
+import com.rabbitmqprac.global.exception.payload.StatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -165,7 +169,8 @@ public class GlobalExceptionAdvice {
 
         Map<String, String> fieldErrors = new HashMap<>();
         if (type.isEnum()) {
-            fieldErrors.put(e.getName(), "The parameter " + e.getName() + " must have a value among : " + StringUtils.join(type.getEnumConstants(), ", "));
+            String message = "The parameter " + e.getName() + " must have a value among : " + StringUtils.join(type.getEnumConstants(), ", ");
+            fieldErrors.put(e.getName(), message);
         } else {
             fieldErrors.put(e.getName(), "The parameter " + e.getName() + " must have a value of type " + type.getSimpleName());
         }

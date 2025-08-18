@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ChatRoomFixture {
     FIRST_CHAT_ROOM(1L, "first-chat-room", 10),
-    SECOND_CHAT_ROOM(2L, "second-chat-room", 20),
-    ;
+    SECOND_CHAT_ROOM(2L, "second-chat-room", 20);
 
     private final Long id;
     private final String title;

@@ -11,8 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum ChatRoomMemberFixture {
     ADMIN(ChatRoomMemberRole.ADMIN),
-    MEMBER(ChatRoomMemberRole.MEMBER),
-    ;
+    MEMBER(ChatRoomMemberRole.MEMBER);
 
     private final ChatRoomMemberRole role;
 
