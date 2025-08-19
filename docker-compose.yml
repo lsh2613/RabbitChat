@@ -45,5 +45,17 @@ services:
     networks:
       - my_network
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/config/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    networks:
+        - my_network
+
 networks:
   my_network:
