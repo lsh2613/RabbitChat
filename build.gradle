@@ -85,8 +85,8 @@ tasks.withType(Checkstyle){
 }
 
 checkstyle {
-    configFile = file("config/checkstyle/rules.xml")
-    configProperties = ["suppressionFile" : "config/checkstyle/suppressions.xml"]
+    configFile = file("checkstyle/config/rules.xml")
+    configProperties = ["suppressionFile" : "checkstyle/config/suppressions.xml"]
     maxWarnings = 0
 }
 
