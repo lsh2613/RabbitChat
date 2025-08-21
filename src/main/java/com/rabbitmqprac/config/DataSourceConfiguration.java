@@ -77,7 +77,7 @@ public class DataSourceConfiguration {
         @Override
         protected Object determineCurrentLookupKey() {
             String lookupKey = TransactionSynchronizationManager.isCurrentTransactionReadOnly() ? REPLICA_DATA_SOURCE : MASTER_DATA_SOURCE;
-            log.info("Current DataSource type: {}", lookupKey);
+            log.debug("Current DataSource type: {}", lookupKey);
             return lookupKey;
         }
     }
