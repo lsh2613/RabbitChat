@@ -67,8 +67,11 @@ public class DataSourceConfiguration {
 
     @Bean
     @Primary
-    public DataSource dataSource() {
-        DataSource determinedDataSource = routingDataSource(masterDataSource(), replicaDataSource());
+    public DataSource dataSource(
+            @Qualifier(MASTER_DATA_SOURCE) DataSource masterDataSource,
+            @Qualifier(REPLICA_DATA_SOURCE) DataSource replicaDataSource
+    ) {
+        DataSource determinedDataSource = routingDataSource(masterDataSource, replicaDataSource);
         return new LazyConnectionDataSourceProxy(determinedDataSource);
     }
 
