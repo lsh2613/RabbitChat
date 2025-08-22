@@ -32,6 +32,7 @@ public class User extends DateAuditable {
 
     public static User of(String username, String password, Role role) {
         User user = new User();
+        user.nickname = nickname;
         user.username = username;
         user.password = password;
         user.nickname = username;
