@@ -53,10 +53,11 @@ public class AuthServiceTest {
         @DisplayName("회원가입 성공")
         void signUp() {
             // given
-            final String username = "username";
+            final String nickname = "nickname";
+            final String username = "nickname";
             final String password = "password_123";
             final String confirmPassword = "password_123";
-            AuthSignUpReq req = new AuthSignUpReq(username, password, confirmPassword);
+            AuthSignUpReq req = new AuthSignUpReq(nickname, username, password, confirmPassword);
             Jwts jwts = mock(Jwts.class);
 
             given(userService.saveUserWithEncryptedPassword(any(UserCreateReq.class)))
@@ -81,10 +82,11 @@ public class AuthServiceTest {
         @DisplayName("password와 confirmPassword가 다른 경우 회원 가입에 실패")
         void signUpWhenInvalidPassword() {
             // given
-            final String username = "username";
+            final String nickname = "nickname";
+            final String username = "nickname";
             final String password = "password";
             final String confirmPassword = "invalid_password";
-            AuthSignUpReq req = new AuthSignUpReq(username, password, confirmPassword);
+            AuthSignUpReq req = new AuthSignUpReq(nickname, username, password, confirmPassword);
 
             // when
             AuthErrorException errorException = assertThrows(AuthErrorException.class, () -> authService.signUp(req));
@@ -101,7 +103,7 @@ public class AuthServiceTest {
         @DisplayName("로그인 성공")
         void signIn() {
             // given
-            final String username = "username";
+            final String username = "nickname";
             final String password = "password";
             AuthSignInReq req = new AuthSignInReq(username, password);
             Jwts jwts = mock(Jwts.class);
@@ -127,7 +129,7 @@ public class AuthServiceTest {
         @DisplayName("로그인 유저의 패스워드가 올바르지 않다면 로그인 실패")
         void signInWhenInvalidPassword() {
             // given
-            final String username = "username";
+            final String username = "nickname";
             final String password = "password";
             AuthSignInReq req = new AuthSignInReq(username, password);
             given(userService.readUserByUsername(username)).willReturn(user);

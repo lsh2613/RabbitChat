@@ -44,7 +44,7 @@ class UserServiceTest {
         @DisplayName("유저 저장 성공")
         void saveUser() {
             // given
-            UserCreateReq req = new UserCreateReq(user.getUsername(), user.getPassword());
+            UserCreateReq req = new UserCreateReq(user.getNickname(), user.getUsername(), user.getPassword());
             given(userRepository.save(any(User.class))).willReturn(user);
             given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.FALSE);
 
@@ -61,10 +61,10 @@ class UserServiceTest {
     @DisplayName("유저 저장 실패 시나리오")
     class UserSaveFailScenarios {
         @Test
-        @DisplayName("username 중복")
+        @DisplayName("nickname 중복")
         void saveUserWhenExistingUserByUsername() {
             // given
-            UserCreateReq req = new UserCreateReq(user.getUsername(), user.getPassword());
+            UserCreateReq req = new UserCreateReq(user.getNickname(), user.getUsername(), user.getPassword());
             given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.TRUE);
 
             // when
@@ -184,7 +184,7 @@ class UserServiceTest {
     @DisplayName("username으로 유저 조회 실패 시나리오")
     class UserReadByUsernameFailScenarios {
         @Test
-        @DisplayName("존재하지 않는 username")
+        @DisplayName("존재하지 않는 nickname")
         void readUserByUsernameWhenNotFoundedUser() {
             // given
             given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.empty());
@@ -250,10 +250,10 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("username 중복 체크 성공 시나리오")
+    @DisplayName("nickname 중복 체크 성공 시나리오")
     class UsernameDuplicateCheckSuccessScenarios {
         @Test
-        @DisplayName("username 중복 체크 - 중복")
+        @DisplayName("nickname 중복 체크 - 중복")
         void isDuplicatedUsernameTrue() {
             // given
             given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.TRUE);
@@ -266,7 +266,7 @@ class UserServiceTest {
         }
 
         @Test
-        @DisplayName("username 중복 체크 - 중복 아님")
+        @DisplayName("nickname 중복 체크 - 중복 아님")
         void isDuplicatedUsernameFalse() {
             // given
             given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.FALSE);

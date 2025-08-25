@@ -29,7 +29,7 @@ public class AuthService {
             throw new AuthErrorException(AuthErrorCode.PASSWORD_CONFIRM_MISMATCH);
 
         User user = userService.saveUserWithEncryptedPassword(
-                UserCreateReq.of(req.username(), req.getEncodedPassword(bCryptPasswordEncoder))
+                UserCreateReq.of(req.nickname(), req.username(), req.getEncodedPassword(bCryptPasswordEncoder))
         );
 
         return Pair.of(user.getId(), jwtHelper.createToken(user));

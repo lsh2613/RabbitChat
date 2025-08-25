@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,20 +22,27 @@ public class User extends DateAuditable {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String username;
-    @Column(nullable = false)
+    @ColumnDefault("NULL")
     private String password;
     @Column(nullable = false)
     private String nickname;
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public static User of(String username, String password, Role role) {
+    public static User of(String nickname, String username, String password, Role role) {
         User user = new User();
+        user.nickname = nickname;
         user.username = username;
         user.password = password;
-        user.nickname = username;
+        user.role = role;
+        return user;
+    }
+
+    public static User of(String nickname, Role role) {
+        User user = new User();
+        user.nickname = nickname;
         user.role = role;
         return user;
     }
