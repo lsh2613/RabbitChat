@@ -70,10 +70,15 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserErrorException(UserErrorCode.NOT_FOUND));
 
-        if (userRepository.existsByNickname(req.nickname()))
-            throw new UserErrorException(UserErrorCode.CONFLICT_USERNAME);
+        validateNicknameDuplication(req.nickname());
 
         user.updateNickname(req.nickname());
+    }
+
+    @Transactional(readOnly = true)
+    public void validateNicknameDuplication(String nickname) {
+        if (userRepository.existsByNickname(nickname))
+            throw new UserErrorException(UserErrorCode.CONFLICT_USERNAME);
     }
 
     @Transactional(readOnly = true)
