@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,27 +52,31 @@ public class OauthServiceTest {
     private OauthService oauthService;
 
     private static final User user = mock(User.class);
+    private static final Oauth oauth = mock(Oauth.class);
 
     @BeforeEach
     void setUp() {
         when(user.getId()).thenReturn(UserFixture.FIRST_USER.toEntity().getId());
+        when(oauth.getUser()).thenReturn(user);
     }
 
     @Nested
     @DisplayName("signIn 시나리오")
     class SignInScenario {
+        private final OauthSignInReq req = mock(OauthSignInReq.class);
         private final OauthProvider provider = mock(OauthProvider.class);
         private final String code = "test-code";
+        private final String idToken = "test-id-token";
         private final OidcDecodePayload payload = mock(OidcDecodePayload.class);
-        private final Oauth oauth = mock(Oauth.class);
         private final Jwts jwts = mock(Jwts.class);
         private final OauthTokenRes oauthTokenRes = mock(OauthTokenRes.class);
 
         @BeforeEach
         void setUp() {
-            when(oauth.getUser()).thenReturn(user);
-            when(oauthHelper.getIdToken(any(), any())).thenReturn(oauthTokenRes);
-            when(oauthHelper.getOidcDecodedPayload(any(), any())).thenReturn(payload);
+            when(req.code()).thenReturn(code);
+            when(oauthHelper.getIdToken(provider, code)).thenReturn(oauthTokenRes);
+            when(oauthTokenRes.idToken()).thenReturn(idToken);
+            when(oauthHelper.getOidcDecodedPayload(provider, idToken)).thenReturn(payload);
         }
 
         @Nested
@@ -85,7 +90,7 @@ public class OauthServiceTest {
                 when(jwtHelper.createToken(user)).thenReturn(jwts);
 
                 // when
-                Pair<Long, Jwts> result = oauthService.signIn(provider, new OauthSignInReq(code));
+                Pair<Long, Jwts> result = oauthService.signIn(provider, req);
 
                 // then
                 assertThat(result.getLeft()).isEqualTo(user.getId());
@@ -99,7 +104,7 @@ public class OauthServiceTest {
                 when(oauthRepository.findBySubAndOauthProvider(payload.sub(), provider)).thenReturn(Optional.empty());
 
                 // when
-                Pair<Long, Jwts> result = oauthService.signIn(provider, new OauthSignInReq(code));
+                Pair<Long, Jwts> result = oauthService.signIn(provider, req);
 
                 // then
                 assertThat(result.getLeft()).isEqualTo(-1L);
@@ -111,20 +116,21 @@ public class OauthServiceTest {
     @Nested
     @DisplayName("signUp 시나리오")
     class SignUpScenario {
-        private final OauthProvider provider = OauthProvider.GOOGLE;
+        private final OauthProvider provider = mock(OauthProvider.class);
         private final String code = "test-code";
         private final String nickname = "test-nickname";
+        private final String idToken = "test-id-token";
         private final OauthSignUpReq req = mock(OauthSignUpReq.class);
         private final OauthTokenRes tokenRes = mock(OauthTokenRes.class);
         private final OidcDecodePayload payload = mock(OidcDecodePayload.class);
-        private final Oauth oauth = mock(Oauth.class);
         private final Jwts jwts = mock(Jwts.class);
 
         @BeforeEach
         void setUp() {
-            when(oauthHelper.getIdToken(any(), any())).thenReturn(tokenRes);
-            when(oauthHelper.getOidcDecodedPayload(any(), any())).thenReturn(payload);
             when(req.code()).thenReturn(code);
+            when(oauthHelper.getIdToken(provider, code)).thenReturn(tokenRes);
+            when(tokenRes.idToken()).thenReturn(idToken);
+            when(oauthHelper.getOidcDecodedPayload(provider, idToken)).thenReturn(payload);
             when(req.nickname()).thenReturn(nickname);
         }
 
@@ -138,13 +144,14 @@ public class OauthServiceTest {
                 when(oauthRepository.existsBySubAndOauthProvider(payload.sub(), provider)).thenReturn(false);
                 doNothing().when(userService).validateNicknameDuplication(nickname);
                 when(userService.create(nickname)).thenReturn(user);
-                when(oauthRepository.save(any())).thenReturn(oauth);
                 when(jwtHelper.createToken(user)).thenReturn(jwts);
 
                 // when
                 Pair<Long, Jwts> result = oauthService.signUp(provider, req);
 
                 // then
+                verify(userService).create(nickname);
+                verify(oauthRepository).save(any(Oauth.class));
                 assertThat(result.getLeft()).isEqualTo(user.getId());
                 assertThat(result.getRight()).isEqualTo(jwts);
             }
