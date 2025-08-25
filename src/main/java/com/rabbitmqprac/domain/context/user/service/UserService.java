@@ -2,6 +2,7 @@ package com.rabbitmqprac.domain.context.user.service;
 
 
 import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
+import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
 import com.rabbitmqprac.application.mapper.UserMapper;
 import com.rabbitmqprac.domain.context.user.dto.req.UserCreateReq;
@@ -90,5 +91,10 @@ public class UserService {
     public User create(String nickname) {
         User user = User.of(nickname, Role.USER);
         return userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isDuplicatedNickname(NicknameCheckReq req) {
+        return userRepository.existsByNickname(req.nickname());
     }
 }

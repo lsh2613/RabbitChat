@@ -1,6 +1,7 @@
 package com.rabbitmqprac.service;
 
 import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
+import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
 import com.rabbitmqprac.common.fixture.UserFixture;
 import com.rabbitmqprac.domain.context.user.dto.req.UserCreateReq;
@@ -9,6 +10,7 @@ import com.rabbitmqprac.domain.context.user.exception.UserErrorException;
 import com.rabbitmqprac.domain.context.user.service.UserService;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.domain.persistence.user.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -273,6 +275,43 @@ class UserServiceTest {
 
             // when
             Boolean result = userService.isDuplicatedUsername(user.getUsername());
+
+            // then
+            assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("닉네임 중복 체크 성공 시나리오")
+    class NicknameDuplicateCheckSuccessScenarios {
+        private static NicknameCheckReq req = mock(NicknameCheckReq.class);
+
+        @BeforeEach
+        void setUp() {
+            given(req.nickname()).willReturn(user.getNickname());
+        }
+
+        @Test
+        @DisplayName("닉네임 중복 체크 - 중복")
+        void isDuplicatedNicknameTrue() {
+            // given
+            given(userRepository.existsByNickname(user.getNickname())).willReturn(Boolean.TRUE);
+
+            // when
+            Boolean result = userService.isDuplicatedNickname(req);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        @DisplayName("닉네임 중복 체크 - 중복 아님")
+        void isDuplicatedNicknameFalse() {
+            // given
+            given(userRepository.existsByNickname(user.getNickname())).willReturn(Boolean.FALSE);
+
+            // when
+            Boolean result = userService.isDuplicatedNickname(req);
 
             // then
             assertThat(result).isFalse();
