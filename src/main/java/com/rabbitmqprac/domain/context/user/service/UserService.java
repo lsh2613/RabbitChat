@@ -7,9 +7,9 @@ import com.rabbitmqprac.application.mapper.UserMapper;
 import com.rabbitmqprac.domain.context.user.dto.req.UserCreateReq;
 import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
 import com.rabbitmqprac.domain.context.user.exception.UserErrorException;
+import com.rabbitmqprac.domain.persistence.user.entity.Role;
 import com.rabbitmqprac.domain.persistence.user.entity.User;
 import com.rabbitmqprac.domain.persistence.user.repository.UserRepository;
-import com.rabbitmqprac.global.exception.GlobalErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,5 +84,11 @@ public class UserService {
     @Transactional(readOnly = true)
     public Boolean isDuplicatedUsername(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    @Transactional
+    public User create(String nickname) {
+        User user = User.of(nickname, Role.USER);
+        return userRepository.save(user);
     }
 }

@@ -70,12 +70,14 @@ dependencies {
 
     // Apache Commons Lang3
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
-
 
 tasks.withType(Checkstyle){
     reports {
