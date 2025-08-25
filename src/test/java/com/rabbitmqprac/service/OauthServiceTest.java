@@ -65,10 +65,12 @@ public class OauthServiceTest {
         private final OidcDecodePayload payload = mock(OidcDecodePayload.class);
         private final Oauth oauth = mock(Oauth.class);
         private final Jwts jwts = mock(Jwts.class);
+        private final OauthTokenRes oauthTokenRes = mock(OauthTokenRes.class);
 
         @BeforeEach
         void setUp() {
             when(oauth.getUser()).thenReturn(user);
+            when(oauthHelper.getIdToken(any(), any())).thenReturn(oauthTokenRes);
             when(oauthHelper.getOidcDecodedPayload(any(), any())).thenReturn(payload);
         }
 
