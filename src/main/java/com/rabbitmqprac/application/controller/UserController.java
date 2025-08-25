@@ -1,6 +1,7 @@
 package com.rabbitmqprac.application.controller;
 
 import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
+import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
 import com.rabbitmqprac.domain.context.user.service.UserService;
 import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
@@ -46,4 +47,8 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/users/nickname")
+    public Map<String, Boolean> checkNicknameDuplication(@Validated NicknameCheckReq nicknameCheckReq) {
+        return Map.of("isDuplicated", userService.isDuplicatedNickname(nicknameCheckReq));
+    }
 }
