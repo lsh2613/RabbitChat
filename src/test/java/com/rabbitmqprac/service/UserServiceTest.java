@@ -37,285 +37,311 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private static User user = UserFixture.FIRST_USER.toEntity();
+    private static final User USER = UserFixture.FIRST_USER.toEntity();
 
     @Nested
-    @DisplayName("유저 저장 성공 시나리오")
-    class UserSaveSuccessScenarios {
-        @Test
-        @DisplayName("유저 저장 성공")
-        void saveUser() {
-            // given
-            UserCreateReq req = new UserCreateReq(user.getNickname(), user.getUsername(), user.getPassword());
-            given(userRepository.save(any(User.class))).willReturn(user);
-            given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.FALSE);
+    @DisplayName("유저 저장 시나리오")
+    class SaveUserScenario {
+        private final UserCreateReq req = new UserCreateReq(USER.getNickname(), USER.getUsername(), USER.getPassword());
 
-            // when
-            User savedUser = userService.saveUserWithEncryptedPassword(req);
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("유저 저장 성공")
+            void saveUserSuccess() {
+                // given
+                given(userRepository.existsByUsername(USER.getUsername())).willReturn(false);
+                given(userRepository.save(any(User.class))).willReturn(USER);
 
-            // then
-            assertThat(savedUser.getUsername()).isEqualTo(user.getUsername());
-            assertThat(savedUser.getPassword()).isEqualTo(user.getPassword());
+                // when
+                User saved = userService.saveUserWithEncryptedPassword(req);
+
+                // then
+                assertThat(saved.getUsername()).isEqualTo(USER.getUsername());
+                assertThat(saved.getPassword()).isEqualTo(USER.getPassword());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("username 중복")
+            void saveUserFailByDuplicateUsername() {
+                // given
+                given(userRepository.existsByUsername(USER.getUsername())).willReturn(true);
+
+                // when
+                UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.saveUserWithEncryptedPassword(req));
+
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
+            }
         }
     }
 
     @Nested
-    @DisplayName("유저 저장 실패 시나리오")
-    class UserSaveFailScenarios {
-        @Test
-        @DisplayName("nickname 중복")
-        void saveUserWhenExistingUserByUsername() {
-            // given
-            UserCreateReq req = new UserCreateReq(user.getNickname(), user.getUsername(), user.getPassword());
-            given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.TRUE);
+    @DisplayName("유저 조회 시나리오")
+    class ReadUserScenario {
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("유저 조회 성공")
+            void readUserSuccess() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.of(USER));
 
-            // when
-            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.saveUserWithEncryptedPassword(req));
+                // when
+                User found = userService.readUser(USER.getId());
 
-            // then
-            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
+                // then
+                assertThat(found.getUsername()).isEqualTo(USER.getUsername());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("존재하지 않는 userId")
+            void readUserFailByNotFound() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.empty());
+                // when
+                UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.readUser(USER.getId()));
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            }
         }
     }
 
     @Nested
-    @DisplayName("유저 조회 성공 시나리오")
-    class UserReadSuccessScenarios {
-        @Test
-        @DisplayName("유저 조회 성공")
-        void readUser() {
-            // given
-            given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+    @DisplayName("유저 리스트 조회 시나리오")
+    class GetUserDetailsScenario {
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("유저 리스트 조회 성공")
+            void getUserDetailsSuccess() {
+                // given
+                given(userRepository.findAll()).willReturn(List.of(USER));
 
-            // when
-            User foundUser = userService.readUser(user.getId());
+                // when
+                List<UserDetailRes> details = userService.getUserDetails();
 
-            // then
-            assertThat(foundUser.getUsername()).isEqualTo(user.getUsername());
+                // then
+                assertThat(details).hasSize(1);
+                assertThat(details.get(0).nickname()).isEqualTo(USER.getUsername());
+            }
         }
     }
 
     @Nested
-    @DisplayName("유저 조회 실패 시나리오")
-    class UserReadFailScenarios {
-        @Test
-        @DisplayName("존재하지 않는 userId")
-        void readUserWhenNotFoundedUserId() {
-            // given
-            given(userRepository.findById(user.getId())).willReturn(Optional.empty());
+    @DisplayName("단일 유저 상세 조회 시나리오")
+    class GetUserDetailScenario {
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("유저 상세 조회 성공")
+            void getUserDetailSuccess() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.of(USER));
 
-            // when
-            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.readUser(user.getId()));
+                // when
+                UserDetailRes detail = userService.getUserDetail(USER.getId());
 
-            // then
-            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+                // then
+                assertThat(detail.nickname()).isEqualTo(USER.getUsername());
+            }
         }
-    }
 
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("존재하지 않는 userId")
+            void getUserDetailFailByNotFound() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.empty());
 
-    @Nested
-    @DisplayName("유저 리스트 조회 성공 시나리오")
-    class UserListScenarios {
-        @Test
-        @DisplayName("유저 리스트 조회 성공")
-        void getUserDetails() {
-            // given
-            given(userRepository.findAll()).willReturn(List.of(user));
+                // when
+                UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.getUserDetail(USER.getId()));
 
-            // when
-            List<UserDetailRes> details = userService.getUserDetails();
-
-            // then
-            assertThat(details).hasSize(1);
-            assertThat(details.get(0).nickname()).isEqualTo(user.getUsername());
-        }
-    }
-
-
-    @Nested
-    @DisplayName("단일 유저 상세 조회 성공 시나리오")
-    class UserDetailSuccessScenarios {
-        @Test
-        @DisplayName("유저 상세 조회 성공")
-        void getUserDetail() {
-            // given
-            given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-
-            // when
-            UserDetailRes detail = userService.getUserDetail(user.getId());
-
-            // then
-            assertThat(detail.nickname()).isEqualTo(user.getUsername());
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            }
         }
     }
 
     @Nested
-    @DisplayName("단일 유저 상세 조회 실패 시나리오")
-    class UserDetailFailScenarios {
-        @Test
-        @DisplayName("존재하지 않는 userId")
-        void getUserDetailWhenNotFoundedUserId() {
-            // given
-            given(userRepository.findById(user.getId())).willReturn(Optional.empty());
+    @DisplayName("username으로 유저 조회 시나리오")
+    class ReadUserByUsernameScenario {
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("username으로 유저 조회 성공")
+            void readUserByUsernameSuccess() {
+                // given
+                given(userRepository.findByUsername(USER.getUsername())).willReturn(Optional.of(USER));
 
-            // when
-            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.getUserDetail(user.getId()));
+                // when
+                User found = userService.readUserByUsername(USER.getUsername());
 
-            // then
-            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+                // then
+                assertThat(found.getUsername()).isEqualTo(USER.getUsername());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("존재하지 않는 username")
+            void readUserByUsernameFailByNotFound() {
+                // given
+                given(userRepository.findByUsername(USER.getUsername())).willReturn(Optional.empty());
+
+                // when
+                UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.readUserByUsername(USER.getUsername()));
+
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            }
         }
     }
 
     @Nested
-    @DisplayName("username으로 유저 조회 성공 시나리오")
-    class UserReadByUsernameSuccessScenarios {
-        @Test
-        @DisplayName("username으로 유저 조회 성공")
-        void readUserByUsername() {
-            // given
-            given(userRepository.findByUsername(user.getUsername())).willReturn(java.util.Optional.of(user));
+    @DisplayName("닉네임 변경 시나리오")
+    class UpdateNicknameScenario {
+        private final NicknameUpdateReq req = new NicknameUpdateReq("newNickname");
 
-            // when
-            User foundUser = userService.readUserByUsername(user.getUsername());
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("닉네임 변경 성공")
+            void updateNicknameSuccess() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.of(USER));
+                given(userRepository.existsByNickname(req.nickname())).willReturn(false);
 
-            // then
-            assertThat(foundUser.getUsername()).isEqualTo(user.getUsername());
+                // when
+                userService.updateNickname(USER.getId(), req);
+
+                // then
+                assertThat(USER.getNickname()).isEqualTo(req.nickname());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("존재하지 않은 유저")
+            void updateNicknameFailByNotFound() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.empty());
+
+                // when
+                UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.updateNickname(USER.getId(), req));
+
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+            }
+
+            @Test
+            @DisplayName("닉네임 중복")
+            void updateNicknameFailByDuplicate() {
+                // given
+                given(userRepository.findById(USER.getId())).willReturn(Optional.of(USER));
+                given(userRepository.existsByNickname(req.nickname())).willReturn(true);
+
+                // when
+                UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.updateNickname(USER.getId(), req));
+
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
+            }
         }
     }
 
     @Nested
-    @DisplayName("username으로 유저 조회 실패 시나리오")
-    class UserReadByUsernameFailScenarios {
-        @Test
-        @DisplayName("존재하지 않는 nickname")
-        void readUserByUsernameWhenNotFoundedUser() {
-            // given
-            given(userRepository.findByUsername(user.getUsername())).willReturn(Optional.empty());
+    @DisplayName("username 중복 체크 시나리오")
+    class UsernameDuplicateCheckScenario {
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("username 중복 체크 - 중복")
+            void isDuplicatedUsernameTrue() {
+                // given
+                given(userRepository.existsByUsername(USER.getUsername())).willReturn(true);
 
-            // when
-            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.readUserByUsername(user.getUsername()));
+                // when
+                Boolean result = userService.isDuplicatedUsername(USER.getUsername());
 
-            // then
-            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
+                // then
+                assertThat(result).isTrue();
+            }
+
+            @Test
+            @DisplayName("username 중복 체크 - 중복 아님")
+            void isDuplicatedUsernameFalse() {
+                // given
+                given(userRepository.existsByUsername(USER.getUsername())).willReturn(false);
+
+                // when
+                Boolean result = userService.isDuplicatedUsername(USER.getUsername());
+
+                // then
+                assertThat(result).isFalse();
+            }
         }
     }
 
     @Nested
-    @DisplayName("닉네임 변경 성공 시나리오")
-    class UpdateNicknameSuccessScenarios {
-        @Test
-        @DisplayName("닉네임 변경 성공")
-        void updateNicknameSuccess() {
-            // given
-            NicknameUpdateReq req = new NicknameUpdateReq("newNickname");
-            given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-            given(userRepository.existsByNickname(req.nickname())).willReturn(Boolean.FALSE);
-
-            // when
-            userService.updateNickname(user.getId(), req);
-
-            // then
-            assertThat(user.getNickname()).isEqualTo(req.nickname());
-        }
-    }
-
-    @Nested
-    @DisplayName("닉네임 변경 실패 시나리오")
-    class UpdateNicknameFailScenarios {
-        @Test
-        @DisplayName("존재하지 않은 유저")
-        void updateNicknameFailWhenNotFoundedUser() {
-            // given
-            NicknameUpdateReq req = mock(NicknameUpdateReq.class);
-            given(userRepository.findById(user.getId())).willReturn(Optional.empty());
-
-            // when
-            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.updateNickname(user.getId(), req));
-
-            // then
-            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.NOT_FOUND);
-        }
-
-        @Test
-        @DisplayName("닉네임 중복")
-        void updateNicknameFailByDuplicate() {
-            // given
-            NicknameUpdateReq req = new NicknameUpdateReq("newNickname");
-            given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-            given(userRepository.existsByNickname(req.nickname())).willReturn(Boolean.TRUE);
-
-            // when
-            UserErrorException ex = assertThrows(UserErrorException.class, () -> userService.updateNickname(user.getId(), req));
-
-            // then
-            assertThat(ex.getErrorCode()).isEqualTo(UserErrorCode.CONFLICT_USERNAME);
-        }
-    }
-
-    @Nested
-    @DisplayName("nickname 중복 체크 성공 시나리오")
-    class UsernameDuplicateCheckSuccessScenarios {
-        @Test
-        @DisplayName("nickname 중복 체크 - 중복")
-        void isDuplicatedUsernameTrue() {
-            // given
-            given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.TRUE);
-
-            // when
-            Boolean result = userService.isDuplicatedUsername(user.getUsername());
-
-            // then
-            assertThat(result).isTrue();
-        }
-
-        @Test
-        @DisplayName("nickname 중복 체크 - 중복 아님")
-        void isDuplicatedUsernameFalse() {
-            // given
-            given(userRepository.existsByUsername(user.getUsername())).willReturn(Boolean.FALSE);
-
-            // when
-            Boolean result = userService.isDuplicatedUsername(user.getUsername());
-
-            // then
-            assertThat(result).isFalse();
-        }
-    }
-
-    @Nested
-    @DisplayName("닉네임 중복 체크 성공 시나리오")
-    class NicknameDuplicateCheckSuccessScenarios {
-        private static NicknameCheckReq req = mock(NicknameCheckReq.class);
+    @DisplayName("닉네임 중복 체크 시나리오")
+    class NicknameDuplicateCheckScenario {
+        private final NicknameCheckReq req = mock(NicknameCheckReq.class);
 
         @BeforeEach
         void setUp() {
-            given(req.nickname()).willReturn(user.getNickname());
+            given(req.nickname()).willReturn(USER.getNickname());
         }
 
-        @Test
-        @DisplayName("닉네임 중복 체크 - 중복")
-        void isDuplicatedNicknameTrue() {
-            // given
-            given(userRepository.existsByNickname(user.getNickname())).willReturn(Boolean.TRUE);
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("닉네임 중복 체크 - 중복")
+            void isDuplicatedNicknameTrue() {
+                // given
+                given(userRepository.existsByNickname(USER.getNickname())).willReturn(true);
 
-            // when
-            Boolean result = userService.isDuplicatedNickname(req);
+                // when
+                Boolean result = userService.isDuplicatedNickname(req);
 
-            // then
-            assertThat(result).isTrue();
-        }
+                // then
+                assertThat(result).isTrue();
+            }
 
-        @Test
-        @DisplayName("닉네임 중복 체크 - 중복 아님")
-        void isDuplicatedNicknameFalse() {
-            // given
-            given(userRepository.existsByNickname(user.getNickname())).willReturn(Boolean.FALSE);
+            @Test
+            @DisplayName("닉네임 중복 체크 - 중복 아님")
+            void isDuplicatedNicknameFalse() {
+                // given
+                given(userRepository.existsByNickname(USER.getNickname())).willReturn(false);
 
-            // when
-            Boolean result = userService.isDuplicatedNickname(req);
+                // when
+                Boolean result = userService.isDuplicatedNickname(req);
 
-            // then
-            assertThat(result).isFalse();
+                // then
+                assertThat(result).isFalse();
+            }
         }
     }
-
 }
