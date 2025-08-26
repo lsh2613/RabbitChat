@@ -4,6 +4,7 @@ import com.rabbitmqprac.global.util.ApiExceptionExplainParser;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;
@@ -40,7 +41,11 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(apiInfo(activeProfile))
                 .addSecurityItem(securityRequirement)
-                .components(securitySchemes());
+                .components(securitySchemes())
+                .externalDocs(new ExternalDocumentation()
+                        .description("Rabbit API GitHub")
+                        .url("https://github.com/lsh2613/RabbitChat")
+                );
     }
 
     @Bean
