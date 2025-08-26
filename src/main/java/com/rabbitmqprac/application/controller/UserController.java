@@ -1,7 +1,7 @@
 package com.rabbitmqprac.application.controller;
 
 import com.rabbitmqprac.application.api.UserApi;
-import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
+import com.rabbitmqprac.application.dto.user.res.UserDetailRes;
 import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
 import com.rabbitmqprac.domain.context.user.service.UserService;

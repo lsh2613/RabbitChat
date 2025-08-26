@@ -3,6 +3,7 @@ package com.rabbitmqprac.application.api;
 import com.rabbitmqprac.application.dto.auth.req.AuthSignInReq;
 import com.rabbitmqprac.application.dto.auth.req.AuthSignUpReq;
 import com.rabbitmqprac.application.dto.auth.req.AuthUpdatePasswordReq;
+import com.rabbitmqprac.application.dto.user.res.UserIdRes;
 import com.rabbitmqprac.domain.context.auth.exception.AuthErrorCode;
 import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
 import com.rabbitmqprac.global.annotation.ApiExceptionExplanation;
@@ -31,7 +32,7 @@ public interface AuthApi {
                     constants = "CONFLICT_USERNAME"
             )
     })
-    ResponseEntity<Map<String, Long>> signUp(@RequestBody @Validated AuthSignUpReq authSignUpReq);
+    ResponseEntity<UserIdRes> signUp(@RequestBody @Validated AuthSignUpReq authSignUpReq);
 
     @Operation(summary = "일반 로그인")
     @ApiExceptionExplanations({
@@ -44,7 +45,7 @@ public interface AuthApi {
                     constants = "NOT_FOUND"
             )
     })
-    ResponseEntity<Map<String, Long>> signIn(@RequestBody @Validated AuthSignInReq authSignInReq);
+    ResponseEntity<UserIdRes> signIn(@RequestBody @Validated AuthSignInReq authSignInReq);
 
     @Operation(summary = "비밀번호 변경")
     @ApiExceptionExplanations({

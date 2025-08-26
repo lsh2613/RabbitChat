@@ -2,6 +2,7 @@ package com.rabbitmqprac.application.api;
 
 import com.rabbitmqprac.application.dto.oauth.req.OauthSignInReq;
 import com.rabbitmqprac.application.dto.oauth.req.OauthSignUpReq;
+import com.rabbitmqprac.application.dto.user.res.UserIdRes;
 import com.rabbitmqprac.domain.context.oauth.exception.OauthErrorCode;
 import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
 import com.rabbitmqprac.domain.persistence.oauth.constant.OauthProvider;
@@ -36,7 +37,7 @@ public interface OauthApi {
                     constants = "MALFORMED_TOKEN"
             )
     })
-    ResponseEntity<?> signIn(
+    ResponseEntity<UserIdRes> signIn(
             @RequestParam OauthProvider oauthProvider,
             @RequestBody @Validated OauthSignInReq req
     );
@@ -60,7 +61,7 @@ public interface OauthApi {
                     constants = "CONFLICT_USERNAME"
             )
     })
-    ResponseEntity<?> signUp(
+    ResponseEntity<UserIdRes> signUp(
             @RequestParam OauthProvider oauthProvider,
             @RequestBody @Validated OauthSignUpReq req
     );
