@@ -1,5 +1,6 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.api.AuthApi;
 import com.rabbitmqprac.application.dto.auth.req.AuthSignInReq;
 import com.rabbitmqprac.application.dto.auth.req.AuthSignUpReq;
 import com.rabbitmqprac.application.dto.auth.req.AuthUpdatePasswordReq;
@@ -28,26 +29,29 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 @RestController
-public class AuthController {
+public class AuthController implements AuthApi {
     private final AuthService authService;
 
+    @Override
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody @Validated AuthSignUpReq authSignUpReq) {
+    public ResponseEntity<Map<String, Long>> signUp(@RequestBody @Validated AuthSignUpReq authSignUpReq) {
         return createAuthenticatedResponse(authService.signUp(authSignUpReq));
     }
 
+    @Override
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody @Validated AuthSignInReq authSignInReq) {
+    public ResponseEntity<Map<String, Long>> signIn(@RequestBody @Validated AuthSignInReq authSignInReq) {
         return createAuthenticatedResponse(authService.signIn(authSignInReq));
     }
 
+    @Override
     @PatchMapping("/password")
     public ResponseEntity<?> patchPassword(@AuthenticationPrincipal SecurityUserDetails user, @RequestBody @Validated AuthUpdatePasswordReq authUpdatePasswordReq) {
         authService.updatePassword(user.getUserId(), authUpdatePasswordReq);
         return ResponseEntity.noContent().build();
     }
 
-    private ResponseEntity<?> createAuthenticatedResponse(Pair<Long, Jwts> userInfo) {
+    private ResponseEntity<Map<String, Long>> createAuthenticatedResponse(Pair<Long, Jwts> userInfo) {
         ResponseCookie cookie = CookieUtil.createCookie(
                 "refreshToken", userInfo.getValue().refreshToken(), Duration.ofDays(7).toSeconds()
         );

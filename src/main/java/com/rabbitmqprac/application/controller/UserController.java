@@ -1,5 +1,6 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.api.UserApi;
 import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
 import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
@@ -22,24 +23,28 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApi {
     private final UserService userService;
 
+    @Override
     @GetMapping("/users/me")
     public UserDetailRes getMember(@AuthenticationPrincipal SecurityUserDetails user) {
         return userService.getUserDetail(user.getUserId());
     }
 
+    @Override
     @GetMapping("/users")
     public List<UserDetailRes> getMembers() {
         return userService.getUserDetails();
     }
 
+    @Override
     @GetMapping("/users/username")
     public Map<String, Boolean> isDuplicatedUsername(@RequestParam @Validated String username) {
         return Map.of("isDuplicated", userService.isDuplicatedUsername(username));
     }
 
+    @Override
     @PatchMapping("/users/nickname")
     public ResponseEntity<Void> patchNickname(@AuthenticationPrincipal SecurityUserDetails user,
                                               @RequestBody NicknameUpdateReq nicknameUpdateReq) {
@@ -47,6 +52,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
     @GetMapping("/users/nickname")
     public Map<String, Boolean> checkNicknameDuplication(@Validated NicknameCheckReq nicknameCheckReq) {
         return Map.of("isDuplicated", userService.isDuplicatedNickname(nicknameCheckReq));

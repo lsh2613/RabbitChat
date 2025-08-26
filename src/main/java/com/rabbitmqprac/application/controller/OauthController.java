@@ -1,5 +1,6 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.api.OauthApi;
 import com.rabbitmqprac.application.dto.oauth.req.OauthSignInReq;
 import com.rabbitmqprac.application.dto.oauth.req.OauthSignUpReq;
 import com.rabbitmqprac.domain.context.oauth.service.OauthService;
@@ -23,17 +24,19 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
-public class OauthController {
+public class OauthController implements OauthApi {
     private final OauthService oauthService;
 
-    @PostMapping("/oauth/sign-in")
+    @Override
     @PreAuthorize("isAnonymous()")
+    @PostMapping("/oauth/sign-in")
     public ResponseEntity<?> signIn(@RequestParam OauthProvider oauthProvider, @RequestBody @Validated OauthSignInReq req) {
         return createAuthenticatedResponse(oauthService.signIn(oauthProvider, req));
     }
 
-    @PostMapping("/oauth/sign-up")
+    @Override
     @PreAuthorize("isAnonymous()")
+    @PostMapping("/oauth/sign-up")
     public ResponseEntity<?> signUp(@RequestParam OauthProvider oauthProvider, @RequestBody @Validated OauthSignUpReq req) {
         return createAuthenticatedResponse(oauthService.signUp(oauthProvider, req));
     }

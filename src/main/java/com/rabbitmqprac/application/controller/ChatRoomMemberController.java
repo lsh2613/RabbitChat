@@ -1,5 +1,6 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.api.ChatRoomMemberApi;
 import com.rabbitmqprac.application.dto.chatroommember.res.ChatRoomMemberDetailRes;
 import com.rabbitmqprac.domain.context.chatroommember.service.ChatRoomMemberService;
 import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-public class ChatRoomMemberController {
+public class ChatRoomMemberController implements ChatRoomMemberApi {
 
     private final ChatRoomMemberService chatRoomMemberService;
 

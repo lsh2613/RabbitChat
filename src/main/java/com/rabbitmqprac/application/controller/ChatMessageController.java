@@ -1,5 +1,6 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.api.ChatMessageApi;
 import com.rabbitmqprac.application.dto.chatmessage.req.ChatMessageReq;
 import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageDetailRes;
 import com.rabbitmqprac.domain.context.chatmessage.service.ChatMessageService;
@@ -20,13 +21,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class ChatMessageController {
+public class ChatMessageController implements ChatMessageApi {
 
     private final ChatMessageService chatMessageService;
 
     /**
      * Destination Queue: /pub/chat.message.{chatRoomId}를 통해 호출 후 처리 되는 로직
      */
+    @Override
     @PreAuthorize("#chatRoomAccessChecker.hasPermission(#chatRoomId, principal)")
     @MessageMapping("chat.room.{chatRoomId}/message")
     public void sendMessage(UserPrincipal principal,
@@ -35,6 +37,7 @@ public class ChatMessageController {
         chatMessageService.sendMessage(principal.getUserId(), chatRoomId, message);
     }
 
+    @Override
     @GetMapping("/chat-rooms/{chatRoomId}/messages/before")
     public List<ChatMessageDetailRes> readChatMessagesBefore(@PathVariable Long chatRoomId,
                                                              @RequestParam(value = "lastChatMessageId", defaultValue = "0") Long lastMessageId,
@@ -43,6 +46,7 @@ public class ChatMessageController {
         return chatMessageService.readChatMessagesBefore(chatRoomId, lastMessageId, size);
     }
 
+    @Override
     @GetMapping("/chat-rooms/{chatRoomId}/messages/between")
     public List<ChatMessageDetailRes> readChatMessagesBetween(@AuthenticationPrincipal SecurityUserDetails user,
                                                               @PathVariable Long chatRoomId,

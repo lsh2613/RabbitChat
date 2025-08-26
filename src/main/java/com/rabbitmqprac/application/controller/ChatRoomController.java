@@ -1,5 +1,6 @@
 package com.rabbitmqprac.application.controller;
 
+import com.rabbitmqprac.application.api.ChatRoomApi;
 import com.rabbitmqprac.application.dto.chatroom.req.ChatRoomCreateReq;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
@@ -21,21 +22,24 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class ChatRoomController {
+public class ChatRoomController implements ChatRoomApi {
 
     private final ChatRoomService chatRoomService;
 
+    @Override
     @PostMapping("/chat-rooms")
     public ChatRoomDetailRes create(@AuthenticationPrincipal SecurityUserDetails user,
                                     @RequestBody @Validated ChatRoomCreateReq chatRoomCreateReq) {
         return chatRoomService.create(user.getUserId(), chatRoomCreateReq);
     }
 
+    @Override
     @GetMapping("/chat-rooms/me")
     public List<ChatRoomDetailRes> getMyChatRooms(@AuthenticationPrincipal SecurityUserDetails user) {
         return chatRoomService.getMyChatRooms(user.getUserId());
     }
 
+    @Override
     @GetMapping("/chat-rooms")
     public List<ChatRoomInfoRes> getChatRooms(@AuthenticationPrincipal SecurityUserDetails user) {
         return chatRoomService.getChatRooms(Optional.ofNullable(Objects.isNull(user) ? null : user.getUserId())

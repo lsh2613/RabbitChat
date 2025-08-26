@@ -1,3 +1,8 @@
+rabbit:
+  server:
+    domain:
+      local: ${RABBIT_SERVER_DOMAIN_LOCAL:localhost:8080}
+      dev: ${RABBIT_SERVER_DOMAIN_DEV:localhost:8080}
 spring:
   config:
     import: optional:file:.env[.properties]
