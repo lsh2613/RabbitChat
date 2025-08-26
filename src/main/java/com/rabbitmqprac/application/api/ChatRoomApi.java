@@ -3,6 +3,9 @@ package com.rabbitmqprac.application.api;
 import com.rabbitmqprac.application.dto.chatroom.req.ChatRoomCreateReq;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
+import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanation;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanations;
 import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +23,10 @@ import java.util.Optional;
 public interface ChatRoomApi {
 
     @Operation(summary = "채팅방 생성")
+    @ApiExceptionExplanation(
+            errorCode = UserErrorCode.class,
+            constants = "NOT_FOUND"
+    )
     ChatRoomDetailRes create(
             @AuthenticationPrincipal SecurityUserDetails user,
             @RequestBody @Validated ChatRoomCreateReq chatRoomCreateReq

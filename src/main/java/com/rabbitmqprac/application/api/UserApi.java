@@ -3,6 +3,8 @@ package com.rabbitmqprac.application.api;
 import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
 import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
+import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanation;
 import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,10 @@ public interface UserApi {
     Map<String, Boolean> isDuplicatedUsername(@RequestParam @Validated String username);
 
     @Operation(summary = "닉네임 변경")
+    @ApiExceptionExplanation(
+            errorCode = UserErrorCode.class,
+            constants = "CONFLICT_USERNAME"
+    )
     ResponseEntity<Void> patchNickname(
             @AuthenticationPrincipal SecurityUserDetails user,
             @RequestBody NicknameUpdateReq nicknameUpdateReq

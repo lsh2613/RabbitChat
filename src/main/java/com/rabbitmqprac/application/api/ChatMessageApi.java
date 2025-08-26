@@ -2,6 +2,10 @@ package com.rabbitmqprac.application.api;
 
 import com.rabbitmqprac.application.dto.chatmessage.req.ChatMessageReq;
 import com.rabbitmqprac.application.dto.chatmessage.res.ChatMessageDetailRes;
+import com.rabbitmqprac.domain.context.chatroom.exception.ChatRoomErrorCode;
+import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanation;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanations;
 import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
 import com.rabbitmqprac.infra.security.principal.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +35,16 @@ public interface ChatMessageApi {
                     - 인증: Header에 JWT 토큰 필요
                     """
     )
+    @ApiExceptionExplanations({
+            @ApiExceptionExplanation(
+                    errorCode = UserErrorCode.class,
+                    constants = "NOT_FOUND"
+            ),
+            @ApiExceptionExplanation(
+                    errorCode = ChatRoomErrorCode.class,
+                    constants = "NOT_FOUND"
+            )
+    })
     void sendMessage(UserPrincipal principal,
                      @DestinationVariable Long chatRoomId,
                      @Validated ChatMessageReq message

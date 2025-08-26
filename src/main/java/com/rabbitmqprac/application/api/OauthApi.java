@@ -2,7 +2,12 @@ package com.rabbitmqprac.application.api;
 
 import com.rabbitmqprac.application.dto.oauth.req.OauthSignInReq;
 import com.rabbitmqprac.application.dto.oauth.req.OauthSignUpReq;
+import com.rabbitmqprac.domain.context.oauth.exception.OauthErrorCode;
+import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
 import com.rabbitmqprac.domain.persistence.oauth.constant.OauthProvider;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanation;
+import com.rabbitmqprac.global.annotation.ApiExceptionExplanations;
+import com.rabbitmqprac.infra.security.exception.JwtErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +26,16 @@ public interface OauthApi {
                     - [GOOGLE CODE 발급 URL](https://accounts.google.com/o/oauth2/v2/auth?client_id=248388975343-0oo0f79rrsqpf1k63ahpivkhd2rfu1jp.apps.googleusercontent.com&redirect_uri=http://localhost:8080&response_type=code&scope=openid%20email%20profile&nonce=example-nonce)
                     """
     )
+    @ApiExceptionExplanations({
+            @ApiExceptionExplanation(
+                    errorCode = OauthErrorCode.class,
+                    constants = {"MISSING_ISS", "INVALID_ISS", "MISSING_NONCE", "INVALID_ISS", "INVALID_AUD", "INVALID_NONCE"}
+            ),
+            @ApiExceptionExplanation(
+                    errorCode = JwtErrorCode.class,
+                    constants = "MALFORMED_TOKEN"
+            )
+    })
     ResponseEntity<?> signIn(
             @RequestParam OauthProvider oauthProvider,
             @RequestBody @Validated OauthSignInReq req
@@ -35,6 +50,16 @@ public interface OauthApi {
                     - [GOOGLE CODE 발급 URL](https://accounts.google.com/o/oauth2/v2/auth?client_id=248388975343-0oo0f79rrsqpf1k63ahpivkhd2rfu1jp.apps.googleusercontent.com&redirect_uri=http://localhost:8080&response_type=code&scope=openid%20email%20profile&nonce=example-nonce)
                     """
     )
+    @ApiExceptionExplanations({
+            @ApiExceptionExplanation(
+                    errorCode = OauthErrorCode.class,
+                    constants = {"CONFLICT", "MISSING_ISS", "INVALID_ISS", "MISSING_NONCE", "INVALID_ISS", "INVALID_AUD", "INVALID_NONCE"}
+            ),
+            @ApiExceptionExplanation(
+                    errorCode = UserErrorCode.class,
+                    constants = "CONFLICT_USERNAME"
+            )
+    })
     ResponseEntity<?> signUp(
             @RequestParam OauthProvider oauthProvider,
             @RequestBody @Validated OauthSignUpReq req
