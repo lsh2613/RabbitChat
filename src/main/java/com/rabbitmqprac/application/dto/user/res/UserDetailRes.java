@@ -1,4 +1,4 @@
-package com.rabbitmqprac.application.dto.auth.res;
+package com.rabbitmqprac.application.dto.user.res;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
