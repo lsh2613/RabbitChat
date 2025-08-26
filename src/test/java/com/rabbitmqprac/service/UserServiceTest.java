@@ -1,6 +1,6 @@
 package com.rabbitmqprac.service;
 
-import com.rabbitmqprac.application.dto.auth.res.UserDetailRes;
+import com.rabbitmqprac.application.dto.user.res.UserDetailRes;
 import com.rabbitmqprac.application.dto.user.req.NicknameCheckReq;
 import com.rabbitmqprac.application.dto.user.req.NicknameUpdateReq;
 import com.rabbitmqprac.common.fixture.UserFixture;

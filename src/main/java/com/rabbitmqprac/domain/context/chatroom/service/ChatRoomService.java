@@ -3,7 +3,7 @@ package com.rabbitmqprac.domain.context.chatroom.service;
 
 import com.rabbitmqprac.application.dto.chatroom.req.ChatRoomCreateReq;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
-import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
+import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomSummaryRes;
 import com.rabbitmqprac.application.mapper.ChatMessageMapper;
 import com.rabbitmqprac.application.mapper.ChatRoomMapper;
 import com.rabbitmqprac.domain.context.chatmessage.service.ChatMessageService;
@@ -73,7 +73,7 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomInfoRes> getChatRooms(Optional<Long> userId) {
+    public List<ChatRoomSummaryRes> getChatRooms(Optional<Long> userId) {
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
 
         return chatRooms.stream()

@@ -2,7 +2,7 @@ package com.rabbitmqprac.application.mapper;
 
 import com.rabbitmqprac.application.dto.chatmessage.res.LastChatMessageDetailRes;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
-import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
+import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomSummaryRes;
 import com.rabbitmqprac.domain.persistence.chatroom.entity.ChatRoom;
 import com.rabbitmqprac.global.annotation.Mapper;
 
@@ -39,8 +39,8 @@ public final class ChatRoomMapper {
         );
     }
 
-    public static ChatRoomInfoRes toInfoRes(ChatRoom chatRoom, int currentCapacity, Boolean isJoined) {
-        return ChatRoomInfoRes.of(
+    public static ChatRoomSummaryRes toInfoRes(ChatRoom chatRoom, int currentCapacity, Boolean isJoined) {
+        return ChatRoomSummaryRes.of(
                 chatRoom.getId(),
                 chatRoom.getTitle(),
                 chatRoom.getMaxCapacity(),
