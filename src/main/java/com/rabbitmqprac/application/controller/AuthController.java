@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
@@ -44,11 +46,11 @@ public class AuthController implements AuthApi {
         return createAuthenticatedResponse(authService.signIn(authSignInReq));
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     @PatchMapping("/password")
-    public ResponseEntity<?> patchPassword(@AuthenticationPrincipal SecurityUserDetails user, @RequestBody @Validated AuthUpdatePasswordReq authUpdatePasswordReq) {
+    public void patchPassword(@AuthenticationPrincipal SecurityUserDetails user, @RequestBody @Validated AuthUpdatePasswordReq authUpdatePasswordReq) {
         authService.updatePassword(user.getUserId(), authUpdatePasswordReq);
-        return ResponseEntity.noContent().build();
     }
 
     private ResponseEntity<Map<String, Long>> createAuthenticatedResponse(Pair<Long, Jwts> userInfo) {

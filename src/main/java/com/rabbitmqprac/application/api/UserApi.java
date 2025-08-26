@@ -34,7 +34,7 @@ public interface UserApi {
             errorCode = UserErrorCode.class,
             constants = "CONFLICT_USERNAME"
     )
-    ResponseEntity<Void> patchNickname(
+    void patchNickname(
             @AuthenticationPrincipal SecurityUserDetails user,
             @RequestBody NicknameUpdateReq nicknameUpdateReq
 

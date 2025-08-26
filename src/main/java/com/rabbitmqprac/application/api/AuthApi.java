@@ -57,5 +57,5 @@ public interface AuthApi {
                     constants = "INVALID_PASSWORD"
             )
     })
-    ResponseEntity<?> patchPassword(@AuthenticationPrincipal SecurityUserDetails user, @RequestBody @Validated AuthUpdatePasswordReq authUpdatePasswordReq);
+    void patchPassword(@AuthenticationPrincipal SecurityUserDetails user, @RequestBody @Validated AuthUpdatePasswordReq authUpdatePasswordReq);
 }
