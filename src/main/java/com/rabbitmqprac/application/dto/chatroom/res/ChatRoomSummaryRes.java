@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 @Schema(name = "ChatRoomInfoRes", title = "채팅방 정보 DTO")
-public record ChatRoomInfoRes(
+public record ChatRoomSummaryRes(
         @Schema(title = "채팅방 ID", example = "1")
         Long chatRoomId,
         @Schema(title = "채팅방 제목", example = "스프링 스터디")
@@ -26,13 +26,13 @@ public record ChatRoomInfoRes(
         @Schema(title = "참여 여부", example = "true")
         Boolean isJoined
 ) {
-    public static ChatRoomInfoRes of(Long chatRoomId,
-                                     String title,
-                                     Integer maxCapacity,
-                                     LocalDateTime createdAt,
-                                     int currentCapacity,
-                                     Boolean isJoined
+    public static ChatRoomSummaryRes of(Long chatRoomId,
+                                        String title,
+                                        Integer maxCapacity,
+                                        LocalDateTime createdAt,
+                                        int currentCapacity,
+                                        Boolean isJoined
     ) {
-        return new ChatRoomInfoRes(chatRoomId, title, maxCapacity, createdAt, currentCapacity, isJoined);
+        return new ChatRoomSummaryRes(chatRoomId, title, maxCapacity, createdAt, currentCapacity, isJoined);
     }
 }

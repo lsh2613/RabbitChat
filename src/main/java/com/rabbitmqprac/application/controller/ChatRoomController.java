@@ -3,7 +3,7 @@ package com.rabbitmqprac.application.controller;
 import com.rabbitmqprac.application.api.ChatRoomApi;
 import com.rabbitmqprac.application.dto.chatroom.req.ChatRoomCreateReq;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
-import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
+import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomSummaryRes;
 import com.rabbitmqprac.domain.context.chatroom.service.ChatRoomService;
 import com.rabbitmqprac.infra.security.authentication.SecurityUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class ChatRoomController implements ChatRoomApi {
 
     @Override
     @GetMapping("/chat-rooms")
-    public List<ChatRoomInfoRes> getChatRooms(@AuthenticationPrincipal SecurityUserDetails user) {
+    public List<ChatRoomSummaryRes> getChatRooms(@AuthenticationPrincipal SecurityUserDetails user) {
         return chatRoomService.getChatRooms(Optional.ofNullable(Objects.isNull(user) ? null : user.getUserId())
         );
     }

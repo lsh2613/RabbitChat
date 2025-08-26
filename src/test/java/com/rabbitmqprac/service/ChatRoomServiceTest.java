@@ -2,7 +2,7 @@ package com.rabbitmqprac.service;
 
 import com.rabbitmqprac.application.dto.chatroom.req.ChatRoomCreateReq;
 import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomDetailRes;
-import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomInfoRes;
+import com.rabbitmqprac.application.dto.chatroom.res.ChatRoomSummaryRes;
 import com.rabbitmqprac.common.fixture.ChatRoomFixture;
 import com.rabbitmqprac.common.fixture.UserFixture;
 import com.rabbitmqprac.domain.context.chatmessage.service.ChatMessageService;
@@ -142,13 +142,13 @@ class ChatRoomServiceTest {
             given(chatRoomRepository.findAll()).willReturn(List.of(chatRoom));
 
             // when
-            List<ChatRoomInfoRes> result = chatRoomService.getChatRooms(Optional.ofNullable(null));
+            List<ChatRoomSummaryRes> result = chatRoomService.getChatRooms(Optional.ofNullable(null));
 
             // then
             assertThat(result).isNotNull();
             assertThat(result.size()).isEqualTo(1);
 
-            ChatRoomInfoRes res = result.getFirst();
+            ChatRoomSummaryRes res = result.getFirst();
             assertThat(res.isJoined()).isFalse();
         }
 
@@ -160,13 +160,13 @@ class ChatRoomServiceTest {
             given(chatRoomMemberService.isExists(chatRoom.getId(), user.getId())).willReturn(true);
 
             // when
-            List<ChatRoomInfoRes> result = chatRoomService.getChatRooms(Optional.of(user.getId()));
+            List<ChatRoomSummaryRes> result = chatRoomService.getChatRooms(Optional.of(user.getId()));
 
             // then
             assertThat(result).isNotNull();
             assertThat(result.size()).isEqualTo(1);
 
-            ChatRoomInfoRes res = result.getFirst();
+            ChatRoomSummaryRes res = result.getFirst();
             assertThat(res.isJoined()).isTrue();
         }
     }
