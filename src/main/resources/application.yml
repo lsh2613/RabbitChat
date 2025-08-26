@@ -86,6 +86,10 @@ rabbitmq:
     routing:
       key: "*.room."
 
+# swagger에서 자동으로 error response를 생성하지 않도록 설정
+springdoc:
+  override-with-generic-response: false
+
 logging:
   level:
     ROOT: INFO
