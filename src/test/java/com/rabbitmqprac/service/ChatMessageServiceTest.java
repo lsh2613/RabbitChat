@@ -55,37 +55,37 @@ public class ChatMessageServiceTest {
     private static final ChatRoomFixture CHAT_ROOM_FIXTURE = ChatRoomFixture.FIRST_CHAT_ROOM;
     private static final ChatMessageFixture CHAT_MESSAGE_FIXTURE = ChatMessageFixture.FIRST_CHAT_MESSAGE;
 
-    private User user = mock(User.class);
-    private ChatRoom chatRoom = mock(ChatRoom.class);
-    private ChatMessage chatMessage = mock(ChatMessage.class);
+    private static final User USER = mock(User.class);
+    private static final ChatRoom CHAT_ROOM = mock(ChatRoom.class);
+    private static final ChatMessage CHAT_MESSAGE = mock(ChatMessage.class);
 
     @BeforeEach
     void setUp() {
-        given(user.getId()).willReturn(USER_FIXTURE.getId());
-        given(chatRoom.getId()).willReturn(CHAT_ROOM_FIXTURE.getId());
-
-        given(chatMessage.getId()).willReturn(CHAT_MESSAGE_FIXTURE.getId());
-        given(chatMessage.getUser()).willReturn(user);
-        given(chatMessage.getChatRoom()).willReturn(chatRoom);
+        given(USER.getId()).willReturn(USER_FIXTURE.getId());
+        given(CHAT_ROOM.getId()).willReturn(CHAT_ROOM_FIXTURE.getId());
+        given(CHAT_MESSAGE.getId()).willReturn(CHAT_MESSAGE_FIXTURE.getId());
+        given(CHAT_MESSAGE.getUser()).willReturn(USER);
+        given(CHAT_MESSAGE.getChatRoom()).willReturn(CHAT_ROOM);
     }
 
     @Nested
     @DisplayName("채팅 메시지 전송 시나리오")
     class SendMessageScenario {
+        private final ChatMessageReq req = new ChatMessageReq("content");
+
         @Nested
-        @DisplayName("채팅 메시지 전송 성공 시나리오")
-        class SendMessageSuccessScenario {
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
             @Test
-            @DisplayName("성공")
+            @DisplayName("채팅 메시지 전송 성공")
             void sendMessageSuccess() {
                 // given
-                ChatMessageReq req = new ChatMessageReq("content");
-                given(entityFacade.readUser(user.getId())).willReturn(user);
-                given(entityFacade.readChatRoom(chatRoom.getId())).willReturn(chatRoom);
-                given(chatMessageRepository.save(any(ChatMessage.class))).willReturn(chatMessage);
+                given(entityFacade.readUser(USER.getId())).willReturn(USER);
+                given(entityFacade.readChatRoom(CHAT_ROOM.getId())).willReturn(CHAT_ROOM);
+                given(chatMessageRepository.save(any(ChatMessage.class))).willReturn(CHAT_MESSAGE);
 
                 // when
-                chatMessageService.sendMessage(user.getId(), chatRoom.getId(), req);
+                chatMessageService.sendMessage(USER.getId(), CHAT_ROOM.getId(), req);
 
                 // then
                 verify(rabbitPublisher).publish(any(Long.class), any(ChatMessageRes.class));
@@ -96,24 +96,24 @@ public class ChatMessageServiceTest {
     @Nested
     @DisplayName("채팅 메시지 범위 조회 시나리오")
     class ReadMessageBetweenScenario {
+        private final Long from = 2L;
+        private final Long to = 10L;
+
         @Nested
-        @DisplayName("채팅 메시지 범위 조회 성공 시나리오")
-        class ReadMessageBetweenSuccessScenario {
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
             @Test
             @DisplayName("안 읽은 메시지가 존재하는 경우")
             void readMessageBetweenSuccessWhenExistsUnReadMessage() {
                 // given
-                final Long from = 2L;
-                final Long to = 10L;
-                given(chatMessageRepository.findByChatRoomIdAndIdBetween(user.getId(), from, to))
-                        .willReturn(List.of(chatMessage));
-
-                long lastMessageId = chatRoom.getId() - 1; // chatRoomId보다 작은 값
-                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoom.getId()))
+                given(chatMessageRepository.findByChatRoomIdAndIdBetween(CHAT_ROOM.getId(), from, to))
+                        .willReturn(List.of(CHAT_MESSAGE));
+                long lastMessageId = CHAT_ROOM.getId() - 1;
+                given(chatMessageStatusService.readLastReadMessageId(USER.getId(), CHAT_ROOM.getId()))
                         .willReturn(lastMessageId);
 
                 // when
-                chatMessageService.readChatMessagesBetween(user.getId(), chatRoom.getId(), from, to);
+                chatMessageService.readChatMessagesBetween(USER.getId(), CHAT_ROOM.getId(), from, to);
 
                 // then
                 verify(chatMessageStatusService).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));
@@ -123,17 +123,14 @@ public class ChatMessageServiceTest {
             @DisplayName("안 읽은 메시지가 존재하지 않는 경우")
             void readMessageBetweenSuccessWhenNotExistsUnReadMessage() {
                 // given
-                final Long from = 2L;
-                final Long to = 10L;
-                given(chatMessageRepository.findByChatRoomIdAndIdBetween(user.getId(), from, to))
-                        .willReturn(List.of(chatMessage));
-
-                long lastMessageId = chatRoom.getId() + 1;  // chatRoomId보다 큰 값
-                given(chatMessageStatusService.readLastReadMessageId(user.getId(), chatRoom.getId()))
+                given(chatMessageRepository.findByChatRoomIdAndIdBetween(CHAT_ROOM.getId(), from, to))
+                        .willReturn(List.of(CHAT_MESSAGE));
+                long lastMessageId = CHAT_ROOM.getId() + 1;
+                given(chatMessageStatusService.readLastReadMessageId(USER.getId(), CHAT_ROOM.getId()))
                         .willReturn(lastMessageId);
 
                 // when
-                chatMessageService.readChatMessagesBetween(user.getId(), chatRoom.getId(), from, to);
+                chatMessageService.readChatMessagesBetween(USER.getId(), CHAT_ROOM.getId(), from, to);
 
                 // then
                 verify(chatMessageStatusService, never()).saveLastReadMessageId(any(Long.class), any(Long.class), any(Long.class));
