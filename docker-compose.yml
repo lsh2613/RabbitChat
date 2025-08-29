@@ -2,7 +2,7 @@ version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: rabbit-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -13,75 +13,11 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     networks:
-      - my_network
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    hostname: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - my_network
-
-  mysql_master:
-    container_name: rabbit-mysql-master
-    image: mysql:8.0
-    environment:
-      MYSQL_DATABASE: rabbit
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql/master-data-source.cnf:/etc/mysql/conf.d/my.cnf
-      - ./mysql/init-master.sql:/docker-entrypoint-initdb.d/01-init-master.sql
-    networks:
-      - my_network
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234" ]
-      timeout: 20s
-      retries: 10
-
-  mysql_replica:
-    container_name: rabbit-mysql-replica
-    image: mysql:8.0
-    environment:
-      MYSQL_DATABASE: rabbit
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - "3307:3306"
-    volumes:
-      - ./mysql/replica-data-source.cnf:/etc/mysql/conf.d/my.cnf
-    networks:
-      - my_network
-    depends_on:
-      mysql_master:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234" ]
-      timeout: 20s
-      retries: 10
-
-  mysql_replication_setup:
-    image: mysql:8.0
-    container_name: mysql_replication_setup
-    volumes:
-      - ./mysql/setup-replication.sh:/setup-replication.sh
-    command: [ "/bin/bash", "/setup-replication.sh" ]
-    networks:
-      - my_network
-    depends_on:
-      mysql_master:
-        condition: service_healthy
-      mysql_replica:
-        condition: service_healthy
-    restart: "no"
+      - rabbit-default
 
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: rabbit-nginx
     ports:
       - "80:80"
       - "443:443"
@@ -89,7 +25,7 @@ services:
       - ./nginx/config/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/ssl:/etc/nginx/ssl
     networks:
-      - my_network
+      - rabbit-default
 
 networks:
-  my_network:
+  rabbit-default:
