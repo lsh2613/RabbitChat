@@ -3,6 +3,30 @@ rabbit:
     domain:
       local: ${RABBIT_SERVER_DOMAIN_LOCAL:http://localhost:8080}
       dev: ${RABBIT_SERVER_DOMAIN_LOCAL:http://localhost:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 실제 운영 시 필요 엔드포인트만 명시하여 보안 강화 필요
+        base-path: ${ACTUATOR_METRICS_PATH:/actuator/prometheus}
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  actuator:
+    username: ${ACTUATOR_USERNAME:rabbit}
+    password: ${ACTUATOR_PASSWORD:rabbit1234}
+    role: ${ACTUATOR_ROLE:ACTUATOR}
+
+server:
+  tomcat:
+    mbeanregistry: # 톰캣 메트릭을 모두 사용하려면 다음 옵션을 켜야하며, 옵션을 켜지 않으면 tomcat.session. 관련정보만 노출
+      enabled: true
+
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -28,7 +52,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-
   data:
     mongodb:
       uri: mongodb://root:1234@localhost:27017/rabbitmq?authSource=admin&authMechanism=SCRAM-SHA-1
