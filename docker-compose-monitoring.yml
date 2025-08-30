@@ -20,6 +20,9 @@ services:
       - 3000:3000
     volumes:
       - ./monitoring/grafana/volume:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-rabbit}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-rabbit1234}
     restart: always
     networks:
       - rabbit-monitoring
