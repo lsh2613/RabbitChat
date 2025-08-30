@@ -80,6 +80,9 @@ dependencies {
     // monoitoring
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+    // logging
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
 }
 
 tasks.named('test') {
