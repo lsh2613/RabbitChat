@@ -112,16 +112,3 @@ rabbitmq:
 # swagger에서 자동으로 error response를 생성하지 않도록 설정
 springdoc:
   override-with-generic-response: false
-
-logging:
-  level:
-    ROOT: INFO
-    org.hibernate: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.sql: debug
-    org.hibernate.type: trace
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    org.springframework.orm: TRACE
-    org.springframework.transaction: TRACE
-    com.zaxxer.hikari: TRACE
-    com.mysql.cj.jdbc: TRACE
