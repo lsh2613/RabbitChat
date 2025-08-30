@@ -1,17 +1,57 @@
+rabbit:
+  server:
+    domain:
+      local: ${RABBIT_SERVER_DOMAIN_LOCAL:http://localhost:8080}
+      dev: ${RABBIT_SERVER_DOMAIN_LOCAL:http://localhost:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 실제 운영 시 필요 엔드포인트만 명시하여 보안 강화 필요
+        base-path: ${ACTUATOR_METRICS_PATH:/actuator/prometheus}
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  actuator:
+    username: ${ACTUATOR_USERNAME:rabbit}
+    password: ${ACTUATOR_PASSWORD:rabbit1234}
+    role: ${ACTUATOR_ROLE:ACTUATOR}
+
+server:
+  tomcat:
+    mbeanregistry: # 톰캣 메트릭을 모두 사용하려면 다음 옵션을 켜야하며, 옵션을 켜지 않으면 tomcat.session. 관련정보만 노출
+      enabled: true
+
 spring:
+  config:
+    import: optional:file:.env[.properties]
   sql:
     init:
       mode: always
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/rabbitmq?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
+    master:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/rabbit?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      username: root
+      password: 1234
+    replica:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3307/rabbit?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      username: root
+      password: 1234
   jpa:
     hibernate:
       ddl-auto: update
     defer-datasource-initialization: true
-
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
   data:
     mongodb:
       uri: mongodb://root:1234@localhost:27017/rabbitmq?authSource=admin&authMechanism=SCRAM-SHA-1
@@ -20,6 +60,26 @@ spring:
     redis:
       host: localhost
       port: 6379
+
+oauth2:
+  client:
+    provider:
+      kakao:
+        client-id: ${KAKAO_CLIENT_ID:57e328d97dc0c7b53898e2e79082f23c}
+        client-secret: ${KAKAO_CLIENT_SECRET:exampleSecretKeyForRabbit}
+        jwks-uri: ${KAKAO_JWKS_URI:https://kauth.kakao.com/.well-known/jwks.json}
+        token-uri: ${KAKAO_TOKEN_URI:https://kauth.kakao.com/oauth/token}
+        issuer: ${KAKAO_ISS:https://kauth.kakao.com}
+        nonce: ${KAKAO_NONCE:example-nonce}
+        redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:8080}
+      google:
+        client-id: ${GOOGLE_CLIENT_ID:248388975343-0oo0f79rrsqpf1k63ahpivkhd2rfu1jp.apps.googleusercontent.com}
+        client-secret: ${GOOGLE_CLIENT_SECRET:exampleSecretKeyForRabbit}
+        jwks-uri: ${GOOGLE_JWKS_URI:https://www.googleapis.com/oauth2/v3/certs}
+        token-uri: ${GOOGLE_TOKEN_URI:https://oauth2.googleapis.com/token}
+        issuer: ${GOOGLE_ISS:https://accounts.google.com}
+        nonce: ${GOOGLE_NONCE:example-nonce}
+        redirect-uri: ${GOOGLE_REDIRECT_URI:http://localhost:8080}
 
 jwt:
   secret-key:
@@ -49,15 +109,6 @@ rabbitmq:
     routing:
       key: "*.room."
 
-logging:
-  level:
-    ROOT: INFO
-    org.hibernate: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.sql: debug
-    org.hibernate.type: trace
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    org.springframework.orm: TRACE
-    org.springframework.transaction: TRACE
-    com.zaxxer.hikari: TRACE
-    com.mysql.cj.jdbc: TRACE
+# swagger에서 자동으로 error response를 생성하지 않도록 설정
+springdoc:
+  override-with-generic-response: false

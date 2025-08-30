@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  prometheus:
+    build: ./monitoring/prometheus
+    container_name: rabbit-prometheus
+    ports:
+      - 9090:9090
+    environment:
+      ACTUATOR_METRICS_PATH: ${ACTUATOR_METRICS_PATH:-/actuator/prometheus}
+      ACTUATOR_USERNAME: ${ACTUATOR_USERNAME:-rabbit}
+      ACTUATOR_PASSWORD: ${ACTUATOR_PASSWORD:-rabbit1234}
+    restart: always
+    networks:
+      - rabbit-monitoring
+
+  grafana:
+    image: grafana/grafana
+    container_name: rabbit-grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./monitoring/grafana/volume:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-rabbit}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-rabbit1234}
+    restart: always
+    networks:
+      - rabbit-monitoring
+    depends_on:
+      - prometheus
+
+networks:
+  rabbit-monitoring:

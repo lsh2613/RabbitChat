@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+/logs/**
+/.github/git-commit-instructions.md
+/monitoring/grafana/volume/**

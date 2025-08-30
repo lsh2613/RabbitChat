@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s     # scrap target의 기본 interval을 15초로 변경 / default = 1m
+  scrape_timeout: 15s      # scrap request 가 timeout wait/ default = 10s
+
+  external_labels:
+    monitor: 'rabbit-prometheus'       # 기본적으로 붙여줄 라벨
+
+scrape_configs:
+  - job_name: prometheus
+    metrics_path: ${ACTUATOR_METRICS_PATH}
+    static_configs:
+      - targets: [ 'host.docker.internal:8080' ]
+    basic_auth:
+      username: ${ACTUATOR_USERNAME}
+      password: ${ACTUATOR_PASSWORD}

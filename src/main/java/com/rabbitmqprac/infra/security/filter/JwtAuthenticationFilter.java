@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,9 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailService;
     private final JwtProvider accessTokenProvider;
 
+    @Value("${management.endpoints.web.exposure.base-path}")
+    private String metricsPath;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (isAnonymousRequest(request)) {
+        if (isMetricRequest(request) || isAnonymousRequest(request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -43,6 +47,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UserDetails userDetails = getUserDetails(accessToken);
         authenticateUser(userDetails, request);
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isMetricRequest(HttpServletRequest request) {
+        return request.getRequestURI().startsWith(metricsPath);
     }
 
     /**

@@ -70,14 +70,26 @@ dependencies {
 
     // Apache Commons Lang3
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // monoitoring
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+    // logging
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-
-tasks.withType(Checkstyle){
+tasks.withType(Checkstyle) {
     reports {
         xml.required = true
         html.required = true
@@ -86,7 +98,7 @@ tasks.withType(Checkstyle){
 
 checkstyle {
     configFile = file("checkstyle/config/rules.xml")
-    configProperties = ["suppressionFile" : "checkstyle/config/suppressions.xml"]
+    configProperties = ["suppressionFile": "checkstyle/config/suppressions.xml"]
     maxWarnings = 0
 }
 

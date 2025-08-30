@@ -25,7 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.never;
@@ -44,143 +43,148 @@ public class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    private static User user = UserFixture.FIRST_USER.toEntity();
+    private static final User USER = UserFixture.FIRST_USER.toEntity();
+    private static final Jwts JWTS = mock(Jwts.class);
 
     @Nested
-    @DisplayName("회원가입 성공 시나리오")
-    class SignUpSuccessScenarios {
-        @Test
-        @DisplayName("회원가입 성공")
-        void signUp() {
-            // given
-            final String username = "username";
-            final String password = "password_123";
-            final String confirmPassword = "password_123";
-            AuthSignUpReq req = new AuthSignUpReq(username, password, confirmPassword);
-            Jwts jwts = mock(Jwts.class);
+    @DisplayName("회원가입 시나리오")
+    class SignUpScenario {
+        private final String nickname = "nickname";
+        private final String username = "nickname";
+        private final String password = "password_123";
+        private final String confirmPassword = "password_123";
+        private final AuthSignUpReq req = new AuthSignUpReq(nickname, username, password, confirmPassword);
 
-            given(userService.saveUserWithEncryptedPassword(any(UserCreateReq.class)))
-                    .willReturn(user);
-            given(jwtHelper.createToken(user)).willReturn(jwts);
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("회원가입 성공")
+            void signUpSuccess() {
+                // given
+                given(userService.saveUserWithEncryptedPassword(any(UserCreateReq.class))).willReturn(USER);
+                given(jwtHelper.createToken(USER)).willReturn(JWTS);
 
-            // when
-            Pair<Long, Jwts> result = authService.signUp(req);
+                // when
+                Pair<Long, Jwts> result = authService.signUp(req);
 
-            // then
-            assertThat(result.getLeft()).isEqualTo(user.getId());
-            assertThat(result.getRight()).isEqualTo(jwts);
-            verify(userService).saveUserWithEncryptedPassword(any(UserCreateReq.class));
-            verify(jwtHelper).createToken(user);
+                // then
+                assertThat(result.getLeft()).isEqualTo(USER.getId());
+                assertThat(result.getRight()).isEqualTo(JWTS);
+                verify(userService).saveUserWithEncryptedPassword(any(UserCreateReq.class));
+                verify(jwtHelper).createToken(USER);
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("password와 confirmPassword가 다르면 회원가입 실패")
+            void signUpFailWhenPasswordMismatch() {
+                // given
+                AuthSignUpReq invalidReq = new AuthSignUpReq(nickname, username, password, "wrong");
+
+                // when
+                AuthErrorException ex = assertThrows(AuthErrorException.class, () -> authService.signUp(invalidReq));
+
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(AuthErrorCode.PASSWORD_CONFIRM_MISMATCH);
+            }
         }
     }
 
     @Nested
-    @DisplayName("회원가입 실패 시나리오")
-    class SignUpFailScenarios {
-        @Test
-        @DisplayName("password와 confirmPassword가 다른 경우 회원 가입에 실패")
-        void signUpWhenInvalidPassword() {
-            // given
-            final String username = "username";
-            final String password = "password";
-            final String confirmPassword = "invalid_password";
-            AuthSignUpReq req = new AuthSignUpReq(username, password, confirmPassword);
+    @DisplayName("로그인 시나리오")
+    class SignInScenario {
+        private final String username = "nickname";
+        private final String password = "password";
+        private final AuthSignInReq req = new AuthSignInReq(username, password);
 
-            // when
-            AuthErrorException errorException = assertThrows(AuthErrorException.class, () -> authService.signUp(req));
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("로그인 성공")
+            void signInSuccess() {
+                // given
+                given(userService.readUserByUsername(username)).willReturn(USER);
+                given(jwtHelper.createToken(USER)).willReturn(JWTS);
+                given(bCryptPasswordEncoder.matches(password, USER.getPassword())).willReturn(true);
 
-            // then
-            assertThat(errorException.getErrorCode()).isEqualTo(AuthErrorCode.PASSWORD_CONFIRM_MISMATCH);
+                // when
+                Pair<Long, Jwts> result = authService.signIn(req);
+
+                // then
+                assertThat(result.getLeft()).isEqualTo(USER.getId());
+                assertThat(result.getRight()).isEqualTo(JWTS);
+                verify(jwtHelper).createToken(USER);
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("패스워드가 올바르지 않으면 로그인 실패")
+            void signInFailWhenInvalidPassword() {
+                // given
+                given(userService.readUserByUsername(username)).willReturn(USER);
+                given(bCryptPasswordEncoder.matches(password, USER.getPassword())).willReturn(false);
+
+                // when
+                AuthErrorException ex = assertThrows(AuthErrorException.class, () -> authService.signIn(req));
+
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(AuthErrorCode.INVALID_PASSWORD);
+                verify(jwtHelper, never()).createToken(USER);
+            }
         }
     }
 
     @Nested
-    @DisplayName("로그인 성공 시나리오")
-    class SignInSuccessScenarios {
-        @Test
-        @DisplayName("로그인 성공")
-        void signIn() {
-            // given
-            final String username = "username";
-            final String password = "password";
-            AuthSignInReq req = new AuthSignInReq(username, password);
-            Jwts jwts = mock(Jwts.class);
+    @DisplayName("패스워드 변경 시나리오")
+    class UpdatePasswordScenario {
+        private final Long userId = 1L;
+        private final String oldPassword = "oldPassword";
+        private final String newPassword = "newPassword";
+        private final AuthUpdatePasswordReq req = new AuthUpdatePasswordReq(oldPassword, newPassword);
 
-            given(userService.readUserByUsername(username)).willReturn(user);
-            given(jwtHelper.createToken(user)).willReturn(jwts);
-            given(bCryptPasswordEncoder.matches(password, user.getPassword())).willReturn(Boolean.TRUE);
+        @Nested
+        @DisplayName("성공 시나리오")
+        class SuccessScenario {
+            @Test
+            @DisplayName("패스워드 변경 성공")
+            void updatePasswordSuccess() {
+                // given
+                given(userService.readUser(userId)).willReturn(USER);
+                given(bCryptPasswordEncoder.matches(oldPassword, USER.getPassword())).willReturn(true);
+                given(req.newPassword(bCryptPasswordEncoder)).willReturn(newPassword);
 
-            // when
-            Pair<Long, Jwts> result = authService.signIn(req);
+                // when
+                authService.updatePassword(userId, req);
 
-            // then
-            assertThat(result.getLeft()).isEqualTo(user.getId());
-            assertThat(result.getRight()).isEqualTo(jwts);
-            verify(jwtHelper).createToken(user);
-        }
-    }
-
-    @Nested
-    @DisplayName("로그인 실패 시나리오")
-    class SignInFailScenarios {
-        @Test
-        @DisplayName("로그인 유저의 패스워드가 올바르지 않다면 로그인 실패")
-        void signInWhenInvalidPassword() {
-            // given
-            final String username = "username";
-            final String password = "password";
-            AuthSignInReq req = new AuthSignInReq(username, password);
-            given(userService.readUserByUsername(username)).willReturn(user);
-            given(bCryptPasswordEncoder.matches(password, user.getPassword())).willReturn(Boolean.FALSE);
-
-            // when
-            AuthErrorException errorException = assertThrows(AuthErrorException.class, () -> authService.signIn(req));
-
-            // then
-            assertThat(errorException.getErrorCode()).isEqualTo(AuthErrorCode.INVALID_PASSWORD);
-            verify(jwtHelper, never()).createToken(user);
-        }
-    }
-
-    @Nested
-    @DisplayName("패스워드 변경 성공 시나리오")
-    class UpdatePasswordScenarios {
-        @Test
-        @DisplayName("패스워드 변경 성공")
-        void updatePasswordSuccess() {
-            // given
-            final Long userId = anyLong();
-            final String oldPassword = "oldPassword";
-            final String newPassword = "newPassword";
-            AuthUpdatePasswordReq req = new AuthUpdatePasswordReq(oldPassword, newPassword);
-
-            given(userService.readUser(userId)).willReturn(user);
-            given(bCryptPasswordEncoder.matches(req.oldPassword(), user.getPassword())).willReturn(true);
-            given(req.newPassword(bCryptPasswordEncoder)).willReturn(newPassword);
-
-            // when
-            authService.updatePassword(userId, req);
-
-            // then
-            assertThat(user.getPassword()).isEqualTo(newPassword);
+                // then
+                assertThat(USER.getPassword()).isEqualTo(newPassword);
+            }
         }
 
-        @Test
-        @DisplayName("기존 패스워드가 틀리면 변경 실패")
-        void updatePasswordFailWhenInvalidOldPassword() {
-            // given
-            final Long userId = anyLong();
-            final String oldPassword = "oldPassword";
-            final String newPassword = "newPassword";
-            AuthUpdatePasswordReq req = new AuthUpdatePasswordReq(oldPassword, newPassword);
-            given(userService.readUser(userId)).willReturn(user);
-            given(bCryptPasswordEncoder.matches(oldPassword, user.getPassword())).willReturn(false);
+        @Nested
+        @DisplayName("실패 시나리오")
+        class FailScenario {
+            @Test
+            @DisplayName("기존 패스워드가 틀리면 변경 실패")
+            void updatePasswordFailWhenInvalidOldPassword() {
+                // given
+                given(userService.readUser(userId)).willReturn(USER);
+                given(bCryptPasswordEncoder.matches(oldPassword, USER.getPassword())).willReturn(false);
 
-            // when
-            AuthErrorException errorException = assertThrows(AuthErrorException.class, () -> authService.updatePassword(userId, req));
+                // when
+                AuthErrorException ex = assertThrows(AuthErrorException.class, () -> authService.updatePassword(userId, req));
 
-            // then
-            assertThat(errorException.getErrorCode()).isEqualTo(AuthErrorCode.INVALID_PASSWORD);
+                // then
+                assertThat(ex.getErrorCode()).isEqualTo(AuthErrorCode.INVALID_PASSWORD);
+            }
         }
     }
 }

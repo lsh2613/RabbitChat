@@ -2,7 +2,7 @@
 SET
 FOREIGN_KEY_CHECKS = 0;
 
--- 기존 데이터 삭제 (이미지에 있는 테이블만 해당)
+-- 기존 데이터 삭제
 DELETE
 FROM `user`;
 DELETE
@@ -11,8 +11,14 @@ DELETE
 FROM `chat_room_member`;
 DELETE
 FROM `chat_message`;
--- AUTO_INCREMENT 값 초기화 (이미지에 있는 테이블만 해당)
+DELETE
+FROM `oauth`;
+-- AUTO_INCREMENT 값 초기화
 ALTER TABLE `user` AUTO_INCREMENT = 1;
+ALTER TABLE `chat_room` AUTO_INCREMENT = 1;
+ALTER TABLE `chat_room_member` AUTO_INCREMENT = 1;
+ALTER TABLE `chat_message` AUTO_INCREMENT = 1;
+ALTER TABLE `oauth` AUTO_INCREMENT = 1;
 
 -- 빠른 삽입을 위해 검사 비활성화
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

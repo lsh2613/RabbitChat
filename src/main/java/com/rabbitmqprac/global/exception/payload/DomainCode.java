@@ -8,7 +8,8 @@ public enum DomainCode implements BaseCode {
     JWT(1),
     USER(2),
     USER_SESSION(3),
-    CHAT_ROOM(4);
+    CHAT_ROOM(4),
+    OAUTH(5);
 
     private final int code;
 
