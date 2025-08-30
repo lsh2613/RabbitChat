@@ -20,7 +20,9 @@ categories:
       - 'refactoring'
       - '🛠 Refactor'
   - title: '⚙️ ETC'
-    label: 'chore'
+    label:
+      - 'chore'
+      - '⚙️ Chore'
 change-template: '- $TITLE by @$AUTHOR in #$NUMBER'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
