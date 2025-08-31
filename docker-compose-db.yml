@@ -48,8 +48,8 @@ services:
     image: mysql:8.0
     container_name: mysql-replication-setup
     volumes:
-      - ./mysql/setup-replication.sh:/setup-replication.sh
-    command: [ "/bin/bash", "/setup-replication.sh" ]
+      - ./mysql/entrypoint.sh:/entrypoint.sh
+    command: [ "/bin/bash", "/entrypoint.sh" ]
     networks: [ rabbit-db ]
     depends_on:
       mysql_master:
