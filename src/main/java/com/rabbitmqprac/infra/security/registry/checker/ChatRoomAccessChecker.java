@@ -1,4 +1,4 @@
-package com.rabbitmqprac.infra.security.common.registry;
+package com.rabbitmqprac.infra.security.registry.checker;
 
 import com.rabbitmqprac.domain.context.chatroommember.service.ChatRoomMemberService;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.security.Principal;
 @Slf4j
 @Component("chatRoomAccessChecker")
 @RequiredArgsConstructor
-public class ChatRoomAccessChecker implements ResourceAccessChecker {
+public class ChatRoomAccessChecker implements StompAuthorityChecker {
     private final ChatRoomMemberService chatRoomMemberService;
 
     @Override

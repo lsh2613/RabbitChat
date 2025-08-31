@@ -1,11 +1,11 @@
-package com.rabbitmqprac.infra.security.common.registry;
+package com.rabbitmqprac.infra.security.registry.checker;
 
 import java.security.Principal;
 
 /**
  * 리소스 접근 권한을 확인하는 인터페이스
  */
-public interface ResourceAccessChecker {
+public interface StompAuthorityChecker {
     /**
      * 리소스에 대한 접근 권한을 확인한다.
      *

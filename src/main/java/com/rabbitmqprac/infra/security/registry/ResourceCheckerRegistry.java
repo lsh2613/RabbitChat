@@ -1,12 +1,11 @@
-package com.rabbitmqprac.infra.security.common.registry;
+package com.rabbitmqprac.infra.security.registry;
 
-import com.rabbitmqprac.infra.stomp.exception.StompErrorCode;
-import com.rabbitmqprac.infra.stomp.exception.StompErrorException;
+import com.rabbitmqprac.infra.security.registry.checker.ChatRoomAccessChecker;
+import com.rabbitmqprac.infra.security.registry.checker.StompAuthorityChecker;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -18,8 +17,8 @@ import java.util.regex.Pattern;
  */
 @RequiredArgsConstructor
 @Component
-public class ResourceAccessRegistry {
-    private final Map<Pattern, ResourceAccessChecker> checkers = new HashMap<>();
+public class ResourceCheckerRegistry {
+    private final Map<Pattern, StompAuthorityChecker> checkers = new HashMap<>();
     private final ChatRoomAccessChecker chatRoomAccessChecker;
 
     @PostConstruct
@@ -27,7 +26,7 @@ public class ResourceAccessRegistry {
         registerChecker("^/exchange/chat\\.exchange/room\\.\\d+$", chatRoomAccessChecker);
     }
 
-    public void registerChecker(final String pathPattern, final ResourceAccessChecker checker) {
+    public void registerChecker(final String pathPattern, final StompAuthorityChecker checker) {
         checkers.put(Pattern.compile(pathPattern), checker);
     }
 
@@ -38,7 +37,7 @@ public class ResourceAccessRegistry {
      * @return ResourceAccessChecker : path에 대한 체커
      * @throws IllegalArgumentException : 해당 경로에 대한 체커가 없는 경우
      */
-    public Optional<ResourceAccessChecker> getChecker(final String path) {
+    public Optional<StompAuthorityChecker> getChecker(final String path) {
         return checkers.entrySet().stream()
                 .filter(entry -> entry.getKey().matcher(path).matches())
                 .map(Map.Entry::getValue)
