@@ -4,10 +4,8 @@ services:
     image: redis:alpine
     container_name: rabbit-redis
     hostname: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - rabbit-db
+    ports: [ "6379:6379" ]
+    networks: [ rabbit-db ]
 
   mysql_master:
     container_name: rabbit-mysql-master
@@ -16,13 +14,11 @@ services:
       MYSQL_DATABASE: rabbit
       MYSQL_ROOT_HOST: '%'
       MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - "3306:3306"
+    ports: [ "3306:3306" ]
     volumes:
       - ./mysql/master-data-source.cnf:/etc/mysql/conf.d/my.cnf
       - ./mysql/init-master.sql:/docker-entrypoint-initdb.d/01-init-master.sql
-    networks:
-      - rabbit-db
+    networks: [ rabbit-db ]
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234" ]
       timeout: 20s
@@ -35,12 +31,10 @@ services:
       MYSQL_DATABASE: rabbit
       MYSQL_ROOT_HOST: '%'
       MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - "3307:3306"
+    ports: [ "3307:3306" ]
     volumes:
       - ./mysql/replica-data-source.cnf:/etc/mysql/conf.d/my.cnf
-    networks:
-      - rabbit-db
+    networks: [ rabbit-db ]
     depends_on:
       mysql_master:
         condition: service_healthy
@@ -50,13 +44,13 @@ services:
       retries: 10
 
   mysql_replication_setup:
+    profiles: [ setup ]
     image: mysql:8.0
-    container_name: mysql_replication_setup
+    container_name: mysql-replication-setup
     volumes:
-      - ./mysql/setup-replication.sh:/setup-replication.sh
-    command: [ "/bin/bash", "/setup-replication.sh" ]
-    networks:
-      - rabbit-db
+      - ./mysql/entrypoint.sh:/entrypoint.sh
+    command: [ "/bin/bash", "/entrypoint.sh" ]
+    networks: [ rabbit-db ]
     depends_on:
       mysql_master:
         condition: service_healthy
