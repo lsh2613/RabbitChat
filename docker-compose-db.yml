@@ -46,7 +46,7 @@ services:
   mysql_replication_setup:
     profiles: [ setup ]
     image: mysql:8.0
-    container_name: mysql_replication_setup
+    container_name: mysql-replication-setup
     volumes:
       - ./mysql/setup-replication.sh:/setup-replication.sh
     command: [ "/bin/bash", "/setup-replication.sh" ]
