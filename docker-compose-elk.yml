@@ -3,6 +3,7 @@ version: "3.8"
 services:
   setup:
     profiles: [ setup ]
+    container_name: rabbit-elk-setup
     init: true
     build:
       context: elk/setup/
@@ -29,9 +30,7 @@ services:
     volumes:
       - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    ports: [ "9200:9200", "9300:9300" ]
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-rabbit1234}
@@ -47,11 +46,7 @@ services:
     volumes:
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
-    ports:
-      - "5044:5044"
-      - "50000:50000/tcp"
-      - "50000:50000/udp"
-      - "9600:9600"
+    ports: [ "5044:5044", "50000:50000/tcp", "50000:50000/udp", "9600:9600" ]
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
       LOGSTASH_USERNAME: ${LOGSTASH_USERNAME:-rabbit_logstash}
@@ -67,8 +62,7 @@ services:
         ELASTIC_VERSION: ${ELASTIC_VERSION:-8.10.2}
     volumes:
       - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
-    ports:
-      - "5601:5601"
+    ports: [ "5601:5601" ]
     environment:
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-rabbit1234}
     networks: [ rabbit-elk ]

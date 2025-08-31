@@ -1,6 +1,7 @@
 package com.rabbitmqprac.global.advice;
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.rabbitmqprac.domain.context.user.exception.UserErrorCode;
 import com.rabbitmqprac.global.exception.CustomValidationException;
 import com.rabbitmqprac.global.exception.GlobalErrorException;
 import com.rabbitmqprac.global.exception.payload.CausedBy;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -124,6 +126,19 @@ public class GlobalExceptionAdvice {
         CausedBy causedBy = CausedBy.of(StatusCode.FORBIDDEN, ReasonCode.ACCESS_TO_THE_REQUESTED_RESOURCE_IS_FORBIDDEN);
 
         return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), e.getMessage());
+    }
+
+    /**
+     * @PreAuthorize 에서 검증 실패 시 발생하는 AuthorizationDeniedException 처리
+     */
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    protected ErrorResponse handleAuthorizationDeniedException(AuthorizationDeniedException e) {
+        log.warn("handleAuthorizationDeniedException : {}", e.getMessage());
+        UserErrorCode errorCode = UserErrorCode.FORBIDDEN;
+        CausedBy causedBy = errorCode.causedBy();
+
+        return ErrorResponse.of(causedBy.getCode(), causedBy.getReason(), errorCode.getExplainError());
     }
 
     /**

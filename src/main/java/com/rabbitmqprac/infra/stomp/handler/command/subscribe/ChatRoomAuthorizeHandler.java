@@ -1,7 +1,7 @@
 package com.rabbitmqprac.infra.stomp.handler.command.subscribe;
 
 import com.rabbitmqprac.domain.context.usersession.service.UserSessionService;
-import com.rabbitmqprac.infra.security.common.registry.ResourceAccessRegistry;
+import com.rabbitmqprac.infra.security.registry.ResourceCheckerRegistry;
 import com.rabbitmqprac.infra.stomp.exception.StompErrorCode;
 import com.rabbitmqprac.infra.stomp.exception.StompErrorException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ChatRoomAuthorizeHandler implements SubscribeCommandHandler {
-    private final ResourceAccessRegistry resourceAccessRegistry;
+    private final ResourceCheckerRegistry resourceCheckerRegistry;
     private final UserSessionService userSessionService;
 
     private static final String USER_EXCHANGE_PREFIX = "/user";
@@ -29,7 +29,7 @@ public class ChatRoomAuthorizeHandler implements SubscribeCommandHandler {
         }
 
         Long chatRoomId = extractChatRoomId(destination);
-        resourceAccessRegistry.getChecker(destination).ifPresent(checker -> {
+        resourceCheckerRegistry.getChecker(destination).ifPresent(checker -> {
             if (checker.hasPermission(chatRoomId, accessor.getUser())) {
                 Long userId = Long.parseLong(accessor.getUser().getName());
                 log.info("[Exchange 권한 검사] userId={}에 대한 {} 권한 검사 통과", userId, destination);

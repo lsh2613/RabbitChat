@@ -9,7 +9,6 @@ import com.rabbitmqprac.infra.security.principal.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +28,6 @@ public class ChatMessageController implements ChatMessageApi {
      * Destination Queue: /pub/chat.message.{chatRoomId}를 통해 호출 후 처리 되는 로직
      */
     @Override
-    @PreAuthorize("#chatRoomAccessChecker.hasPermission(#chatRoomId, principal)")
     @MessageMapping("chat.room.{chatRoomId}/message")
     public void sendMessage(UserPrincipal principal,
                             @DestinationVariable Long chatRoomId,
