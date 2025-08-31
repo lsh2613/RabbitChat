@@ -50,6 +50,7 @@ services:
       retries: 10
 
   mysql_replication_setup:
+    profiles: [ setup ]
     image: mysql:8.0
     container_name: mysql_replication_setup
     volumes:
