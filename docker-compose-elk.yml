@@ -3,6 +3,7 @@ version: "3.8"
 services:
   setup:
     profiles: [ setup ]
+    container_name: rabbit-elk-setup
     init: true
     build:
       context: elk/setup/
