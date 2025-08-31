@@ -16,6 +16,7 @@ import com.rabbitmqprac.domain.persistence.usersession.entity.UserSession;
 import com.rabbitmqprac.domain.persistence.usersession.entity.UserStatus;
 import com.rabbitmqprac.global.helper.RabbitPublisher;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final RabbitPublisher rabbitPublisher;
 
+    @PreAuthorize("@chatRoomMemberAuthorityValidator.isMember(#chatRoomId, #userId)")
     @Transactional
     public void sendMessage(Long userId, Long chatRoomId, ChatMessageReq req) {
         User user = entityFacade.readUser(userId);
@@ -45,6 +47,7 @@ public class ChatMessageService {
         sendMessage(chatMessage, unreadMemberCnt, chatRoom);
     }
 
+    @PreAuthorize("@chatRoomMemberAuthorityValidator.isMember(#chatRoomId)")
     @Transactional(readOnly = true)
     public List<ChatMessageDetailRes> readChatMessagesBefore(Long chatRoomId, Long lastChatMessageId, int size) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdBefore(
@@ -137,16 +140,19 @@ public class ChatMessageService {
         rabbitPublisher.publish(chatRoom.getId(), chatMessageRes);
     }
 
+    @PreAuthorize("@chatRoomMemberAuthorityValidator.isMember(#chatRoomId)")
     @Transactional(readOnly = true)
     public Optional<ChatMessage> readLastChatMessage(Long chatRoomId) {
         return chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoomId);
     }
 
+    @PreAuthorize("@chatRoomMemberAuthorityValidator.isMember(#chatRoomId)")
     @Transactional(readOnly = true)
     public int countUnreadMessages(Long chatRoomId, Long lastReadMessageId) {
         return chatMessageRepository.countByChatRoomIdAndIdGreaterThan(chatRoomId, lastReadMessageId);
     }
 
+    @PreAuthorize("@chatRoomMemberAuthorityValidator.isMember(#chatRoomId)")
     @Transactional(readOnly = true)
     public List<ChatMessageDetailRes> readChatMessagesBetween(Long userId, Long chatRoomId, Long from, Long to) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdAndIdBetween(chatRoomId, from, to);
