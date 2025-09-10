@@ -1,6 +1,6 @@
 package com.rabbitmqprac.global.interceptor;
 
-import com.rabbitmqprac.global.consant.SessionType;
+import com.rabbitmqprac.global.constant.SessionType;
 import com.rabbitmqprac.global.util.RequestInfoExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

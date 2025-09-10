@@ -1,4 +1,4 @@
-package com.rabbitmqprac.global.consant;
+package com.rabbitmqprac.global.constant;
 
 public final class CacheManagerType {
     public static final String SECURITY_USER = "securityUserCacheManager";

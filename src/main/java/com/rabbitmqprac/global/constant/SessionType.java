@@ -1,4 +1,4 @@
-package com.rabbitmqprac.global.consant;
+package com.rabbitmqprac.global.constant;
 
 public final class SessionType {
     public static final String START_TIME = "startTime";

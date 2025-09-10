@@ -1,6 +1,6 @@
 package com.rabbitmqprac.global.annotation;
 
-import com.rabbitmqprac.global.consant.CacheManagerType;
+import com.rabbitmqprac.global.constant.CacheManagerType;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.lang.annotation.Documented;
