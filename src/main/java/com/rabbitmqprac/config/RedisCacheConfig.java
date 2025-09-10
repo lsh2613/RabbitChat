@@ -94,6 +94,8 @@ public class RedisCacheConfig {
     @OidcCacheManager
     public CacheManager oidcCacheManager(@InfraRedisConnectionFactory RedisConnectionFactory cf) {
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                .disableCachingNullValues()
+                .computePrefixWith(CacheKeyPrefix.simple())
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new StringRedisSerializer()
