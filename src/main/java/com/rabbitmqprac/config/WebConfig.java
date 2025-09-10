@@ -1,21 +1,29 @@
 package com.rabbitmqprac.config;
 
+import com.rabbitmqprac.global.converter.OauthProviderConverter;
 import com.rabbitmqprac.global.interceptor.RequestInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Profile("prod")
+import java.util.Optional;
+
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-    private final RequestInterceptor requestInterceptor;
+    private final Optional<RequestInterceptor> requestInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestInterceptor);
+        if (requestInterceptor.isPresent()) {
+            registry.addInterceptor(requestInterceptor.get());
+        }
     }
 
+    @Override
+    public void addFormatters(FormatterRegistry registrar) {
+        registrar.addConverter(new OauthProviderConverter());
+    }
 }

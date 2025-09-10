@@ -4,6 +4,7 @@ import com.rabbitmqprac.infra.oauth.dto.OauthTokenRes;
 import com.rabbitmqprac.infra.oauth.dto.OidcPublicKeyRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -20,6 +21,7 @@ public class GoogleOidcClient implements OauthOidcClient {
     private String tokenUri;
 
     @Override
+    @Cacheable(value = "GoogleOauthOidc", cacheManager = "oidcCacheManager")
     public OidcPublicKeyRes getOidcPublicKey() {
         return webClient.get()
                 .uri(jwksUri)

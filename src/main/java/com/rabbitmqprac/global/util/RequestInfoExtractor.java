@@ -1,7 +1,7 @@
 package com.rabbitmqprac.global.util;
 
 import com.rabbitmqprac.global.annotation.Util;
-import com.rabbitmqprac.global.consant.SessionType;
+import com.rabbitmqprac.global.constant.SessionType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.context.request.RequestAttributes;
